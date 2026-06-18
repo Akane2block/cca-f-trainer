@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CCA-F">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<title>CCA-F 練習</title>
+<style>
+  :root{
+    --black:#08131a; --white:#ffffff; --gray:#6b7280;
+    --light:#f4f4f4; --border:#e5e5e5;
+    --ok:#0a7d33; --ng:#b00020;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:'Helvetica Neue','Hiragino Sans',Arial,'Noto Sans JP',sans-serif;
+    color:var(--black); background:var(--white);
+    line-height:1.7; font-size:16px;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:0 16px calc(env(safe-area-inset-bottom) + 90px);}
+  header{
+    position:sticky; top:0; background:var(--white);
+    border-bottom:1px solid var(--border); z-index:10;
+    padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;
+  }
+  .hbar{max-width:760px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px;}
+  .brand{font-weight:800; font-size:18px; letter-spacing:.02em; border:0; background:none; padding:0; margin:0; cursor:pointer; font-family:inherit; color:inherit; text-align:left;}
+  .brand:active{opacity:.6;}
+  .brand small{display:block; font-weight:400; font-size:11px; color:var(--gray); letter-spacing:.04em;}
+  .langtoggle{display:flex; border:1px solid var(--black); border-radius:8px; overflow:hidden;}
+  .langtoggle button{
+    border:0; background:var(--white); color:var(--black);
+    font-size:13px; font-weight:700; padding:6px 12px; cursor:pointer; font-family:inherit;
+  }
+  .langtoggle button.on{background:var(--black); color:var(--white);}
+  .leveltoggle{display:flex; border:1px solid var(--black); border-radius:8px; overflow:hidden; margin-top:8px;}
+  .leveltoggle button{flex:1; border:0; border-right:1px solid var(--black); background:var(--white); color:var(--black); font-size:14px; font-weight:700; padding:9px 0; cursor:pointer; font-family:inherit;}
+  .leveltoggle button:last-child{border-right:0;}
+  .leveltoggle button.on{background:var(--black); color:var(--white);}
+  .qmeta .qcount{margin-left:auto;}
+  .tag.lvl{border-color:var(--gray); color:var(--gray);}
+
+  h2{font-size:20px; font-weight:800; margin:24px 0 12px;}
+  .muted{color:var(--gray); font-size:13px;}
+
+  /* ホーム：モード選択 */
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .card{
+    border:1px solid var(--border); border-radius:14px; background:var(--white);
+    padding:18px 16px; cursor:pointer; text-align:left; font-family:inherit; color:inherit;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .card:active{background:var(--light);}
+  .card .t{font-weight:800; font-size:16px;}
+  .card .d{font-size:12px; color:var(--gray); line-height:1.5;}
+  .card.full{grid-column:1 / -1; border:2px solid var(--black);}
+
+  /* ドメイン別スコア */
+  .scorebox{border:1px solid var(--border); border-radius:14px; padding:6px 16px; margin-top:8px;}
+  .scorerow{display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border);}
+  .scorerow:last-child{border-bottom:0;}
+  .scorerow .nm{flex:1; font-size:14px;}
+  .scorerow .pct{font-weight:800; font-size:15px; font-variant-numeric:tabular-nums; min-width:52px; text-align:right;}
+  .bar{height:6px; background:var(--light); border-radius:99px; overflow:hidden; flex:1.4;}
+  .bar > i{display:block; height:100%; background:var(--black);}
+
+  /* 出題画面 */
+  .qmeta{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:18px;}
+  .tag{font-size:11px; font-weight:700; border:1px solid var(--black); border-radius:99px; padding:3px 10px;}
+  .qcount{font-size:13px; color:var(--gray); font-variant-numeric:tabular-nums;}
+  .timer{font-size:14px; font-weight:800; font-variant-numeric:tabular-nums;}
+  .scenario{
+    border-left:3px solid var(--black); background:var(--light);
+    padding:12px 14px; border-radius:0 10px 10px 0; margin:14px 0; font-size:15px;
+  }
+  .qtext{font-weight:700; font-size:17px; margin:8px 0 14px;}
+  .opt{
+    display:block; width:100%; text-align:left; font-family:inherit; font-size:15px;
+    border:1px solid var(--border); border-radius:12px; background:var(--white); color:inherit;
+    padding:14px 14px; margin-bottom:10px; cursor:pointer; line-height:1.6;
+  }
+  .opt:active{background:var(--light);}
+  .opt .lab{font-weight:800; margin-right:8px;}
+  .opt.correct{border:2px solid var(--ok);}
+  .opt.wrong{border:2px solid var(--ng);}
+  .opt.dim{opacity:.55;}
+  .opt .ex{display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); font-size:13px; color:#333;}
+  .opt.revealed .ex{display:block;}
+  .verdict{font-weight:800; font-size:13px;}
+  .verdict.ok{color:var(--ok);} .verdict.ng{color:var(--ng);}
+
+  .next{
+    position:fixed; left:0; right:0; bottom:0; background:var(--white);
+    border-top:1px solid var(--border); padding:12px 16px calc(env(safe-area-inset-bottom) + 12px);
+  }
+  .next .inner{max-width:760px; margin:0 auto; display:flex; gap:10px;}
+  .btn{
+    flex:1; font-family:inherit; font-weight:800; font-size:16px; border-radius:12px;
+    padding:14px; cursor:pointer; border:1px solid var(--black);
+  }
+  .btn.primary{background:var(--black); color:var(--white);}
+  .btn.ghost{background:var(--white); color:var(--black);}
+  .hidden{display:none !important;}
+
+  /* 用語チップ（解答後に出る） */
+  .terms{margin-top:16px; padding-top:12px; border-top:1px solid var(--border);}
+  .terms .lead{font-size:12px; font-weight:700; color:var(--gray); margin-bottom:8px;}
+  .chip{
+    display:inline-block; font-family:inherit; font-size:13px; font-weight:700;
+    border:1px solid var(--black); border-radius:99px; background:var(--white); color:var(--black);
+    padding:5px 12px; margin:0 6px 8px 0; cursor:pointer;
+  }
+  .chip.open{background:var(--black); color:var(--white);}
+  .termdef{
+    border:1px solid var(--border); border-left:3px solid var(--black);
+    border-radius:0 10px 10px 0; padding:10px 12px; margin:2px 0 10px; background:var(--light);
+  }
+  .termdef .tn{font-weight:800; font-size:14px;}
+  .termdef .te{font-size:12px; color:var(--gray); margin-left:6px;}
+  .termdef .td{font-size:13px; margin-top:4px;}
+
+  /* 用語集 */
+  .search{
+    width:100%; font-family:inherit; font-size:15px; padding:12px 14px;
+    border:1px solid var(--border); border-radius:12px; margin-bottom:8px;
+  }
+  .gitem{border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:10px 0;}
+  .gitem .gt{font-weight:800; font-size:15px;}
+  .gitem .ge{font-size:12px; color:var(--gray); margin-left:6px;}
+  .gitem .gd{font-size:14px; margin-top:5px;}
+  .gitem .gde{font-size:13px; color:#444; margin-top:3px;}
+  .gitem .gdom{display:inline-block; font-size:10px; font-weight:700; color:var(--gray); border:1px solid var(--border); border-radius:99px; padding:2px 8px; margin-top:8px;}
+  .ghead{font-size:13px; font-weight:800; color:var(--gray); margin:20px 0 4px;}
+
+  /* 結果画面 */
+  .big{font-size:40px; font-weight:800; font-variant-numeric:tabular-nums;}
+  .resultline{display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:14px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="hbar">
+    <button class="brand" data-act="backHome" aria-label="ホームへ戻る">CCA-F 練習<small>タップでホーム ・ Claude Certified Architect</small></button>
+    <div class="langtoggle" id="langToggle">
+      <button data-lang="ja" class="on">日本語</button>
+      <button data-lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- ホーム -->
+  <section id="home">
+    <h2>レベル</h2>
+    <div class="leveltoggle" id="levelToggle">
+      <button data-level="all" class="on">全部</button>
+      <button data-level="basic">基礎</button>
+      <button data-level="advanced">上級</button>
+    </div>
+    <p class="muted" id="levelInfo" style="margin-top:6px;"></p>
+
+    <h2>モードを選ぶ</h2>
+    <div class="grid">
+      <button class="card" data-mode="domain"><span class="t">ドメイン別</span><span class="d">配点の高い領域を狙い撃ちで練習</span></button>
+      <button class="card" data-mode="random"><span class="t">ランダム</span><span class="d">全ドメインから順不同で出題</span></button>
+      <button class="card" data-mode="review"><span class="t">間違いだけ復習</span><span class="d">前回までに間違えた問題を再挑戦</span></button>
+      <button class="card full" data-mode="mock"><span class="t">本番モード（60問・タイマー）</span><span class="d">本試験と同じ60問。時間を計って通しで解く</span></button>
+      <button class="card full" data-mode="terms"><span class="t">用語クイズ（4択）</span><span class="d">用語集から自動出題。定義↔用語を4択で覚える</span></button>
+    </div>
+
+    <button class="card full glossary-cta" data-act="openGlossary" style="margin-top:12px;border:1px solid var(--border);">
+      <span class="t">用語集を見る</span><span class="d">CCA-Fの専門用語を日英・解説つきで一覧／検索</span>
+    </button>
+
+    <h2>ドメイン別の正答率</h2>
+    <div class="scorebox" id="scoreBox"></div>
+    <p class="muted" id="totalLine" style="margin-top:10px;"></p>
+    <p class="muted">合格目安: 本番モードで安定して80%以上（本試験 720/1000）。間違えた問題は「間違いだけ復習」に自動でたまります。</p>
+  </section>
+
+  <!-- ドメイン選択 -->
+  <section id="domainPick" class="hidden">
+    <h2>ドメインを選ぶ</h2>
+    <div class="grid" id="domainList"></div>
+    <div style="margin-top:16px;"><button class="btn ghost" data-act="backHome">← 戻る</button></div>
+  </section>
+
+  <!-- 出題 -->
+  <section id="quiz" class="hidden">
+    <div class="qmeta">
+      <span class="tag" id="qTag">—</span>
+      <span class="tag lvl hidden" id="qLevel"></span>
+      <span class="qcount" id="qCount">—</span>
+      <span class="timer hidden" id="qTimer">00:00</span>
+    </div>
+    <div class="scenario" id="qScenario"></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOptions"></div>
+    <div id="qTerms" class="terms hidden"></div>
+  </section>
+
+  <!-- 用語集 -->
+  <section id="glossary" class="hidden">
+    <h2>用語集</h2>
+    <input id="glossarySearch" class="search" type="search" placeholder="用語・解説で検索（例: HITL, 冪等, retry）" autocomplete="off">
+    <div id="glossaryList"></div>
+    <div style="margin-top:16px;"><button class="btn ghost" data-act="backHome">← 戻る</button></div>
+  </section>
+
+  <!-- 結果 -->
+  <section id="result" class="hidden">
+    <h2>結果</h2>
+    <p><span class="big" id="rScore">0%</span></p>
+    <div id="rBreakdown"></div>
+    <p class="muted" id="rMsg" style="margin-top:14px;"></p>
+    <div style="margin-top:18px; display:flex; gap:10px;">
+      <button class="btn ghost" data-act="backHome">ホームへ</button>
+      <button class="btn primary" data-act="reviewWrong">間違いを復習</button>
+    </div>
+  </section>
+</div>
+
+<!-- 下部固定ボタン -->
+<div class="next hidden" id="navBar">
+  <div class="inner">
+    <button class="btn ghost" data-act="quitQuiz">やめる</button>
+    <button class="btn primary" data-act="nextQ" id="nextBtn">次へ</button>
+  </div>
+</div>
+
+<script src="questions.js"></script>
+<script src="data/q-agentic.js"></script>
+<script src="data/q-claudecode.js"></script>
+<script src="data/q-prompt.js"></script>
+<script src="data/q-tool.js"></script>
+<script src="data/q-context.js"></script>
+<script src="data/q-adv-agentic.js"></script>
+<script src="data/q-adv-claudecode.js"></script>
+<script src="data/q-adv-prompt.js"></script>
+<script src="data/q-adv-tool.js"></script>
+<script src="data/q-adv-context.js"></script>
+<script src="data/glossary.js"></script>
+<script src="app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  }
+</script>
+</body>
+</html>
