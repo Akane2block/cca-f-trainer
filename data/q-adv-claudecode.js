@@ -349,5 +349,20 @@ window.QUESTIONS.push(
         'Verbal notice has no enforcement and violates least privilege; stopping it structurally via the allowlist is the real fix.'
       ]
     }
+  },
+  {
+    id: 'cc-adv-011', domain: 'claudecode', answer: 1, level: 'advanced',
+    ja: {
+      scenario: '1つのリポジトリに、古いPythonスクリプト（末尾 .old.py）と新しいGoサービス（末尾 .service.go）が混在している。共通のコーディング規約を .claude/rules/coding-standards.md に1ファイルで置き、この2種類の拡張子のファイルを編集するときだけClaudeに読み込ませたい。',
+      question: 'ルールの適用対象を指定する最も適切な方法は？',
+      options: ['フロントマターに paths: ["**/*.(old\\.py|service\\.go)"] と正規表現で1本にまとめて書く','フロントマターに paths: ["**/*.old.py", "**/*.service.go"] とグロブの配列で2パターン並べて書く','ルートに CLAUDE.coding.md という名前で置けば、ファイル名から対象拡張子が自動で決まる','拡張子ごとに .claude/rules/ 配下へ2つのルールファイルを分けて作る'],
+      explanations: ['paths は正規表現ではなくグロブパターンを期待する。正規表現風の書き方は正しく認識されない。','正解。paths は配列を受け取れるので、対象パターンをグロブで複数並べれば1ファイルで両方の拡張子に効かせられる。','カスタムルールは .claude/rules/ 配下に置きフロントマターで対象を指定する。ファイル名だけで対象拡張子が決まるわけではない。','paths は配列を取れるので、わざわざ拡張子ごとにファイルを分ける必要はない。1ファイルで複数パターンを管理できる。']
+    },
+    en: {
+      scenario: 'One repo mixes legacy Python scripts (ending .old.py) and new Go services (ending .service.go). You want a single shared coding-standards rule in .claude/rules/coding-standards.md that Claude loads only when editing files of these two extensions.',
+      question: 'What is the best way to scope the rule?',
+      options: ['Write it as one regex in frontmatter: paths: ["**/*.(old\\.py|service\\.go)"]','Write a glob array in frontmatter: paths: ["**/*.old.py", "**/*.service.go"]','Just name it CLAUDE.coding.md at the repo root so the target extensions are inferred from the filename','Create two separate rule files under .claude/rules/, one per extension'],
+      explanations: ['paths expects glob patterns, not regex; a regex-style pattern will not be matched correctly.','Correct. paths takes an array, so listing multiple glob patterns in one file applies the rule to both extensions.','Custom rules live under .claude/rules/ and target files via frontmatter; the filename alone does not determine target extensions.','Since paths takes an array, splitting per extension is unnecessary—one file can manage multiple patterns.']
+    }
   }
 );

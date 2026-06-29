@@ -244,5 +244,20 @@ window.QUESTIONS.push(
         'Persisting decisions, position, remaining tasks, and rejected options as a structured summary read first the next day is the correct way to hand off state reliably within the token budget.'
       ]
     }
+  },
+  {
+    id: 'ctx-adv-008', domain: 'context', answer: 2, level: 'advanced',
+    ja: {
+      scenario: '医療データ分析チームが数百万件の電子カルテを処理する。取り込みから最終レポート生成までのSLAは60時間。アーキテクトは1回目の処理で10%が失敗し、2回目の処理（再試行）が必要になると予測している。使用する Batch API は1バッチあたり最大24時間かかる。再試行を含めすべて60時間のSLAを確実に守るための「最大の」バッチ送信間隔は？',
+      question: '1回目の送信から再試行の送信まで、最大どれだけ空けられるか？',
+      options: ['12時間','24時間','36時間','48時間'],
+      explanations: ['12時間は全体の余裕（スラック＝60−24−24）であって、問われている送信間隔ではない。これが定番の引っかけ。','24時間は1バッチの最大処理時間そのもので、送信間隔ではない。','正解。再試行バッチも最大24時間かかるため、締切24時間前（=36時間時点）までに再試行を送る必要がある。60−24=36時間が空けてよい最大間隔。','48時間だと再試行の完了が60時間を超え、SLAに間に合わない。']
+    },
+    en: {
+      scenario: 'A medical data team processes millions of records. The SLA from ingestion to final report is 60 hours. The architect predicts 10% of the first pass fails and needs a second pass (retry). The Batch API takes up to 24 hours per batch. To guarantee the 60-hour SLA including reprocessing, what is the MAXIMUM batch submission interval?',
+      question: 'At most how long can elapse between the first submission and the retry submission?',
+      options: ['12 hours','24 hours','36 hours','48 hours'],
+      explanations: ['12 hours is the overall slack (60 − 24 − 24), not the submission interval being asked—this is the classic trap.','24 hours is the max processing time of a single batch, not the submission interval.','Correct. The retry batch also takes up to 24h, so the retry must be sent by 24h before the deadline (at the 36h mark). 60 − 24 = 36h is the max gap.','At 48 hours the retry would finish past 60 hours and miss the SLA.']
+    }
   }
 );

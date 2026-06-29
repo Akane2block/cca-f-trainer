@@ -134,5 +134,35 @@ window.QUESTIONS.push(
       options: ['Describe the filter-string format in detail in the description with many examples so Claude writes correct expressions','Keep filter as-is but have Claude re-validate the generated expression before it goes to the backend','Drop the free-form expression and define typed individual arguments (email / status / region) with enums/allowed values in the schema, with the server interpreting and validating to build the query','Keep adding arguments to one list_customers so every filter can be expressed as a single free-form expression'],
       explanations: ['More format description and examples still leave syntax errors and over-fetching while it stays free-form; it cannot structurally prevent PII leaks.','Having the same model that produced the error re-validate it is unreliable; validation is no substitute for a boundary.','Replacing the free-form expression with typed individual arguments constrained by schema enums/allowed values, with server-side interpretation and validation, is correct — input validation and schema prevent misuse and PII over-fetch.','Piling arguments onto a free-form expression widens ambiguity and attack surface, worsening exactly this problem.']
     }
+  },
+  {
+    id: 'tl-adv-010', domain: 'tool', answer: 1, level: 'advanced',
+    ja: {
+      scenario: 'カスタムツール update_ad_campaign は campaign_id が必須だが、Claudeが時々この引数を省略してツールを呼び、実行が失敗する。Claudeがこのツールを使うとき、必須の campaign_id を必ず含め、引数なしでの実行を試みないようにしたい。',
+      question: '最も適切な設計は？',
+      options: ['API呼び出しで output_config.format を json にし、Structured Outputs（構造化出力）で応答フォーマットを固定する','ツール定義の input_schema で campaign_id を required にし、ツール定義に strict: true を付けて厳密ツール使用を有効にする','CLAUDE.md に require-args: true を追記して、必須引数の付与をプロジェクト指示として強制する','tool_choice 側に strict: true を付けて、引数の欠落を防ぐ'],
+      explanations: ['Structured Outputs（output_config.format）は応答本文のフォーマットを制御する別機能で、ツール引数の必須チェックはできない。引数の欠落は防げない。','正解。input_schema の required で必須を宣言し、ツール定義に strict: true を付けると tool_use.input がスキーマに厳密一致することが保証される（additionalProperties: false と required が必要）。','CLAUDE.md はエディタ統合向けのプロジェクト指示で、APIレベルの引数強制の仕組みではない。require-args のような設定キーも存在しない。','strict は tool_choice ではなくツール定義側（name/description/input_schema と並ぶトップレベル）に置かないと効かない。']
+    },
+    en: {
+      scenario: 'A custom tool update_ad_campaign requires campaign_id, but Claude sometimes calls it without that argument and the call fails. You want Claude to always include the required campaign_id and never attempt a call without it.',
+      question: 'What is the most appropriate design?',
+      options: ['Set output_config.format to json on the API call and use Structured Outputs to fix the response format','Mark campaign_id as required in the tool input_schema and set strict: true on the tool definition to enable strict tool use','Add require-args: true to CLAUDE.md to enforce required arguments as a project instruction','Set strict: true on tool_choice to prevent missing arguments'],
+      explanations: ['Structured Outputs (output_config.format) controls the response body format—a different feature; it cannot validate tool arguments, so omissions are not prevented.','Correct. Declaring required in input_schema and setting strict: true on the tool definition guarantees tool_use.input strictly matches the schema (needs additionalProperties: false and required).','CLAUDE.md is a project instruction for editor integrations, not an API-level argument-enforcement mechanism; no require-args key exists.','strict must sit on the tool definition (top-level alongside name/description/input_schema), not on tool_choice, or it has no effect.']
+    }
+  },
+  {
+    id: 'tl-adv-011', domain: 'tool', answer: 2, level: 'advanced',
+    ja: {
+      scenario: '在庫管理エージェントが、物流モニタリング用のMCPツールで「過去24時間に配送遅延した荷物のID」を照会する。ツールのサービスアカウント認証情報が期限切れになりバックエンドで認証失敗したが、開発者は「エージェントのクラッシュ防止」のため、すべての例外をキャッチして {"isError": false, "results": []} を返す設計にしていた。',
+      question: 'この設計がアーキテクチャに与える影響として最も適切なのは？',
+      options: ['MCPプロトコルが認証失敗を検出し、isError: false を上書きしてモデルへ警告する','エージェントは空配列を一時的なエラーと解釈し、指数バックオフで自動リトライする','エージェントは「遅延した荷物は存在しない」と誤結論し、重大なアクセス失敗を有効な空の結果として見逃す','エージェントはユーザーに新しい認証情報の手動入力を促す'],
+      explanations: ['MCPプロトコルはツールが定義したレスポンスをそのまま運ぶだけで、エラーの検証・修正はしない。isError: false に塗られていれば検知しようがない。','isError: false はモデルにとって「成功」。成功レスポンスを疑わないため、リトライもしない。','正解。isError: false のためモデルはシステム障害をデータの不在と誤解し、誤った推論を出す（サイレント・フェイラー）。','認証問題が isError: false で隠蔽されているため、モデルはユーザーに情報を求めない。失敗は isError: true で伝えるべき。']
+    },
+    en: {
+      scenario: 'An inventory agent uses an MCP tool to query the IDs of shipments delayed in the last 24 hours. The tool\'s service-account credentials expired and backend auth failed, but to "prevent the agent from crashing" the developer made it catch all exceptions and return {"isError": false, "results": []}.',
+      question: 'What is the most accurate architectural impact of this design?',
+      options: ['The MCP protocol detects the auth failure, overrides isError: false, and warns the model','The agent interprets the empty array as a transient error and auto-retries with exponential backoff','The agent wrongly concludes "no delayed shipments exist," missing a critical access failure as a valid empty result','The agent prompts the user to manually enter new credentials'],
+      explanations: ['The MCP protocol merely transports the tool-defined response and does not validate or fix errors; if it is painted isError: false, there is nothing to detect.','isError: false means "success" to the model; it does not doubt a success response, so it will not retry.','Correct. Because isError: false, the model mistakes a system failure for absence of data and reasons incorrectly (silent failure).','The auth problem is hidden behind isError: false, so the model never asks the user for anything; failures should be surfaced with isError: true.']
+    }
   }
 );
