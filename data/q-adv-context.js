@@ -259,5 +259,110 @@ window.QUESTIONS.push(
       options: ['12 hours','24 hours','36 hours','48 hours'],
       explanations: ['12 hours is the overall slack (60 − 24 − 24), not the submission interval being asked—this is the classic trap.','24 hours is the max processing time of a single batch, not the submission interval.','Correct. The retry batch also takes up to 24h, so the retry must be sent by 24h before the deadline (at the 36h mark). 60 − 24 = 36h is the max gap.','At 48 hours the retry would finish past 60 hours and miss the SLA.']
     }
+  },
+  {
+    id:'ctx-adv-009', domain: 'context', answer: 0, level: 'advanced',
+    ja: {
+      scenario: '15拠点のフルフィルメントセンターを持つECプラットフォームで、各拠点の日次操作ログをClaudeに分析させ、在庫の不正転送や横流しを検出している。現在は15拠点分のログをすべて連結して1つのプロンプトに入れており、コンテキストウィンドウには収まっている。単一拠点内で完結する不審な操作は検出できているが、複数拠点をまたいで在庫移動・権限変更・出荷処理を組み合わせる巧妙な攻撃を繰り返し見逃していることが監査で判明した。',
+      question: '拠点横断の攻撃を検出するアーキテクチャとして最も適切なものはどれか。',
+      options: [
+        'マルチパス構成にし、まず各拠点ログごとの局所分析パスで不審なIP・ユーザーID・在庫ID・タイムスタンプ等を抽出し、抽出結果だけを統合パスに渡してファイル横断の相関分析を行う',
+        '検出した攻撃候補ごとに確信度スコアを自己報告させ、低確信度のものをセキュリティチームの人間レビューに回す',
+        'max_tokensを引き上げてExtended Thinkingを有効にし、より深い推論で全ログを読み解かせる',
+        '初期分析の結果を、独立した別のClaudeインスタンスに渡して妥当性をレビューさせる二段構成にする'
+      ],
+      explanations: [
+        '決め手は、生ログの全連結ではコンテキストに収まっていても重要な相関がノイズに埋もれる点。先にエンティティを抽出して入力密度を下げ、抽出結果同士で相関を見れば拠点横断のパターンが浮かび上がる。',
+        '確信度スコアは「すでに見つけた候補」の優先度付けには使えるが、今回の問題はそもそも候補を発見できていないこと。発見漏れの解決策にはならない。',
+        '思考量や出力余地を増やしても、巨大な生ログのノイズで注意が分散する問題は残る。入力を整理しないまま「もっと考えて」では根本解決しない。',
+        'レビュー用インスタンスは品質評価には役立つが、元の分析が見落としたものはレビュー側にも渡らない。まず入力を相関しやすい形に変換する必要がある。'
+      ]
+    },
+    en: {
+      scenario: 'An e-commerce platform with 15 fulfillment centers has Claude analyze each site’s daily operation logs to detect fraudulent inventory transfers and diversion. Today all 15 logs are concatenated into a single prompt, which still fits within the context window. Suspicious activity confined to a single site is being caught, but an audit revealed the system repeatedly misses sophisticated attacks that combine inventory moves, permission changes, and shipping operations across multiple sites.',
+      question: 'Which architecture is most appropriate for detecting the cross-site attacks?',
+      options: [
+        'Adopt a multi-pass design: run a local analysis pass per site log to extract suspicious IPs, user IDs, inventory IDs, and timestamps, then feed only those extractions into an aggregation pass that correlates across files',
+        'Have the model self-report a confidence score per detected attack candidate and route low-confidence ones to human review by the security team',
+        'Raise max_tokens and enable extended thinking so deeper reasoning can work through all the logs',
+        'Add a second stage where an independent Claude instance reviews the validity of the initial analysis'
+      ],
+      explanations: [
+        'The decisive point: with raw logs all concatenated, key correlations drown in noise even though everything “fits” in context. Extracting entities first lowers input density, and correlating the extractions surfaces cross-site patterns.',
+        'Confidence scores help prioritize candidates already found; the problem here is that candidates are not being discovered at all. It does not fix detection misses.',
+        'More thinking budget does not fix attention being diluted by massive raw-log noise. “Think harder” without restructuring the input does not address the root cause.',
+        'A reviewer instance helps assess quality, but whatever the original analysis missed never reaches the reviewer. The input must first be transformed into a correlatable form.'
+      ]
+    }
+  },
+  {
+    id:'ctx-adv-010', domain: 'context', answer: 3, level: 'advanced',
+    ja: {
+      scenario: '保険会社が医療保険請求の情報抽出をClaudeで自動化している。抽出結果には確信度スコアが付き、0.90未満は人間のオペレーターが全件レビューし、0.90以上はそのまま自動処理される。運用開始から半年、ビジネス側から「自動処理されている高確信度データの精度が長期的に維持されているか、新しい請求フォーマットや新規提携病院の増加でエラーパターンが変わっていないかを継続的に監視したい」という要望が出た。',
+      question: '品質管理（QC）のサンプリング戦略として最も適切なものはどれか。',
+      options: [
+        '判定が最も不安定な0.90〜0.92の境界付近のデータに絞って人間レビューを行う',
+        '全請求データから毎週5%を無作為抽出して人間レビューを行う',
+        '毎週ランダムに選んだ1つの提携病院の請求を100%レビューする',
+        '0.90以上の高確信度データを対象に、請求元や請求の複雑さなどの属性で層化したランダム抽出を行い、人間がレビューする'
+      ],
+      explanations: [
+        '境界付近は確かに怪しいが、0.99のような高確信度で起きる深刻なサイレント・フェイラーを見逃す。高確信度層全体の監視には範囲が狭すぎる。',
+        '低確信度データはすでに全件人間レビュー済みなので、全体からの無作為抽出はレビュー資源が重複する。監視すべきは自動処理される側。',
+        '特定病院の傾向は分かるが偏りが大きく、他の病院・他の請求パターンで進むドリフトを見逃す。',
+        '決め手は、監視対象が「自動処理される高確信度グループ」であること。属性で層化してランダム抽出すれば、偏りを抑えつつ新しいエラーパターンやドリフトを早期に検知できる。'
+      ]
+    },
+    en: {
+      scenario: 'An insurance company automates data extraction from medical claims with Claude. Each extraction carries a confidence score: below 0.90 goes to full human operator review, while 0.90 and above is processed automatically. Six months into operation, the business asks for continuous monitoring of whether the auto-processed high-confidence data is staying accurate over time, and whether error patterns are shifting as new claim formats and newly partnered hospitals come online.',
+      question: 'Which sampling strategy is most appropriate for this quality control?',
+      options: [
+        'Focus human review on data near the boundary, between 0.90 and 0.92, where judgments are least stable',
+        'Randomly sample 5% of all claims each week for human review',
+        'Each week, pick one partner hospital at random and review 100% of its claims',
+        'From the high-confidence (≥ 0.90) data, take a stratified random sample across attributes such as claim source and claim complexity, and have humans review it'
+      ],
+      explanations: [
+        'The boundary zone is indeed suspect, but this misses severe silent failures occurring at very high confidence like 0.99. It is far too narrow to monitor the whole high-confidence group.',
+        'Low-confidence data is already fully human-reviewed, so sampling from everything duplicates review effort. What needs watching is the auto-processed side.',
+        'Reviewing one hospital reveals that hospital’s quirks but is heavily biased, missing drift progressing in other hospitals and claim patterns.',
+        'The decisive point: the monitoring target is the auto-processed high-confidence group. Stratified random sampling across attributes keeps bias down while catching new error patterns and drift early.'
+      ]
+    }
+  },
+  {
+    id:'ctx-adv-011', domain: 'context', answer: 2, level: 'advanced',
+    ja: {
+      scenario: '金融機関が、80ファイルからなるレガシーな勘定系モノリスを疎結合なモジュール構造へ再設計しようとしている。担当チームはClaudeに全80ファイルを1つのプロンプトで読ませてモジュール境界を提案させた。ファイル群はコンテキストウィンドウに収まっており、出力された境界案も一見それらしい。しかしアーキテクトが精査すると、提案はフォルダ構成をなぞった表面的なもので、遠く離れたファイル同士が共有データや業務ルールで強く結合している箇所をことごとく見落としていた。',
+      question: 'この分析プロセスの再設計として最も適切なものはどれか。',
+      options: [
+        'より大きなコンテキストウィンドウを持つ次世代モデルの提供を待ち、それまで本件の分析は保留する',
+        '独立したレビュー用のClaudeインスタンスを追加し、境界案が表面的でないか批判的にレビューさせる',
+        'ファイルごとの局所分析フェーズで依存関係・ドメインエンティティ・責務を構造化データとして抽出し、その抽出結果だけを使うファイル横断の統合フェーズで深い結合を見つけて境界を提案させる2段階に分ける',
+        'max_tokensを大幅に引き上げ、境界の根拠をより長く詳細に出力させることで見落としを減らす'
+      ],
+      explanations: [
+        'コンテキストに「入るかどうか」は今回すでにクリアしている。問題は情報が過密だと重要な関係に注意を向け続けられないこと（注意力の減衰）で、ウィンドウ拡大では解決しない。',
+        'レビューは品質確認に役立つが、同じ過密な材料を渡されたレビュー側も同様に深い結合を見落とす。入力密度の整理が先。',
+        '決め手は「全部入る」と「正しく分析できる」が別物であること。局所分析で各ファイルの要点を構造化して入力密度を下げ、統合フェーズで抽出結果同士を突き合わせれば、遠距離の深い結合が浮かび上がる。',
+        'max_tokensは主に出力長の上限であり、入力内の依存関係を深く読み取る能力を上げる設定ではない。長く書けても見落とした結合は出てこない。'
+      ]
+    },
+    en: {
+      scenario: 'A financial institution is redesigning a legacy core-banking monolith of 80 files into loosely coupled modules. The team had Claude read all 80 files in a single prompt and propose module boundaries. The files fit within the context window, and the proposed boundaries looked plausible at first glance. But on close inspection the architect found the proposal merely traced the folder layout and consistently missed places where distant files are tightly coupled through shared data and business rules.',
+      question: 'Which redesign of this analysis process is most appropriate?',
+      options: [
+        'Wait for a next-generation model with a larger context window and put this analysis on hold until then',
+        'Add an independent reviewer Claude instance to critically review whether the boundary proposal is superficial',
+        'Split into two stages: a per-file local analysis phase that extracts dependencies, domain entities, and responsibilities as structured data, then a cross-file integration phase that uses only those extractions to find deep coupling and propose boundaries',
+        'Raise max_tokens substantially so the model can output longer, more detailed justifications and miss less'
+      ],
+      explanations: [
+        '“Fitting in context” is already achieved here. The problem is that with over-dense input the model cannot sustain attention on the relations that matter (attention decay) — a bigger window does not fix that.',
+        'Review helps with quality assurance, but a reviewer fed the same over-dense material misses the same deep couplings. Reducing input density comes first.',
+        'The decisive point: “it all fits” and “it analyzes correctly” are different things. Local analysis structures each file’s essentials and lowers input density; the integration phase then cross-references the extractions, surfacing deep long-range coupling.',
+        'max_tokens mainly caps output length; it does not improve how deeply dependencies in the input are read. Longer output does not contain couplings that were never noticed.'
+      ]
+    }
   }
 );

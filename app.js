@@ -29,7 +29,6 @@
   let lang = LS.get('ccaf_lang', 'ja');
   let stats = LS.get('ccaf_stats', {});      // {domainKey:{correct,total}}
   let wrong = LS.get('ccaf_wrong', []);      // [questionId]
-  let qlevel = LS.get('ccaf_level', 'all');  // all | basic | advanced
 
   function recordAnswer(q, isCorrect) {
     const s = stats[q.domain] || { correct: 0, total: 0 };
@@ -53,7 +52,7 @@
 
   // ---- ユーティリティ ----
   function shuffle(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
-  function pool() { return qlevel === 'all' ? Q : Q.filter(q => (q.level || 'basic') === qlevel); }
+  function pool() { return Q; }
   function byDomain(key) { return pool().filter(q => q.domain === key); }
   function loc(q) { return q[lang] || q.ja; }
 
@@ -62,7 +61,7 @@
 
   function startSession(list, opts = {}) {
     if (!list.length) { alert('この条件の問題がまだありません。'); return; }
-    session = { list, idx: 0, answered: false, correctCount: 0, mode: opts.mode, timed: !!opts.timed, synthetic: !!opts.synthetic, startTs: Date.now() };
+    session = { list, idx: 0, answered: false, choice: null, correctCount: 0, mode: opts.mode, timed: !!opts.timed, synthetic: !!opts.synthetic, startTs: Date.now() };
     show('quiz');
     if (session.timed) startTimer(); else stopTimer();
     renderQuestion();
@@ -82,18 +81,16 @@
   function stopTimer() { timerEl.classList.add('hidden'); if (timerId) clearInterval(timerId); timerId = null; }
 
   // ---- 出題描画 ----
-  function renderQuestion() {
+  // preserve=true のとき（言語切替時）は回答済み状態を保ったまま言語だけ差し替える
+  function renderQuestion(preserve) {
     const q = session.list[session.idx];
     const L = loc(q);
-    session.answered = false;
+    if (!preserve) { session.answered = false; session.choice = null; }
     const terms = $('#qTerms'); terms.classList.add('hidden'); terms.innerHTML = '';
-    const lv = $('#qLevel');
     if (session.synthetic) {
       $('#qTag').textContent = (lang === 'en' ? 'Term quiz' : '用語クイズ');
-      lv.classList.add('hidden');
     } else {
       $('#qTag').textContent = (DOMAIN_MAP[q.domain] || {})[lang] || q.domain;
-      lv.textContent = (q.level === 'advanced') ? '上級' : '基礎'; lv.classList.remove('hidden');
     }
     $('#qCount').textContent = (session.idx + 1) + ' / ' + session.list.length;
     $('#qScenario').textContent = L.scenario || '';
@@ -109,9 +106,15 @@
       b.addEventListener('click', () => choose(i));
       box.appendChild(b);
     });
-    $('#nextBtn').textContent = (session.idx === session.list.length - 1) ? '結果へ' : '次へ';
-    $('#nextBtn').disabled = true;
-    $('#nextBtn').style.opacity = .5;
+    $('#nextBtn').textContent = (session.idx === session.list.length - 1)
+      ? (lang === 'en' ? 'Results' : '結果へ')
+      : (lang === 'en' ? 'Next' : '次へ');
+    if (preserve && session.answered && session.choice !== null) {
+      reveal(session.choice);
+    } else {
+      $('#nextBtn').disabled = true;
+      $('#nextBtn').style.opacity = .5;
+    }
   }
 
   function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
@@ -119,18 +122,26 @@
   function choose(i) {
     if (session.answered) return;
     session.answered = true;
+    session.choice = i;
+    const q = session.list[session.idx];
+    const isCorrect = i === q.answer;
+    if (isCorrect) session.correctCount++;
+    if (!session.synthetic) recordAnswer(q, isCorrect);
+    reveal(i);
+  }
+
+  // 回答結果の表示（choose直後と、言語切替時の再描画で共用。統計は記録しない）
+  function reveal(i) {
     const q = session.list[session.idx];
     const L = loc(q);
     const correct = q.answer;
-    const isCorrect = i === correct;
-    if (isCorrect) session.correctCount++;
-    if (!session.synthetic) recordAnswer(q, isCorrect);
-
+    const okL = lang === 'en' ? 'Correct' : '正解';
+    const ngL = lang === 'en' ? 'Incorrect' : '不適';
     const opts = $('#qOptions').children;
     for (let k = 0; k < opts.length; k++) {
       const el = opts[k];
       const ex = el.querySelector('.ex');
-      const verdict = (k === correct) ? '<span class="verdict ok">正解</span> ' : '<span class="verdict ng">不適</span> ';
+      const verdict = (k === correct) ? '<span class="verdict ok">' + okL + '</span> ' : '<span class="verdict ng">' + ngL + '</span> ';
       ex.innerHTML = verdict + escapeHtml((L.explanations && L.explanations[k]) || '');
       el.classList.add('revealed');
       if (k === correct) el.classList.add('correct');
@@ -148,7 +159,7 @@
     const terms = matchTerms(q);
     if (!terms.length) { box.classList.add('hidden'); box.innerHTML = ''; return; }
     box.classList.remove('hidden');
-    box.innerHTML = '<div class="lead">この問題の専門用語（タップで解説）</div>';
+    box.innerHTML = '<div class="lead">' + (lang === 'en' ? 'Key terms in this question (tap for definition)' : 'この問題の専門用語（タップで解説）') + '</div>';
     const chipRow = document.createElement('div');
     const defRow = document.createElement('div');
     terms.forEach(g => {
@@ -317,39 +328,29 @@
     if (a === 'openGlossary') { renderGlossary($('#glossarySearch').value); show('glossary'); }
   });
   $('#glossarySearch').addEventListener('input', e => renderGlossary(e.target.value));
-  $('#levelToggle').addEventListener('click', e => {
-    const b = e.target.closest('button'); if (!b) return;
-    qlevel = b.dataset.level; LS.set('ccaf_level', qlevel);
-    document.querySelectorAll('#levelToggle button').forEach(x => x.classList.toggle('on', x.dataset.level === qlevel));
-    renderLevelInfo();
-  });
   $('#langToggle').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.lang === lang) return;
     lang = b.dataset.lang; LS.set('ccaf_lang', lang);
     document.querySelectorAll('#langToggle button').forEach(x => x.classList.toggle('on', x.dataset.lang === lang));
-    // 画面再描画
-    if (!sections.quiz.classList.contains('hidden') && session) {
-      const wasAnswered = session.answered;
-      renderQuestion();
-      // 言語切替時は回答状態をリセット（解説の言語も揃える）
-    }
+    // 表示中の画面のまま、言語だけ差し替える（回答済み状態・問題は保持）
+    if (!sections.quiz.classList.contains('hidden') && session) renderQuestion(true);
     if (!sections.domainPick.classList.contains('hidden')) renderDomainPick();
     if (!sections.glossary.classList.contains('hidden')) renderGlossary($('#glossarySearch').value);
+    renderCountInfo();
     renderScores();
   });
 
-  // ---- レベル表示 ----
-  function renderLevelInfo() {
-    const adv = Q.filter(q => q.level === 'advanced').length;
-    const basic = Q.length - adv;
-    const showing = qlevel === 'all' ? Q.length : (qlevel === 'advanced' ? adv : basic);
-    $('#levelInfo').textContent = '基礎 ' + basic + '問 ・ 上級 ' + adv + '問（いま出題対象 ' + showing + '問）';
+  // ---- 収録数表示 ----
+  function renderCountInfo() {
+    $('#levelInfo').textContent = lang === 'en'
+      ? Q.length + ' scenario questions (real-exam style)'
+      : '収録 ' + Q.length + ' 問（本試験レベル・業務シナリオ形式）';
   }
 
   // ---- 初期化 ----
-  document.querySelectorAll('#levelToggle button').forEach(x => x.classList.toggle('on', x.dataset.level === qlevel));
   document.querySelectorAll('#langToggle button').forEach(x => x.classList.toggle('on', x.dataset.lang === lang));
-  renderLevelInfo();
+  renderCountInfo();
   renderScores();
   show('home');
   console.log('[CCA-F] loaded', Q.length, 'questions');

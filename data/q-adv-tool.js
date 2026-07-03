@@ -164,5 +164,145 @@ window.QUESTIONS.push(
       options: ['The MCP protocol detects the auth failure, overrides isError: false, and warns the model','The agent interprets the empty array as a transient error and auto-retries with exponential backoff','The agent wrongly concludes "no delayed shipments exist," missing a critical access failure as a valid empty result','The agent prompts the user to manually enter new credentials'],
       explanations: ['The MCP protocol merely transports the tool-defined response and does not validate or fix errors; if it is painted isError: false, there is nothing to detect.','isError: false means "success" to the model; it does not doubt a success response, so it will not retry.','Correct. Because isError: false, the model mistakes a system failure for absence of data and reasons incorrectly (silent failure).','The auth problem is hidden behind isError: false, so the model never asks the user for anything; failures should be surfaced with isError: true.']
     }
+  },
+  {
+    id:'tl-adv-012', domain: 'tool', answer: 3, level: 'advanced',
+    ja: {
+      scenario: 'ECプラットフォームの在庫管理エージェントが、MCPツール sync_inventory で各倉庫の在庫を同期している。あるリリースでメッセージ組み立て処理をリファクタリングした際、tool_result ブロックの tool_use_id に、直前のアシスタントメッセージ内の tool_use の id を渡す代わりに、新しく生成したUUIDを設定してしまうバグが混入した。開発チームはこのリクエストをAPIに送信して会話ループを続けようとしている。',
+      question: 'このリクエストを送ると何が起きるか。',
+      options: [
+        'APIはツール名 sync_inventory を手がかりに、対応するツール呼び出しへ結果を自動的にマッピングして処理を続行する',
+        'APIはリクエストを受け付けるが、Claudeは元の要求が未完了と判断し、sync_inventory をもう一度呼び直す',
+        'Claudeはこのツール結果を無視し、在庫の数値を推測で補って回答を生成する',
+        'APIが 400 Bad Request を返し、リクエスト自体が拒否される'
+      ],
+      explanations: [
+        'ツール名による自動マッピングは行われない。並列ツール呼び出しでは同名ツールが複数回呼ばれうるため、対応付けはIDでしか行えない。',
+        'モデルが再判断する段階まで進まない。対応しないIDを持つ tool_result は、APIサーバー側のバリデーションで先に弾かれる。',
+        'ハルシネーションはモデルの推論の問題だが、これはリクエスト構造の不整合。モデルに届く前に処理が止まる。',
+        '決め手は、tool_result.tool_use_id が直前の tool_use.id と完全一致していなければならないこと。勝手に生成したUUIDでは「どの呼び出しへの返答か」を紐付けられず、構造エラーとして 400 Bad Request になる。'
+      ]
+    },
+    en: {
+      scenario: 'An e-commerce inventory agent synchronizes warehouse stock via the MCP tool sync_inventory. During a release that refactored the message-assembly code, a bug slipped in: the tool_result block’s tool_use_id is now set to a freshly generated UUID instead of the id of the tool_use in the preceding assistant message. The team sends this request to the API to continue the conversation loop.',
+      question: 'What happens when this request is sent?',
+      options: [
+        'The API uses the tool name sync_inventory to automatically map the result to the corresponding tool call and continues',
+        'The API accepts the request, but Claude decides the original call is unfinished and invokes sync_inventory again',
+        'Claude ignores the tool result and generates an answer, filling in inventory figures by guesswork',
+        'The API returns 400 Bad Request and the request itself is rejected'
+      ],
+      explanations: [
+        'There is no auto-mapping by tool name. With parallel tool calls the same tool can be invoked multiple times, so correlation can only be done by ID.',
+        'It never gets to the model’s re-reasoning stage; a tool_result with a non-matching ID is rejected earlier by API-side validation.',
+        'Hallucination is a model-inference issue, but this is a structural inconsistency in the request. Processing stops before the model sees it.',
+        'The decisive point: tool_result.tool_use_id must exactly match the preceding tool_use.id. With an invented UUID the API cannot tie the result to any call, so it rejects the request as a structural error — 400 Bad Request.'
+      ]
+    }
+  },
+  {
+    id:'tl-adv-013', domain: 'tool', answer: 0, level: 'advanced',
+    ja: {
+      scenario: '市場調査エージェントが、検索・集計・グラフ生成の複数ツールを組み合わせて消費者トレンドのレポートを作る。実装では、Claudeの応答を受け取るたびに response.content[0].type を調べ、それが "text" ならば「ツール使用は終わり、最終回答が出た」と見なして while ループを抜ける。ところが本番では、分析が半分ほどしか進んでいないのにループが頻繁に終了し、レポートが未完成のまま出力される事象が多発している。',
+      question: 'この実装の修正として最も適切なものはどれか。',
+      options: [
+        'ループの終了条件を stop_reason == "end_turn" に変更し、stop_reason == "tool_use" の間はツールを実行して tool_result を返し続ける',
+        '分析が完了したら "ANALYSIS_COMPLETE" という合図を出力するようシステムプロンプトで指示し、その文字列の有無でループを終了する',
+        '会話履歴に入れるassistantメッセージから text ブロックを取り除き、tool_use ブロックだけを残して誤判定を防ぐ',
+        'temperatureを下げ、ツール呼び出しの前に余計な説明テキストを生成しないよう出力を安定させる'
+      ],
+      explanations: [
+        '決め手は、1つの応答に text と tool_use の複数 content block が同居しうること。content[0] が text でも stop_reason が "tool_use" ならツール実行の要求は続いている。終了判定はAPIが正式に返す stop_reason で行う。',
+        '独自の合図文字列はモデルが出し忘れる・早く出しすぎるリスクがあり、APIが stop_reason という正式なフィールドを返す以上、それを使うべき。',
+        'textブロックもassistant出力の一部。勝手に削ると会話履歴とモデル出力の整合性が崩れ、説明や最終回答も失われる。',
+        'temperatureはランダム性の調整であり、content blockの構成やループの制御フローを決めるものではない。'
+      ]
+    },
+    en: {
+      scenario: 'A market-research agent combines search, aggregation, and chart-generation tools to build consumer-trend reports. The implementation inspects response.content[0].type on every Claude response and, if it is "text", concludes “tool use is over, the final answer is here” and exits the while loop. In production, however, the loop frequently ends when the analysis is only half done, and incomplete reports keep being emitted.',
+      question: 'Which fix to this implementation is most appropriate?',
+      options: [
+        'Change the loop exit condition to stop_reason == "end_turn", and while stop_reason == "tool_use", keep executing tools and returning tool_result blocks',
+        'Instruct via the system prompt that the model output "ANALYSIS_COMPLETE" when done, and end the loop based on that marker string',
+        'Strip text blocks from the assistant messages stored in history, keeping only tool_use blocks to avoid the misjudgment',
+        'Lower temperature so the model stops generating extra explanatory text before tool calls'
+      ],
+      explanations: [
+        'The decisive point: one response can contain both text and tool_use content blocks. Even if content[0] is text, stop_reason "tool_use" means tool execution is still being requested. Termination should be judged by the stop_reason the API officially returns.',
+        'A custom marker string can be forgotten or emitted too early by the model; since the API returns the official stop_reason field, use that instead.',
+        'Text blocks are part of the assistant’s output. Removing them corrupts the consistency between the history and the model’s output, and loses explanations and final answers.',
+        'Temperature adjusts randomness; it does not determine content-block composition or the loop’s control flow.'
+      ]
+    }
+  },
+  {
+    id:'tl-adv-014', domain: 'tool', answer: 2, level: 'advanced',
+    ja: {
+      scenario: 'フィットネスジムの問い合わせ自動応対システムには、レッスン予約の book_class と退会手続きの cancel_membership の2つのツールがある。予約や退会の要望が来たら該当ツールで詳細を抽出して処理する。一方で「いつもお世話になっています。今日のレッスン楽しかったです」のような挨拶や感想だけのメッセージには、ツールを呼ばず自然な文章で丁寧に返信したい。開発者はAPIリクエストの tool_choice の設定を検討している。',
+      question: 'この要件を満たす設定として最も適切なものはどれか。',
+      options: [
+        'tool_choice を {"type": "any"} にし、丁寧な返信文を生成する generate_polite_response ツールを3つ目として追加する',
+        'tool_choice を {"type": "tool", "name": "book_class"} にし、最も利用頻度の高い予約処理を確実に実行させる',
+        'tool_choice を {"type": "auto"} にし、ツールを呼ぶか通常のテキストで返すかをClaudeに判断させる',
+        '2つのツールを全フィールドoptionalの1つのツールに統合し、tool_choice を {"type": "any"} にする'
+      ],
+      explanations: [
+        'any は「必ずどれかのツールを呼べ」という強制。テキスト返信のためだけに専用ツールを足すのは過剰設計で、自然な応答という要件にも合わない。',
+        'tool は特定ツールの強制。挨拶にも退会依頼にも book_class が強制され、必須情報のない入力ではパラメータ欠落やハルシネーションを招く。',
+        '決め手は「ツールを使う場合と使わない場合の両方がある」という要件。auto ならClaudeが文脈に応じて、予約→book_class、退会→cancel_membership、挨拶→ツールなしのテキスト回答と動的に切り替えられる。',
+        'any である限り挨拶にもツール呼び出しが強制される。全フィールドoptionalの巨大スキーマは、何を抽出すべきかも曖昧にする。'
+      ]
+    },
+    en: {
+      scenario: 'A fitness gym’s automated inquiry system has two tools: book_class for lesson bookings and cancel_membership for cancellations. When a booking or cancellation request arrives, the appropriate tool should extract the details and process it. Meanwhile, messages that are just greetings or feedback — “Thanks as always, today’s class was great!” — should get a warm, natural text reply without any tool call. The developer is deciding how to set tool_choice on the API request.',
+      question: 'Which setting best satisfies these requirements?',
+      options: [
+        'Set tool_choice to {"type": "any"} and add a third tool, generate_polite_response, for producing polite replies',
+        'Set tool_choice to {"type": "tool", "name": "book_class"} so the most frequently used booking flow always runs',
+        'Set tool_choice to {"type": "auto"} and let Claude decide whether to call a tool or answer with plain text',
+        'Merge the two tools into one with every field optional, and set tool_choice to {"type": "any"}'
+      ],
+      explanations: [
+        '“any” forces some tool call on every input. Adding a dedicated tool just to produce text replies is overengineering and conflicts with the natural-response requirement.',
+        '“tool” forces one specific tool. Greetings and cancellations alike would be pushed through book_class, causing missing parameters and hallucinated values on inputs that lack the required details.',
+        'The decisive point is that the requirement includes both tool and non-tool cases. With auto, Claude switches dynamically: bookings → book_class, cancellations → cancel_membership, greetings → a plain text reply with no tool.',
+        'As long as it is “any”, even greetings force a tool call. A giant all-optional merged schema also blurs what should be extracted.'
+      ]
+    }
+  },
+  {
+    id:'tl-adv-015', domain: 'tool', answer: 1, level: 'advanced',
+    ja: {
+      scenario: '法律事務所向けのリサーチアシスタントには、過去の判例を検索する search_case_law と、現行の法令・条文を検索する search_statutes の2つのツールがある。パラリーガルが「テナントの立ち退きに関するlawsを調べて」のような聞き方をすると、Claudeがどちらのツールを呼ぶかが安定せず、判例だけ・条文だけの偏った回答になる事象が続いている。チームはツール定義の description の改善を検討している。',
+      question: 'description の改善として最も適切なものはどれか。',
+      options: [
+        '法律関連の質問ではまず routing_tool を呼んでどちらのデータベースを使うか判定させる2段構成に変える',
+        '両ツールの description に「判例・裁判所の判断を調べるならこちら。現行の条文・法令を調べる場合は search_statutes を使う」のように、曖昧な語に対する使い分けの境界線を対比で書く',
+        'システムプロンプトを変更し、法律関連の質問では常に両方のツールを順番に呼んでから回答させる',
+        '2つのツールを search_legal_database に統合し、判例か条文かの振り分けはバックエンドの検索エンジンに任せる'
+      ],
+      explanations: [
+        'ルーティング専用ツールの追加はワークフローを不必要に複雑にし、毎回1往復余計なレイテンシがかかる。まず既存の description の改善が先。',
+        '決め手は、類似ツールの競合は「何をするか」だけでなく「いつこちらを使い、いつもう一方を使うか」の境界線を description に対比で書くことで解消される点。Claudeは description を読んでツールを選ぶ。',
+        '常に両方呼ぶのは、片方で足りる質問にも余計な検索を走らせ、コストとレイテンシを増やす雑な回避策。',
+        'バックエンド統合は設計としてあり得るが、問われているのは description の改善であり、問いが指定する改善対象からズレている。'
+      ]
+    },
+    en: {
+      scenario: 'A research assistant for a law firm has two tools: search_case_law for past court decisions and search_statutes for current statutes and regulations. When paralegals phrase requests like “look up the laws on tenant eviction,” Claude’s tool choice is unstable, and answers keep skewing toward only case law or only statutes. The team is considering improving the tool definitions’ descriptions.',
+      question: 'Which is the most appropriate description improvement?',
+      options: [
+        'Restructure into two stages where a routing_tool is called first to decide which legal database to use',
+        'Write boundary lines for ambiguous terms into both descriptions, contrastively: “use this for precedents and court rulings; for current statutes and regulations use search_statutes”',
+        'Change the system prompt so every legal question always calls both tools in sequence before answering',
+        'Merge the two into search_legal_database and let the backend search engine route between precedents and statutes'
+      ],
+      explanations: [
+        'A dedicated routing tool complicates the workflow unnecessarily and adds an extra round trip of latency every time. Improving the existing descriptions comes first.',
+        'The decisive point: conflicts between similar tools are resolved by writing not just “what this tool does” but contrastive boundaries — when to use this one and when to use the other. Claude reads descriptions to choose tools.',
+        'Always calling both runs needless searches even when one suffices, a blunt workaround that inflates cost and latency.',
+        'Backend consolidation is a legitimate design, but the question asks how to improve the descriptions — this misses the specified improvement target.'
+      ]
+    }
   }
 );

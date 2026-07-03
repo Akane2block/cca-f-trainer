@@ -149,5 +149,40 @@ window.QUESTIONS.push(
       options:['Keep all fields required and have the model fill missing ones with the string "unknown"','Remove required and make all fields optional, loosening validation to pass anything','Design the schema by necessity: name and date of birth required, expiry date nullable (optional), unreadable values explicitly null / flagged "unreadable", passing missingness as missingness downstream without fabrication','Have the model infer an unreadable address from nearby addresses and always fill a plausible value'],
       explanations:['Filling "unknown" as a string passes required validation, so missingness is not detected; it hides under a value-shaped placeholder and contamination continues.','All-optional plus loosened validation misses absence of truly required fields like name and date of birth and cannot guarantee KYC quality; it discards necessity.','Expressing necessity in the schema (name/DOB required, expiry nullable) and marking unreadable values as null/flagged is correct: it prevents fabrication and passes missingness as missingness to validation and downstream.','Always filling by inference from nearby addresses is a textbook hallucination trigger, producing fabricated data that is fatal for identity verification — the design to most avoid.']
     }
+  },
+  {
+    id:'pr-adv-011', domain: 'prompt', answer: 1, level: 'advanced',
+    ja: {
+      scenario: 'SaaS企業のセキュリティチームが、Claudeベースの脆弱性診断エージェントで社内データ管理ツールのコードを毎晩スキャンしている。このツールは社内ネットワーク専用で、外部ユーザーの入力を直接受け付けない設計になっている。それにもかかわらずエージェントはSQLインジェクションの警告を毎晩数百件報告し、レビュー担当が本当に危険な指摘を拾いきれなくなった。前スプリントでプロンプトに「フラグを立てる際は慎重に判断すること」という一文を追加したが、誤検知の件数はほとんど変わらなかった。',
+      question: '誤検知を減らす修正として最も適切なものはどれか。',
+      options: [
+        '正しい検知と誤検知の両方の実例を含むマルチショット例をプロンプトに追加し、「慎重に」の指示はそのまま残す',
+        '「慎重に」をやめ、「クエリ文字列が動的に組み立てられ、その値が外部HTTPリクエスト等の信頼できない入力に由来し、パラメータ化などの防御が確認できない場合のみフラグを立てる」という観察可能な判定基準に置き換える',
+        'temperatureを0.0に下げ、判定のばらつきをなくして出力を安定させる',
+        '「確信度の高い検知結果のみを報告すること」という指示をプロンプトに追加する'
+      ],
+      explanations: [
+        'few-shot例は有効だが、判定基準そのものが「慎重に」のまま曖昧だと境界条件でぶれ続ける。例を足す前に基準の明文化が先。',
+        '決め手はここ。「慎重に」「保守的に」のような形容詞ではモデルの判断は安定しない。何を観察したらフラグを立てる／立てないかをルーブリック（明示的な判定条件）として渡せば、判断が客観条件に固定され誤検知が減る。',
+        'temperatureはランダム性の調整であって、判断基準の修正ではない。間違った基準のまま安定して誤検知するだけになりうる。',
+        '「確信度が高い」も何を根拠に確信するのかが曖昧なままで、内部の確率閾値を自然言語で直接制御できるわけでもない。'
+      ]
+    },
+    en: {
+      scenario: 'A SaaS company’s security team scans an internal data-management tool every night with a Claude-based vulnerability-scanning agent. The tool runs on the internal network only and by design accepts no direct external user input. Even so, the agent reports hundreds of SQL injection warnings each night, and reviewers can no longer pick out the genuinely dangerous findings. Last sprint they added the line “be careful when flagging” to the prompt, but the false-positive count barely changed.',
+      question: 'Which fix is most appropriate for reducing the false positives?',
+      options: [
+        'Add multishot examples covering both true detections and false positives to the prompt, keeping the “be careful” instruction in place',
+        'Drop “be careful” and replace it with observable criteria: flag only when a query string is built dynamically, its value derives from untrusted input such as external HTTP requests, and no defense like parameterization is present',
+        'Lower temperature to 0.0 to remove variance and stabilize the output',
+        'Add an instruction to report only high-confidence findings'
+      ],
+      explanations: [
+        'Few-shot examples help, but while the criterion itself stays as vague as “be careful,” judgments keep wavering at boundary cases. Making the rubric explicit comes before adding examples.',
+        'This is the decisive point: adjectives like “careful” or “conservative” do not stabilize model judgment. Handing the model a rubric of observable conditions pins the decision to objective criteria and cuts false positives.',
+        'Temperature adjusts randomness, not the decision logic. You may just get consistently wrong flags under the same faulty criteria.',
+        '“High confidence” is still vague about what the confidence should be grounded in, and you cannot directly steer an internal probability threshold through natural language.'
+      ]
+    }
   }
 );

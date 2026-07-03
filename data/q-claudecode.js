@@ -1,453 +1,1053 @@
-// CCA-F practice questions — domain: claudecode (Claude Code Configuration & Workflows)
+// CCA-F practice questions — domain: claudecode — exam-style scenarios (rebuilt 2026-07)
 window.QUESTIONS.push(
   {
-    id: 'cc-001', domain: 'claudecode', answer: 2,
+    id: 'cc2-001', domain: 'claudecode', answer: 2,
     ja: {
-      scenario: 'チームでClaude Codeを使う。コーディング規約・使用ライブラリ・禁止事項を、毎回プロンプトに貼らずに全員へ一貫して効かせたい。',
-      question: '最も適切な方法は？',
-      options: ['各自が自分のシェル履歴にメモしておく','Slackに規約を貼って都度コピペしてもらう','リポジトリに CLAUDE.md を置き、規約・禁止事項を記述してコミットする','規約はプロンプトに毎回手で書く運用にする'],
-      explanations: ['シェル履歴は共有されず属人的。チーム一貫性が出ない。','都度コピペは抜け漏れと不一致の温床。仕組みで効かせるべき。','CLAUDE.md にプロジェクト方針を書いてコミット＝全員に一貫して効く正攻法。共有・バージョン管理もできる。','毎回手書きは再現性がなく、人によってブレる。']
+      scenario: '決済系フィンテック企業のモノレポには8つのサービスがあり、リポジトリ直下のCLAUDE.mdに「エラーハンドリングは例外を送出する方式で統一する」と定めている。一方、決済コアを担当するチームは半年前にResult型ベースの設計へ移行しており、services/payment/ 配下のCLAUDE.mdには「エラーは例外ではなくResult型で返す」と書かれている。先週異動してきたエンジニアが、services/payment/ 内で返金APIのエラー処理追加をClaude Codeに依頼しようとしている。CIはGitHub Actionsで、テストカバレッジは82%ある。',
+      question: 'このときClaude Codeが従う規約として最も適切な説明はどれか。',
+      options: [
+        'リポジトリ全体の正はルートのCLAUDE.mdなので、例外送出方式が適用される',
+        'CLAUDE.mdは最初に読み込まれた1ファイルだけが有効になるため、起動時のディレクトリによって結果が変わる',
+        '作業対象に近い services/payment/ のCLAUDE.mdが優先され、Result型で実装される',
+        '矛盾する指示が検出されると両方とも無効になり、どちらに従うか選択を求められる'
+      ],
+      explanations: [
+        'ルートは全体共通の既定にすぎない。より作業地点に近い（具体的な）サブディレクトリの指定がある場合はそちらが優先される。',
+        'CLAUDE.mdは階層的に複数読み込まれる。1ファイルだけが排他的に有効になる仕組みではない。',
+        '正解。決め手は作業場所が services/payment/ 配下であること。規約が矛盾する場合は、作業地点に近いCLAUDE.mdが優先される。',
+        '矛盾を自動検出して選択を迫る仕組みはない。階層の優先順位（近い方が勝つ）で解決される。'
+      ]
     },
     en: {
-      scenario: 'Your team uses Claude Code and wants coding standards, allowed libraries, and prohibitions applied consistently for everyone without pasting them into every prompt.',
-      question: 'What is the most appropriate approach?',
-      options: ['Each person keeps notes in their own shell history','Post the standards in Slack and have people copy-paste them each time','Put a CLAUDE.md in the repository describing standards and prohibitions, and commit it','Type the standards by hand into the prompt every time'],
-      explanations: ['Shell history is not shared and is personal; it cannot create team consistency.','Copy-paste each time invites omissions and inconsistency; enforce it structurally instead.','A committed CLAUDE.md applies project guidance consistently to everyone and is shareable and version-controlled.','Hand-typing every time is not reproducible and varies by person.']
+      scenario: 'A payments fintech runs a monorepo with eight services. The repo-root CLAUDE.md states that error handling must be standardized on throwing exceptions. However, the payment-core team migrated to a Result-type design six months ago, and the CLAUDE.md under services/payment/ says errors must be returned as Result types, not thrown. An engineer who transferred last week is about to ask Claude Code to add error handling to a refund API inside services/payment/. CI runs on GitHub Actions and test coverage is 82%.',
+      question: 'Which statement best describes the convention Claude Code will follow here?',
+      options: [
+        'The root CLAUDE.md is the source of truth for the whole repo, so exceptions will be thrown',
+        'Only the first CLAUDE.md loaded takes effect, so the result depends on the startup directory',
+        'The CLAUDE.md closer to the work, under services/payment/, takes precedence, so Result types are used',
+        'When conflicting instructions are detected, both are disabled and the user is prompted to choose'
+      ],
+      explanations: [
+        'The root file is only the repo-wide default. A more specific subdirectory file closer to the work overrides it on conflict.',
+        'CLAUDE.md files are loaded hierarchically; there is no rule that only one file is active.',
+        'Correct. The deciding detail is that the work happens under services/payment/. On conflict, the CLAUDE.md closer to the working location wins.',
+        'There is no conflict-detection prompt; the hierarchy (closer wins) resolves it.'
+      ]
     }
   },
   {
-    id: 'cc-002', domain: 'claudecode', answer: 1,
+    id: 'cc2-002', domain: 'claudecode', answer: 0,
     ja: {
-      scenario: 'Claude Codeで「コミット前に必ずlintとテストを自動実行する」を、人が忘れても確実に走るようにしたい。',
-      question: '適切な仕組みはどれ？',
-      options: ['CLAUDE.md に「コミット前にテストして」と書くだけにする','hooks を設定し、特定イベント時に lint/test コマンドを自動実行させる','毎回チャットで「テストして」と打つのを習慣にする','テストは人が気づいたときだけ手動で回す'],
-      explanations: ['CLAUDE.md の記述は指示であって自動実行の保証ではない。「忘れても走る」を満たさない。','hooks はイベント連動で決まったコマンドを自動実行する仕組み。人の記憶に依存せず確実に走らせられる。','毎回手で打つのは「忘れても確実に」を満たさない。','気づいたときだけは抜けが出る。自動化が要件。']
+      scenario: 'SaaS企業のリポジトリでは、ルートのCLAUDE.mdに「コミットメッセージは英語の命令形で書く」「PRには変更理由を必ず書く」とあり、frontend/ 配下のCLAUDE.mdには「Reactコンポーネントは関数コンポーネントで書き、クラスコンポーネントは新規作成しない」とだけ書かれている。frontend/ で作業していた若手メンバーが「サブディレクトリにCLAUDE.mdがあるなら、ルートのコミット規約はもう効かないのでは」と不安になり、リリース前に確認したいと言ってきた。チームは週2回リリースしている。',
+      question: 'frontend/ 配下で作業するときのルール適用について、正しい説明はどれか。',
+      options: [
+        'ルートとfrontend/の両方のルールが適用される。矛盾しない方針は継承される',
+        'frontend/にCLAUDE.mdがある時点でルートは読み込まれず、コミット規約は適用されない',
+        'ルートのルールだけが有効で、サブディレクトリのCLAUDE.mdは参考情報として扱われる',
+        'コミット規約をfrontend/のCLAUDE.mdにもコピーしない限り、frontend/内では適用されない'
+      ],
+      explanations: [
+        '正解。決め手は2つのファイルの内容が矛盾していないこと。矛盾しない上位の方針はそのまま継承され、両方が同時に効く。',
+        'サブディレクトリのファイルは上位を置き換えるのではなく、追加・具体化する。上書きが起きるのは矛盾したときだけ。',
+        'サブディレクトリのCLAUDE.mdも実際に適用される正式なルールであり、参考情報扱いではない。',
+        '継承されるためコピーは不要。むしろ同一内容の重複コピーは更新漏れの温床になる。'
+      ]
     },
     en: {
-      scenario: 'In Claude Code you want lint and tests to always run before a commit, even if a person forgets.',
-      question: 'Which mechanism fits?',
-      options: ['Just write "test before committing" in CLAUDE.md','Configure hooks to auto-run lint/test commands on specific events','Make a habit of typing "run tests" in chat every time','Run tests manually only when someone notices'],
-      explanations: ['A CLAUDE.md note is an instruction, not guaranteed automatic execution; it does not satisfy "runs even if forgotten."','Hooks auto-run defined commands on events, running reliably without depending on memory.','Typing it by hand every time does not guarantee "even if forgotten."','Only-when-noticed leaves gaps; automation is the requirement.']
+      scenario: 'In a SaaS company’s repository, the root CLAUDE.md says commit messages must be written in English imperative form and every PR must state the reason for the change. The CLAUDE.md under frontend/ only says React components must be function components and no new class components may be created. A junior member working in frontend/ got worried that “if a subdirectory has its own CLAUDE.md, the root commit conventions no longer apply,” and wants to confirm before the release. The team releases twice a week.',
+      question: 'Which statement about rule application when working under frontend/ is correct?',
+      options: [
+        'Rules from both the root and frontend/ apply; non-conflicting policies are inherited',
+        'Once frontend/ has a CLAUDE.md, the root file is not loaded, so the commit conventions do not apply',
+        'Only the root rules are effective; the subdirectory CLAUDE.md is treated as reference material',
+        'The commit conventions do not apply inside frontend/ unless they are copied into its CLAUDE.md'
+      ],
+      explanations: [
+        'Correct. The deciding detail is that the two files do not conflict. Non-conflicting higher-level policies are inherited, so both apply simultaneously.',
+        'A subdirectory file adds to and specializes the parent; it does not replace it. Overriding only happens on conflict.',
+        'The subdirectory CLAUDE.md is a real rule that applies, not mere reference material.',
+        'Copying is unnecessary because of inheritance, and duplicated copies invite update drift.'
+      ]
     }
   },
   {
-    id: 'cc-003', domain: 'claudecode', answer: 3,
+    id: 'cc2-003', domain: 'claudecode', answer: 1,
     ja: {
-      scenario: 'リリース手順（バージョン更新→CHANGELOG追記→タグ付け）を、チームの誰がやっても同じ流れで再現したい。手順書をその都度読み合わせるのは負担。',
-      question: '最も再現性が高い方法は？',
-      options: ['手順をConfluenceに書き、各自が読みながら手で実行する','口頭で先輩から後輩へ手順を引き継ぐ','詳しい人だけがリリース担当を続ける','カスタムスラッシュコマンドにリリース手順を定義し、リポジトリにコミットして全員が呼び出す'],
-      explanations: ['読みながら手作業は手順の解釈や順序がブレる。再現性が担保されない。','口頭引き継ぎは記憶頼みで属人化する。','担当固定は属人化そのもので、本人不在時に止まる。','スラッシュコマンドに手順を定義してコミットすれば、誰が呼んでも同じ流れになり共有・再現できる。']
+      scenario: '受託開発企業のテックリードは、自分の ~/.claude/CLAUDE.md に命名規則・レビュー観点・禁止パターンなど3年分のノウハウを蓄積しており、本人のClaude Code出力は品質が高い。ところが新しく入った2人のメンバーの出力は規約から外れることが多く、レビュー指摘が一向に減らない。リードは「自分のdotfilesリポジトリを共有して、各自ホームディレクトリにコピーしてもらえばよい」と提案している。プロジェクトはGitHubのプライベートリポジトリで管理されている。',
+      question: 'チーム全員のClaude Code出力に同じ規約を適用する方法として最も適切なのはどれか。',
+      options: [
+        'dotfilesリポジトリを共有し、各メンバーが ~/.claude/ に手動でコピーする',
+        '規約をプロジェクトリポジトリのCLAUDE.mdや .claude/rules/ にコミットし、リポジトリを通じて全員に適用する',
+        '規約をオンボーディングWikiに整理し、新メンバーに熟読してもらう',
+        'hooksで規約違反のコードをコミット時に自動検出する仕組みを先に構築する'
+      ],
+      explanations: [
+        'コピーした時点の内容で固定され、更新のたびに再配布が必要になる。属人化の場所がdotfilesに移るだけで解決しない。',
+        '正解。決め手は規約が個人の ~/.claude/ にあること＝属人化。リポジトリにコミットすれば全員に同じルールが自動で効き、更新もバージョン管理される。',
+        'Wikiは人間向けの文書であり、Claude Codeの動作には反映されない。',
+        '違反検出は事後対策であり、出力を最初から規約に沿わせる根本対応にはならない。'
+      ]
     },
     en: {
-      scenario: 'You want the release flow (bump version, update CHANGELOG, tag) to be reproducible by anyone on the team. Re-reading a runbook each time is a burden.',
-      question: 'What gives the highest reproducibility?',
-      options: ['Write the steps in Confluence and have everyone do them by hand while reading','Hand the steps down verbally from senior to junior','Keep only the expert doing releases','Define the release steps as a custom slash command and commit it so everyone invokes the same flow'],
-      explanations: ['Doing it by hand while reading lets interpretation and ordering drift; reproducibility is not guaranteed.','Verbal handoff relies on memory and becomes person-dependent.','Fixing one owner is exactly the personal-dependency problem and stalls when they are away.','A committed slash command defines the steps once so anyone invoking it gets the same flow — shared and reproducible.']
+      scenario: 'A tech lead at a contract-development firm has accumulated three years of know-how — naming rules, review checkpoints, forbidden patterns — in his personal ~/.claude/CLAUDE.md, and his Claude Code output is high quality. But two newly joined members keep producing output that violates the conventions, and review comments are not decreasing. The lead proposes sharing his dotfiles repository and having everyone copy it into their home directories. The project itself lives in a private GitHub repository.',
+      question: 'What is the most appropriate way to apply the same conventions to everyone’s Claude Code output?',
+      options: [
+        'Share the dotfiles repository and have each member manually copy it into ~/.claude/',
+        'Commit the conventions into the project repository’s CLAUDE.md and .claude/rules/ so they apply to everyone through the repo',
+        'Organize the conventions in an onboarding wiki and have new members study it',
+        'First build hooks that automatically detect convention violations at commit time'
+      ],
+      explanations: [
+        'Copies freeze at copy time and require redistribution on every update; the person-dependence just moves into dotfiles.',
+        'Correct. The deciding detail is that the rules live in a personal ~/.claude/ — that is what makes them person-dependent. Committing them to the repo applies them to everyone automatically, with version control.',
+        'A wiki is documentation for humans; it has no effect on Claude Code’s behavior.',
+        'Violation detection is after-the-fact; it does not make the output follow conventions in the first place.'
+      ]
     }
   },
   {
-    id: 'cc-004', domain: 'claudecode', answer: 0,
+    id: 'cc2-004', domain: 'claudecode', answer: 3,
     ja: {
-      scenario: 'Claude Code から社内のチケット管理システムやデータベースなど、外部ツール・データへ安全に接続して操作させたい。',
-      question: '想定された接続方法はどれ？',
-      options: ['MCPサーバーを設定し、Claude Code から外部ツール／データへ接続する','外部システムのパスワードをCLAUDE.mdに平文で書く','チャットに毎回APIのURLとトークンを貼り付ける','外部接続は諦めて、結果を人が手でコピーして渡す'],
-      explanations: ['MCP（Model Context Protocol）サーバーの設定が、Claude Code から外部ツール／データへ接続する想定の仕組み。','認証情報を平文で設定ファイルに書くのは漏洩リスクが高く不適切。','毎回貼り付けは属人的で危険、再現性もない。','人が手で運ぶのは自動化・再現性の放棄で、接続要件を満たさない。']
+      scenario: '物流スタートアップのモノレポには、Goで書かれた api/ とTypeScriptの web/ がある。チームは「全サービス共通のセキュリティ方針（秘密情報の扱い・依存追加時の承認）」と「Go固有のエラーラップ規約」「web固有のアクセシビリティ規約」をClaude Codeに守らせたい。あるメンバーは管理のしやすさを理由に、すべてをルートのCLAUDE.md 1ファイルにまとめる案を出している。リポジトリのコントリビューターは11人で、PRは1日10本ほど流れる。',
+      question: 'この規約群の配置として最も適切なのはどれか。',
+      options: [
+        'すべてルートのCLAUDE.mdに集約する。1ファイルなら更新漏れが起きない',
+        '共通方針は各メンバーの ~/.claude/CLAUDE.md に置き、リポジトリにはサービス固有の規約だけをコミットする',
+        '共通方針もサービス固有規約も、api/ と web/ の両方のCLAUDE.mdにそれぞれ全文を書く',
+        '共通方針はルートのCLAUDE.mdに置き、Go固有は api/、web固有は web/ 配下のCLAUDE.mdに分けて置く'
+      ],
+      explanations: [
+        '1ファイル集約は、webの作業でもGo規約が毎回読み込まれるなど無関係なコンテキストを常に消費し、肥大化の起点になる。',
+        '共通方針こそ全員・全作業に効かせたいものであり、個人ディレクトリに置くと属人化して新メンバーに効かない。',
+        '同一内容の二重コピーは更新漏れの温床。共通部分は1箇所で管理すべき。',
+        '正解。決め手は「共通」と「サービス固有」の分離。共通はルートで継承させ、固有規約は該当ディレクトリの作業時だけ効くように配置するのが階層設計の基本。'
+      ]
     },
     en: {
-      scenario: 'You want Claude Code to connect securely to external tools/data such as your issue tracker or a database and operate on them.',
-      question: 'Which is the intended way to connect?',
-      options: ['Configure an MCP server so Claude Code connects to external tools/data','Write the external system password in plaintext in CLAUDE.md','Paste the API URL and token into chat every time','Give up on external connection and have a human copy results by hand'],
-      explanations: ['Configuring an MCP (Model Context Protocol) server is the intended way for Claude Code to connect to external tools/data.','Writing credentials in plaintext in a config file is a leak risk and inappropriate.','Pasting every time is personal, risky, and not reproducible.','Hand-carrying results abandons automation/reproducibility and does not meet the connection need.']
+      scenario: 'A logistics startup’s monorepo contains api/ written in Go and web/ written in TypeScript. The team wants Claude Code to follow a repo-wide security policy (secret handling, approval for new dependencies), plus Go-specific error-wrapping rules and web-specific accessibility rules. One member proposes putting everything into the single root CLAUDE.md for ease of management. The repo has 11 contributors and about 10 PRs a day.',
+      question: 'What is the most appropriate placement for these rules?',
+      options: [
+        'Consolidate everything into the root CLAUDE.md; a single file avoids missed updates',
+        'Put the common policy in each member’s ~/.claude/CLAUDE.md and commit only service-specific rules to the repo',
+        'Write both the common policy and the service-specific rules in full in both api/ and web/ CLAUDE.md files',
+        'Put the common policy in the root CLAUDE.md, Go-specific rules under api/, and web-specific rules under web/'
+      ],
+      explanations: [
+        'A single consolidated file loads Go rules even during web work, constantly burning unrelated context and inviting bloat.',
+        'The common policy is exactly what must reach everyone; personal directories make it person-dependent and it never reaches new members.',
+        'Duplicated full copies are a breeding ground for update drift; shared content should live in one place.',
+        'Correct. The deciding point is separating “common” from “service-specific”: the root file is inherited everywhere, while service rules load only when working in those directories.'
+      ]
     }
   },
   {
-    id: 'cc-005', domain: 'claudecode', answer: 2,
+    id: 'cc2-005', domain: 'claudecode', answer: 0,
     ja: {
-      scenario: 'Claude Code に「rm -rf や本番DBへの書き込みなど危険なコマンドは勝手に実行させない」ようにしたい。',
-      question: '最も適切な設計は？',
-      options: ['全コマンドを無条件で許可し、後からログを見て気をつける','危険操作は本人が覚えておいて、その都度止める','settings.json の権限設定で許可リスト／拒否リストを定義し、危険な操作を制御する','危険なコマンドにならないことを祈る'],
-      explanations: ['無条件許可は事故が起きてからでは取り返せない。最小権限の原則に反する。','人の記憶頼みは抜けが出る。仕組みで止めるべき。','settings.json の権限（許可／拒否）設定で危険操作を明示的に制御＝最小権限の正攻法。','祈りは設計ではない。']
+      scenario: '倉庫管理システムのリポジトリには、旧システムから移植した *.old.py が約40ファイルと、Goマイクロサービス用の *.service.go が複数ディレクトリに点在している。旧Pythonファイルには「修正時は必ず互換テストを回す」、Goサービスファイルには「独自のロギング規約に従う」を適用したい。メンバーが .claude/rules/legacy.md を作成し、フロントマターに paths: "\\.old\\.py$|\\.service\\.go$" と1本の正規表現で書いたPRを出してきた。あなたはレビューを依頼されている。',
+      question: 'このフロントマターへのレビュー指摘として最も適切なのはどれか。',
+      options: [
+        'pathsはグロブパターンの配列で指定する。paths: ["**/*.old.py", "**/*.service.go"] のように書き直す',
+        '方向性は正しいので、正規表現のエスケープ漏れだけ修正すればよい',
+        'pathsではなくmatchキーを使う仕様なので、キー名を修正する',
+        '1つのルールファイルに複数の対象は書けないため、ファイルを2つに分割する'
+      ],
+      explanations: [
+        '正解。決め手はpathsの書式。正規表現ではなくグロブパターンの配列を取り、複数のglobを並べることで複数種類のファイルに1ファイルのルールを適用できる。',
+        '書式そのものが正規表現ではないため、エスケープを直しても意図どおりに動かない。',
+        'matchというキーは存在しない。それらしい名前の別キーに置き換えるのは誤り。',
+        '配列に複数のglobを列挙できるため分割は不要。分割はむしろ管理対象を増やす。'
+      ]
     },
     en: {
-      scenario: 'You want Claude Code to not run dangerous commands (e.g. rm -rf, writes to the production DB) on its own.',
-      question: 'What is the most appropriate design?',
-      options: ['Allow all commands unconditionally and just watch logs afterward','Rely on the person to remember and stop each dangerous one','Define allow/deny lists in settings.json permissions to control dangerous operations','Hope no dangerous command ever happens'],
-      explanations: ['Unconditional allow is unrecoverable once an accident happens and violates least privilege.','Relying on memory leaves gaps; stop it structurally instead.','Defining allow/deny in settings.json permissions explicitly controls dangerous ops — the least-privilege way.','Hope is not a design.']
+      scenario: 'A warehouse-management repo contains about 40 legacy files named *.old.py ported from the old system, plus *.service.go files for Go microservices scattered across directories. The team wants a rule “always run the compatibility tests when modifying” applied to the legacy Python files and “follow the custom logging conventions” applied to the Go service files. A member created .claude/rules/legacy.md and submitted a PR whose frontmatter reads paths: "\\.old\\.py$|\\.service\\.go$" as a single regular expression. You are asked to review it.',
+      question: 'What is the most appropriate review comment on this frontmatter?',
+      options: [
+        'paths takes an array of glob patterns; rewrite it as paths: ["**/*.old.py", "**/*.service.go"]',
+        'The direction is right; just fix the missing escapes in the regular expression',
+        'The spec uses a match key instead of paths, so rename the key',
+        'A single rules file cannot target multiple patterns, so split it into two files'
+      ],
+      explanations: [
+        'Correct. The deciding point is the format: paths takes an array of globs, not a regex, and listing multiple globs applies one rules file to multiple file types.',
+        'The format itself is not a regular expression, so fixing escapes will not make it work.',
+        'There is no match key; swapping in a plausible-sounding key name is wrong.',
+        'Multiple globs can be listed in the array, so splitting is unnecessary and just multiplies maintenance.'
+      ]
     }
   },
   {
-    id: 'cc-006', domain: 'claudecode', answer: 1,
+    id: 'cc2-006', domain: 'claudecode', answer: 2,
     ja: {
-      scenario: '新しく入ったメンバーのマシンだけClaude Codeの挙動が違う。規約も承認コマンドの許可リストも効いていない。',
-      question: '最初に確認すべき原因は？',
-      options: ['そのメンバーのタイピングが速すぎる','.claude/（CLAUDE.md や settings.json）がリポジトリにコミットされず共有されていない','Claudeのモデルが古い','チャットの言語設定が違う'],
-      explanations: ['タイピング速度は設定の差とは無関係。','.claude/ の設定をコミットして共有していなければ各自バラバラになる。属人化＝共有漏れが典型原因。','モデルの新旧では規約や許可リストの有無は説明できない。','言語設定は規約・権限の適用とは別問題。']
+      scenario: 'ヘルスケア系スタートアップに入社したエンジニアが、リポジトリの .claude/rules/db-migration.md に paths: ["db/migrations/**"] というフロントマターが付いているのを見つけ、「これはClaudeがこのフォルダのファイルを探しに行くための設定ですか」と質問してきた。実際、READMEを更新する作業ではこのルールの内容が会話に反映されている様子はなく、マイグレーションファイルを修正したときには規約どおりの出力になっていた。ルール本文には命名規則とロールバック手順が書かれている。',
+      question: 'このpaths指定の役割として正しい説明はどれか。',
+      options: [
+        '起動時に該当パスのファイルを検索してインデックスを作るための設定である',
+        '該当パス以外のファイルへの編集をブロックする権限設定である',
+        '該当パスのファイルを扱う作業のときだけルールを読み込むという条件で、無関係な作業ではコンテキストを消費しない',
+        '該当パスの変更を監視してhooksを発火させるためのトリガー設定である'
+      ],
+      explanations: [
+        'pathsは検索やインデックス作成の指示ではない。「ファイルを探す」設定だという理解が典型的な誤解。',
+        '編集の可否を決めるのはpermissionsであり、rulesのpathsに編集ブロックの機能はない。',
+        '正解。決め手はREADME作業では効かず、マイグレーション作業でだけ効いたという挙動。pathsは「いつルールを読み込むか」の条件で、コンテキスト節約の仕組み。',
+        'イベント連動でコマンドを実行するのはhooksの領域で、rulesのpathsとは別の仕組み。'
+      ]
     },
     en: {
-      scenario: 'Only a new member\'s machine behaves differently in Claude Code — neither the standards nor the approved-command allowlist are taking effect.',
-      question: 'What is the first likely cause to check?',
-      options: ['That member types too fast','The .claude/ directory (CLAUDE.md and settings.json) was not committed to the repo, so it is not shared','The Claude model is outdated','The chat language setting differs'],
-      explanations: ['Typing speed is unrelated to configuration differences.','If .claude/ settings are not committed and shared, each machine diverges — the classic "not shared" cause.','Model version does not explain missing standards or allowlists.','Language setting is separate from applying standards/permissions.']
+      scenario: 'An engineer who just joined a healthcare startup found that the repo’s .claude/rules/db-migration.md has frontmatter paths: ["db/migrations/**"], and asked, “Is this a setting that makes Claude go search for files in this folder?” In practice, when they were updating the README the rule’s content never seemed to appear in the conversation, but when they modified a migration file the output followed the conventions. The rule body describes naming rules and rollback procedures.',
+      question: 'Which statement correctly describes the role of this paths setting?',
+      options: [
+        'It makes Claude search and index the matching files at startup',
+        'It is a permission setting that blocks edits to files outside the matching paths',
+        'It is a condition that loads the rule only when working on files under the matching paths, so unrelated work spends no context on it',
+        'It is a trigger that watches the matching paths for changes and fires hooks'
+      ],
+      explanations: [
+        'paths is not an instruction to search or index; “it finds files” is the classic misreading.',
+        'Edit permissions are governed by the permissions system; a rule’s paths cannot block edits.',
+        'Correct. The deciding evidence is the observed behavior: inert during README work, active during migration work. paths controls when a rule is loaded, saving context.',
+        'Running commands on events is the domain of hooks, a separate mechanism from rule paths.'
+      ]
     }
   },
   {
-    id: 'cc-007', domain: 'claudecode', answer: 3,
+    id: 'cc2-007', domain: 'claudecode', answer: 1,
     ja: {
-      scenario: '大きめのタスク（仕様調査→実装→テスト作成）を1つのチャットで全部やると文脈が膨らみ、focusがぼやける。Claude Code内で作業を整理して進めたい。',
-      question: '適切な進め方は？',
-      options: ['すべてを1メッセージに詰め込んで一気に頼む','調査結果を毎回手でコピーして次の会話に貼り直す','文脈が増えても気にせず同じ会話を延々続ける','サブエージェントに調査やテスト作成など独立した部分を切り出して任せ、結果を受け取る'],
-      explanations: ['1メッセージに全部は文脈が膨らみ、focusも品質も落ちやすい。','手コピーは属人的で抜けやすく、自動化されない。','延々と同じ会話を続けると文脈が肥大して扱いづらい。','サブエージェントに独立した部分を切り出して任せ、結果だけ受け取れば、文脈を分離して進められる。']
+      scenario: 'EC企業のモノレポには15のマイクロサービスがあり、以前の担当者が「確実に読ませたい」という理由で、DBアクセス規約を書いた同一内容のCLAUDE.mdを15サービスのディレクトリすべてにコピーしていた。先月、接続プールに関する新ルールを追記した際、15ファイル中2ファイルの更新が漏れ、そのサービスだけ古い規約で実装が進んでレビューで発覚した。リポジトリはトランクベース運用で、デプロイは日次。規約の見直しは四半期ごとに入る。',
+      question: 'この保守性の問題への対処として最も適切なのはどれか。',
+      options: [
+        '15ファイルの内容が一致しているかをCIで検査するスクリプトを追加する',
+        '規約を .claude/rules/ の1ファイルにまとめ、pathsに対象サービスのglobを複数列挙して適用する',
+        '15ファイルを削除し、規約をすべてルートのCLAUDE.mdに移す',
+        '実体ファイルを1つにして、15のディレクトリへシンボリックリンクを張る'
+      ],
+      explanations: [
+        '不一致の検出はできるが、15ファイルを更新し続ける運用自体が残る。対症療法にとどまる。',
+        '正解。決め手は同一規約の多重コピーという構造。pathsはglobの配列を取れるので、規約1ファイルを複数サービスに適用でき、更新箇所が1つになる。',
+        'ルート集約だと全作業で常時読み込まれ、無関係なフロントエンド作業などでもコンテキストを消費する。',
+        '同期問題は解けるが読み込みタイミングは制御できず、リンクの管理という別の煩雑さが増える。pathsが本来の解決策。'
+      ]
     },
     en: {
-      scenario: 'Doing a large task (spec research → implement → write tests) all in one chat bloats context and blurs focus. You want to organize the work within Claude Code.',
-      question: 'What is a good way to proceed?',
-      options: ['Cram everything into one message and ask for it all at once','Manually copy research results and re-paste them into the next conversation each time','Keep going in the same conversation regardless of growing context','Delegate independent parts (research, writing tests) to subagents and receive their results'],
-      explanations: ['All in one message bloats context and tends to lower focus and quality.','Manual copying is personal, error-prone, and not automated.','Endlessly extending one conversation inflates context and is hard to manage.','Delegating independent parts to subagents and receiving just the results lets you separate context cleanly.']
+      scenario: 'An e-commerce monorepo has 15 microservices. A previous maintainer, wanting the rules “definitely read,” copied an identical CLAUDE.md containing DB-access conventions into all 15 service directories. Last month, when a new connection-pool rule was added, 2 of the 15 files were missed; those services were implemented against the stale conventions and it surfaced in review. The repo is trunk-based with daily deploys, and conventions are revised quarterly.',
+      question: 'What is the most appropriate fix for this maintainability problem?',
+      options: [
+        'Add a CI script that checks the 15 files stay identical',
+        'Consolidate the conventions into one file under .claude/rules/ and list multiple service globs in paths',
+        'Delete the 15 files and move everything into the root CLAUDE.md',
+        'Keep one physical file and create symbolic links in the 15 directories'
+      ],
+      explanations: [
+        'It detects drift but keeps the 15-copy workflow alive; it treats the symptom.',
+        'Correct. The deciding structure is the duplicated identical rules. paths takes an array of globs, so one rules file can target many services and there is a single place to update.',
+        'Root consolidation loads the rules during every task, spending context even on unrelated frontend work.',
+        'Symlinks fix synchronization but cannot control when the content is loaded, and add link-management overhead; paths is the designed solution.'
+      ]
     }
   },
   {
-    id: 'cc-008', domain: 'claudecode', answer: 0,
+    id: 'cc2-008', domain: 'claudecode', answer: 3,
     ja: {
-      scenario: '個人の好みの細かな指示（口調や日付計算の癖など）と、チーム全員に効かせたいプロジェクト規約を、混ぜずに管理したい。',
-      question: 'メモリ／指示の階層の使い分けとして適切なのは？',
-      options: ['プロジェクト共通はリポジトリの CLAUDE.md、個人の好みはユーザースコープの設定に分けて置く','すべて1つのファイルに全員分の好みも含めて書く','個人の好みもリポジトリのCLAUDE.mdに書いて全員に強制する','チーム規約は各自のローカルにだけ置く'],
-      explanations: ['プロジェクト共通＝リポジトリの CLAUDE.md、個人の好み＝ユーザースコープ、と階層を分けるのが正しい使い分け。','全部1ファイルだと個人の好みが他人にも効いてしまい混乱する。','個人の好みを全員に強制するのは不適切。階層を分ける目的に反する。','チーム規約をローカルだけに置くと共有されず属人化する。']
+      scenario: 'メディア企業の開発チームでは、ルートのCLAUDE.mdが1,200行まで育っている。iOSアプリのSwift規約、インフラのTerraform規約、データ基盤のdbt規約までがすべて1ファイルに詰め込まれている。最近メンバーから「READMEを1行直すだけの依頼でも動きが重い」「セッションの後半になるとルールを無視されることがある」という声が出始めた。Claude Codeは最新版に更新済みで、リポジトリのサイズは1.2GBある。',
+      question: 'この状況への改善として最も適切なのはどれか。',
+      options: [
+        'CLAUDE.mdを英語に書き換えてトークン数を圧縮する',
+        'より大きいコンテキストウィンドウを持つモデルへ切り替える',
+        'ルールの読み込みを作業種別ごとにスキップする設定をhooksに追加する',
+        '領域別ルールを .claude/rules/*.md のpathsやサブディレクトリのCLAUDE.mdへ分割し、関係する作業のときだけ読み込まれるようにする'
+      ],
+      explanations: [
+        '多少の圧縮にはなるが、無関係なルールが全作業で読み込まれる構造は変わらない。',
+        '器を広げても、毎回不要なルールでコンテキストを埋める根本構造が残る。実在する対処だが今回の決め手を外している。',
+        'hooksはイベント連動のコマンド実行の仕組みで、ルール読み込みの取捨選択を行う機能はない。',
+        '正解。決め手は「どの作業でも1,200行全部が読み込まれる」構造。pathsやサブディレクトリ分割で読み込みを作業に関係する分だけに絞るのが設計どおりの解決。'
+      ]
     },
     en: {
-      scenario: 'You want to keep personal preferences (tone, date-calc habits) separate from project standards that should apply to the whole team.',
-      question: 'What is the right use of the memory/instruction hierarchy?',
-      options: ['Put project-wide rules in the repo CLAUDE.md and personal preferences in user-scoped settings','Put everyone\'s preferences plus rules all in one file','Put personal preferences in the repo CLAUDE.md and force them on everyone','Keep team standards only on each person\'s local machine'],
-      explanations: ['Project-wide → repo CLAUDE.md, personal → user scope: that is the correct separation of the hierarchy.','One file makes personal preferences apply to others and causes confusion.','Forcing personal preferences on everyone is inappropriate and defeats the hierarchy.','Keeping team standards only local means they are not shared and become person-dependent.']
+      scenario: 'At a media company, the root CLAUDE.md has grown to 1,200 lines. Swift conventions for the iOS app, Terraform conventions for infra, and dbt conventions for the data platform are all packed into the one file. Members have started saying that even a one-line README fix feels sluggish, and that rules sometimes get ignored late in a session. Claude Code is fully updated, and the repository is 1.2 GB.',
+      question: 'What is the most appropriate improvement?',
+      options: [
+        'Rewrite CLAUDE.md in English to compress the token count',
+        'Switch to a model with a larger context window',
+        'Add a hooks setting that skips rule loading depending on the task type',
+        'Split the domain-specific rules into .claude/rules/*.md with paths or subdirectory CLAUDE.md files, so they load only for related work'
+      ],
+      explanations: [
+        'It shaves some tokens but leaves the structure where unrelated rules load for every task.',
+        'A bigger window still gets filled with irrelevant rules every session; a real remedy for a different problem, missing the decisive issue here.',
+        'Hooks run commands on events; they have no capability to filter which rules get loaded.',
+        'Correct. The decisive structure is that all 1,200 lines load for every task. Splitting with paths or subdirectory files limits loading to relevant work — the designed solution.'
+      ]
     }
   },
   {
-    id: 'cc-009', domain: 'claudecode', answer: 2,
+    id: 'cc2-009', domain: 'claudecode', answer: 0,
     ja: {
-      scenario: '「PRを開く前に必ず差分を要約してレビュー観点を出す」という決まった作業を、毎回同じ品質でやりたい。',
-      question: '最も再現性の高い方法は？',
-      options: ['各自が自分の頭の中の手順で要約する','要約は気が向いたときだけやる','カスタムスラッシュコマンド／スキルにレビュー要約手順を定義し、共有して呼び出す','毎回チャットに長い指示文を打ち直す'],
-      explanations: ['頭の中の手順は人によって違い、品質が揺れる。','気が向いたときだけは抜けが出る。','スラッシュコマンド／スキルに手順を定義して共有すれば、毎回同じ品質で呼び出せる。','長文を毎回打ち直すのは手間で、内容もブレやすい。']
+      scenario: 'ゲーム会社のモノレポで、共通のセキュリティレビュー規約を6つのサービスに適用したい。インフラ担当は「実体ファイルを1つ置いて、各サービスディレクトリにシンボリックリンクを張れば同期問題は起きない」と提案した。別のメンバーは「.claude/rules/ にルールファイルを置いてpathsで6サービスのglobを指定するのと同じことでは」と述べ、どちらでもよいという空気になっている。リポジトリはGit LFSを使っており、CIはセルフホストランナーで動いている。',
+      question: '2つの方式の違いの説明として正しいものはどれか。',
+      options: [
+        'シンボリックリンクは複数箇所から同一ファイルを参照させるだけで読み込みタイミングは制御できない。pathsは該当ファイルを扱うときだけ読み込む条件を定義でき、コンテキスト管理の意味が異なる',
+        'シンボリックリンクはgitで管理できるがpathsの設定はローカル限定なので、チーム共有ならシンボリックリンク一択である',
+        'pathsを使っても起動時に全ルールが読み込まれるため、コンテキスト消費はシンボリックリンクと変わらない',
+        '両者は機能的に完全に等価であり、チームの好みで選んで問題ない'
+      ],
+      explanations: [
+        '正解。決め手は「同期」と「読み込み制御」の違い。リンクは実体を共有するだけだが、pathsは無関係な作業でルールを読み込まない条件を与える。',
+        '.claude/rules/ はリポジトリにコミットでき、チーム全員に共有される。ローカル限定という前提が誤り。',
+        'pathsの本質は条件付き読み込みであり、該当しない作業ではコンテキストを消費しない。',
+        '内容の同期という点では似て見えるが、読み込みタイミングの制御有無という本質的な差がある。'
+      ]
     },
     en: {
-      scenario: 'Before opening a PR you want to always summarize the diff and list review points — at the same quality every time.',
-      question: 'What gives the highest reproducibility?',
-      options: ['Each person summarizes using their own mental steps','Summarize only when in the mood','Define the review-summary steps as a custom slash command/skill, share it, and invoke it','Retype a long instruction into chat every time'],
-      explanations: ['Mental steps differ per person and quality wobbles.','Only-when-in-the-mood leaves gaps.','Defining the steps as a shared slash command/skill lets you invoke the same quality every time.','Retyping a long prompt each time is effortful and drifts in content.']
+      scenario: 'In a game studio’s monorepo, the team wants a shared security-review rule applied to six services. The infra engineer proposes keeping one physical file and placing symbolic links in each service directory so nothing drifts. Another member says that putting a rules file under .claude/rules/ with six service globs in paths “amounts to the same thing,” and the room is leaning toward “either is fine.” The repo uses Git LFS and CI runs on self-hosted runners.',
+      question: 'Which statement correctly describes the difference between the two approaches?',
+      options: [
+        'Symlinks only make multiple locations reference the same file and cannot control load timing; paths defines a condition to load the rule only when touching matching files, which is a different kind of context management',
+        'Symlinks can be managed in git while paths settings are local-only, so symlinks are the only option for team sharing',
+        'Even with paths, all rules load at startup, so context consumption equals the symlink approach',
+        'The two are functionally identical, so the team can pick by preference'
+      ],
+      explanations: [
+        'Correct. The deciding distinction is synchronization versus load control: links share content, while paths prevents the rule from loading during unrelated work.',
+        '.claude/rules/ is committed to the repository and shared with the whole team; the local-only premise is false.',
+        'The essence of paths is conditional loading; non-matching work spends no context on the rule.',
+        'They look similar for keeping content in sync, but differ fundamentally in whether load timing is controlled.'
+      ]
     }
   },
   {
-    id: 'cc-010', domain: 'claudecode', answer: 1,
+    id: 'cc2-010', domain: 'claudecode', answer: 2,
     ja: {
-      scenario: 'CIで自動チェックを通すようにClaude Codeを組み込みたい。テストやlintが失敗したら処理を止めて、人が差分を確認できるようにしたい。',
-      question: '適切な組み込み方は？',
-      options: ['チェックが失敗しても無視してそのままマージする','CIにlint/test/型チェックを入れ、失敗時はパイプラインを停止して差分レビューに回す','チェックはローカルの各自任せにしてCIには入れない','失敗したら自動で強制マージする'],
-      explanations: ['失敗を無視したマージは品質を壊す。チェックの意味がない。','CIに自動チェックを入れ、失敗時に停止＋差分レビューに回す＝自動チェック・失敗時停止・差分確認の正攻法。','各自任せはCIで担保できず属人化する。','失敗時の強制マージは検証を飛ばす最悪パターン。']
+      scenario: '会計SaaSのチームは、CLAUDE.mdの冒頭に「コードを変更したら必ず npm run test:unit を実行すること」と太字で書いている。それでも長いセッションの終盤や、複数ファイルにまたがる修正の後で、テスト未実行のままコミットされるケースが月に数回発生し、翌朝のCIで発覚して差し戻しになっている。テスト自体は3分で終わる。チームはトランクベース開発を採用しており、コミットは1日30件ほどある。',
+      question: 'テスト実行を確実にする方法として最も適切なのはどれか。',
+      options: [
+        'CLAUDE.mdの該当指示をさらに目立つ位置に移し、より強い表現に書き換える',
+        'カスタムスラッシュコマンド /test を作り、コミット前に実行する運用を周知する',
+        'hooksでファイル編集イベントに連動して npm run test:unit を自動実行するよう設定する',
+        'コミット前にペアのメンバーがテスト実行を確認するチェックリスト運用にする'
+      ],
+      explanations: [
+        '既に太字で冒頭にある指示が守られないことがあるのが問題。指示は実行の保証ではなく、強調しても構造は変わらない。',
+        'コマンド化しても起動は手動のままで、実行漏れの余地が残る。定型手順の共有には良い手だが今回の決め手を外している。',
+        '正解。決め手は「書いてあるのに実行されないことがある」という点。hooksはイベントに連動してコマンドを必ず実行するため、指示ではなく仕組みで保証できる。',
+        '人間の確認は忘れや形骸化が起こる。自動化できるものを運用でカバーするのは逆方向。'
+      ]
     },
     en: {
-      scenario: 'You want to wire Claude Code into CI so automated checks run. If tests or lint fail, stop and let a human review the diff.',
-      question: 'What is the right way to integrate?',
-      options: ['Merge anyway even if checks fail','Add lint/test/type-check to CI; on failure, stop the pipeline and route to diff review','Leave checks to each person locally and not put them in CI','Force an auto-merge when checks fail'],
-      explanations: ['Merging despite failures breaks quality and defeats the checks.','Adding automated checks to CI and stopping + routing to diff review on failure is the correct pattern.','Leaving it to each person locally is not enforced in CI and is person-dependent.','Force-merging on failure is the worst pattern — it skips verification.']
+      scenario: 'An accounting-SaaS team has written in bold at the top of CLAUDE.md: “Always run npm run test:unit after changing code.” Even so, a few times a month — late in long sessions or after multi-file changes — commits land without the tests having run, and the next morning’s CI catches it and the work is bounced back. The test suite takes three minutes. The team practices trunk-based development with about 30 commits a day.',
+      question: 'What is the most appropriate way to make sure the tests actually run?',
+      options: [
+        'Move the instruction to an even more prominent spot in CLAUDE.md and phrase it more forcefully',
+        'Create a custom slash command /test and tell everyone to run it before committing',
+        'Configure a hook tied to file-edit events that automatically runs npm run test:unit',
+        'Adopt a checklist process where a pair member confirms the tests ran before each commit'
+      ],
+      explanations: [
+        'The instruction is already bold and at the top, yet it gets skipped; an instruction is not a guarantee of execution, and emphasis does not change the structure.',
+        'A command still requires manual invocation, leaving room for omission; good for sharing procedures, but it misses the decisive issue.',
+        'Correct. The deciding fact is “it is written down but sometimes not executed.” Hooks run the command automatically on the event, guaranteeing it by mechanism rather than instruction.',
+        'Human confirmation gets forgotten and degrades into ritual; covering an automatable step with process runs the wrong way.'
+      ]
     }
   },
   {
-    id: 'cc-011', domain: 'claudecode', answer: 3,
+    id: 'cc2-011', domain: 'claudecode', answer: 1,
     ja: {
-      scenario: 'チームで、よく使う「依存関係を更新して安全に検証する」一連の手順をClaude Codeで標準化したい。新メンバーもすぐ同じ手順を使えるようにしたい。',
-      question: '最も適切なのは？',
-      options: ['ベテランの作業を録画して見せるだけにする','各自がブックマークに手順メモを貼っておく','手順はその場のチャットで毎回口頭ニュアンスで伝える','再利用する手順をスキル／スラッシュコマンドとして定義し、.claude/ にコミットして共有する'],
-      explanations: ['録画を見せるだけでは実行は属人的で、標準化にならない。','個人ブックマークは共有されず、新メンバーに行き渡らない。','その場の口頭ニュアンスは再現性がない。','再利用手順をスキル／スラッシュコマンドにしてコミット＝共有・自動化・即時利用ができる正攻法。']
+      scenario: '機械学習基盤チームのPythonリポジトリでは、CLAUDE.mdに「編集後は必ずblackとisortをかける」と書いてあるにもかかわらず、Claude Codeの編集にフォーマット未適用の差分が混ざることがあり、レビュアーが毎回スタイル指摘に時間を取られている。CIには既にフォーマットチェックがあり違反PRは落ちるが、指摘と修正の往復で1〜2日のリードタイムが発生している。チームは6人で、週20本前後のPRを処理している。',
+      question: 'レビューの往復を減らす仕組みとして最も適切なのはどれか。',
+      options: [
+        'CLAUDE.mdに実行すべきコマンドの具体例とオプションを追記する',
+        'ファイル編集イベントに連動するhookでblackとisortを自動実行する',
+        'カスタムスラッシュコマンド /format を用意し、PR作成前に実行してもらう',
+        'CIのフォーマットチェックをより厳格な設定に強化する'
+      ],
+      explanations: [
+        '指示を具体化しても、指示が実行の保証にならない構造は変わらない。',
+        '正解。決め手は「書いてあるのに適用されないことがある」点。編集イベントに連動するhookなら人もモデルも介在せず、フォーマットが仕組みとして必ず適用される。',
+        '手動起動のため実行漏れが残り、往復の原因が解消しない。',
+        '検出は既にCIができている。問題は検出後の往復時間であり、チェック強化では往復は減らない。'
+      ]
     },
     en: {
-      scenario: 'Your team wants to standardize a frequent flow ("update dependencies and verify safely") in Claude Code so new members can use the same steps immediately.',
-      question: 'What is the most appropriate?',
-      options: ['Just show a recording of a veteran doing it','Each person keeps step notes in their bookmarks','Convey the steps verbally with on-the-spot nuance each time','Define the reusable steps as a skill/slash command and commit them under .claude/ to share'],
-      explanations: ['Showing a recording leaves execution personal and is not standardization.','Personal bookmarks are not shared and do not reach new members.','On-the-spot verbal nuance is not reproducible.','Turning reusable steps into a committed skill/slash command gives sharing, automation, and immediate use.']
+      scenario: 'In an ML-platform team’s Python repository, CLAUDE.md says “always run black and isort after editing,” yet unformatted diffs still slip into Claude Code’s edits, and reviewers keep spending time on style comments. CI already has a format check that fails violating PRs, but the comment-and-fix round trips add one to two days of lead time. The team has six people handling about 20 PRs a week.',
+      question: 'What is the most appropriate mechanism to reduce the review round trips?',
+      options: [
+        'Add concrete command examples and options to CLAUDE.md',
+        'Run black and isort automatically via a hook tied to file-edit events',
+        'Provide a custom slash command /format and ask everyone to run it before opening a PR',
+        'Tighten the CI format check with stricter settings'
+      ],
+      explanations: [
+        'Making the instruction more concrete does not change the fact that an instruction is not a guarantee of execution.',
+        'Correct. The deciding fact is “it is written down but sometimes not applied.” A hook on the edit event applies formatting mechanically, with no human or model in the loop.',
+        'Manual invocation leaves room for omission, so the cause of the round trips remains.',
+        'Detection already works in CI; the problem is the round-trip time after detection, which stricter checks do not reduce.'
+      ]
     }
   },
   {
-    id: 'cc-012', domain: 'claudecode', answer: 0,
+    id: 'cc2-012', domain: 'claudecode', answer: 3,
     ja: {
-      scenario: 'CLAUDE.md に「秘密鍵やトークンを生成物・ログに書かない」と書いたが、実際にコミット直前に検出して止める保証が欲しい。',
-      question: '保証を高める最善手は？',
-      options: ['hook で pre-commit 相当のシークレットスキャンを自動実行し、検出時は処理を止める','CLAUDE.md の文言をもっと強い口調にする','人が毎回目視でgrepする運用にする','検出は諦めてレビューに任せる'],
-      explanations: ['hook で自動シークレットスキャンを走らせ、検出時に停止＝人の記憶に依存せず確実に止められる正攻法。','文言を強めても自動実行の保証にはならない。','目視grepは抜けが出る。仕組みで止めるべき。','レビュー任せは見落としが起きる。自動検出が要件。']
+      scenario: 'BtoB SaaSのチームでは月2回のリリース作業（CHANGELOGの更新、バージョン番号の繰り上げ、タグ作成、リリースノート下書き）を、当番のメンバーが毎回自分の言葉でClaude Codeに依頼している。先月はCHANGELOGの更新が抜け、今月はバージョン番号の付け方が前回と違うという指摘が入った。当番は5人の持ち回りで、リリース手順自体はConfluenceに文書化されている。',
+      question: 'この手順のばらつきをなくす方法として最も適切なのはどれか。',
+      options: [
+        'Confluenceの手順書を最新化し、当番が毎回それをコピーしてClaude Codeに貼り付ける運用にする',
+        'リリース手順をhooksに設定し、自動で実行されるようにする',
+        '各メンバーが自分の個人設定にリリース用のカスタムコマンドを作る',
+        'リリース手順をカスタムスラッシュコマンドとしてリポジトリにコミットし、全員が同じコマンドで同じ流れを実行する'
+      ],
+      explanations: [
+        '毎回の手動コピペは貼り忘れ・版ズレが起こる。文書は正しくても実行が人に依存したままになる。',
+        'hooksはツールイベントに連動する仕組みで、月2回オンデマンドで起動する多段手順の入口には合わない。',
+        '個人設定のコマンドは内容が人ごとにズレていき、当番制ではまさに属人化が再発する。',
+        '正解。決め手は「同じ定型手順を誰がやっても同じ流れで」という要件。コマンドをリポジトリにコミットすれば、5人の当番全員が同一手順を再現できる。'
+      ]
     },
     en: {
-      scenario: 'CLAUDE.md says "never write secret keys/tokens into outputs or logs," but you want a guarantee that this is caught and blocked right before commit.',
-      question: 'What best strengthens the guarantee?',
-      options: ['Use a hook to auto-run a pre-commit secret scan and stop on detection','Make the CLAUDE.md wording more forceful','Rely on a human to grep visually every time','Give up detection and leave it to review'],
-      explanations: ['A hook that auto-runs a secret scan and stops on detection guarantees blocking without depending on memory.','Stronger wording does not guarantee automatic execution.','Visual grep leaves gaps; stop it structurally.','Leaving it to review allows oversights; auto-detection is the requirement.']
+      scenario: 'A B2B SaaS team performs a twice-monthly release procedure — updating the CHANGELOG, bumping the version, creating a tag, drafting release notes — and the member on duty describes it to Claude Code in their own words each time. Last month the CHANGELOG update was missed; this month the version was bumped differently from last time. Five people rotate the duty, and the procedure itself is documented in Confluence.',
+      question: 'What is the most appropriate way to eliminate this variance?',
+      options: [
+        'Keep the Confluence document current and have the on-duty member copy-paste it into Claude Code every time',
+        'Configure the release procedure in hooks so it runs automatically',
+        'Have each member create a personal release command in their own settings',
+        'Commit the procedure as a custom slash command in the repository so everyone runs the same flow with the same command'
+      ],
+      explanations: [
+        'Manual copy-paste invites forgotten pastes and version drift; the document may be right but execution stays person-dependent.',
+        'Hooks fire on tool events; they are the wrong entry point for an on-demand, multi-step procedure run twice a month.',
+        'Personal commands drift apart per person — exactly the person-dependence a rotation must avoid.',
+        'Correct. The deciding requirement is “the same routine procedure, identical for whoever runs it.” A slash command committed to the repo lets all five reproduce one flow.'
+      ]
     }
   },
   {
-    id: 'cc-013', domain: 'claudecode', answer: 2,
+    id: 'cc2-013', domain: 'claudecode', answer: 0,
     ja: {
-      scenario: 'Claude Code に外部の検索ツールやデータソースをいくつも繋いだが、接続設定が各メンバーのマシンにしかなく、入った人ごとに繋ぎ直しが必要で手間。',
-      question: '改善策として適切なのは？',
-      options: ['接続設定は各自が思い出して毎回手で打つ','繋がっている人にだけ作業を集中させる','MCPサーバーの接続設定をプロジェクト設定としてリポジトリで共有し、全員に同じ接続を効かせる','接続が面倒なので外部ツール連携をやめる'],
-      explanations: ['毎回手打ちは属人的でミスが出る。','一人に集中＝属人化で本人不在時に止まる。','MCP接続設定をプロジェクト共有にすれば、新メンバーも繋ぎ直し不要で同じ接続が効く。','連携をやめるのは要件の放棄。']
+      scenario: 'SREチームはClaude CodeでTerraformの運用作業を行っている。CLAUDE.mdには「destroy系・削除系のコマンドは実行前に必ず人間に確認すること」と明記していたが、先週、長いデバッグセッションの中でステージング環境への terraform destroy が承認直前まで進むヒヤリハットが起きた。担当者は「ルールに書いてあるのに」と驚いている。チームはstate管理にTerraform Cloudを使っており、環境は3面ある。',
+      question: '再発防止策として最も適切なのはどれか。',
+      options: [
+        'permissions設定で該当コマンドをdenyまたはaskに指定し、ツール側で実行を制御する',
+        'CLAUDE.mdの警告を強化し、禁止コマンド名を網羅的に列挙する',
+        '本番の認証情報をClaude Codeから参照できない場所に隔離する',
+        'Bashツールの利用自体を全面的に無効化する'
+      ],
+      explanations: [
+        '正解。決め手はCLAUDE.mdの記述が「指示」であって「強制」ではないこと。危険コマンドはpermissionsでツール側からブロック・確認必須にするのが仕組みによる防御。',
+        '指示の列挙を増やしても、長いセッションで指示が薄れる構造は変わらない。',
+        '認証情報の隔離は別の実在するセキュリティ対策だが、今回のヒヤリはステージングで起きており、コマンド実行の制御という決め手を外している。',
+        '全面無効化では通常のterraform planやテストも実行できなくなり、運用が成立しない過剰対応。'
+      ]
     },
     en: {
-      scenario: 'You connected several external search tools and data sources to Claude Code, but the connection config lives only on each member\'s machine, so every newcomer must reconnect.',
-      question: 'What is the right improvement?',
-      options: ['Have each person recall and type the connection config by hand every time','Concentrate the work on whoever is already connected','Share the MCP server connection config as project settings in the repo so everyone gets the same connections','Drop external tool integration because connecting is a hassle'],
-      explanations: ['Typing it by hand each time is personal and error-prone.','Concentrating on one person is personal dependency and stalls when they are away.','Sharing the MCP connection config as project settings means newcomers need no reconnect and get the same connections.','Dropping integration abandons the requirement.']
+      scenario: 'An SRE team uses Claude Code for Terraform operations. CLAUDE.md clearly states that destroy- and delete-type commands must be confirmed with a human before execution. Last week, however, during a long debugging session, a terraform destroy against the staging environment progressed to the brink of approval — a near miss. The engineer was shocked: “But it is written in the rules.” The team manages state in Terraform Cloud and runs three environments.',
+      question: 'What is the most appropriate measure to prevent recurrence?',
+      options: [
+        'Specify the commands as deny or ask in the permissions settings so the tool itself controls execution',
+        'Strengthen the CLAUDE.md warning and exhaustively list the forbidden command names',
+        'Isolate the production credentials somewhere Claude Code cannot reference',
+        'Disable the Bash tool entirely'
+      ],
+      explanations: [
+        'Correct. The deciding fact is that CLAUDE.md content is instruction, not enforcement. Dangerous commands should be blocked or gated by permissions at the tool level.',
+        'Listing more commands does not change the structure in which instructions fade during long sessions.',
+        'Credential isolation is a real security practice, but the near miss happened in staging; it misses the decisive issue of controlling command execution.',
+        'A total ban also kills ordinary terraform plan and tests — an overreaction that breaks operations.'
+      ]
     }
   },
   {
-    id: 'cc-014', domain: 'claudecode', answer: 1,
+    id: 'cc2-014', domain: 'claudecode', answer: 2,
     ja: {
-      scenario: '権限設定で「読み取り系コマンドは許可、書き込み・削除系は確認を要求」にしたい。最小権限で安全に運用したい。',
-      question: '適切な方針は？',
-      options: ['とりあえず全部許可して、危なそうなら後で外す','許可リストに安全な操作だけを明示し、それ以外はデフォルトで確認／拒否にする','全部拒否にして毎回手で例外を足す（実質手作業に戻る）','許可・拒否は決めず運用で気をつける'],
-      explanations: ['全部許可してから外すのは事故が先に起きる。最小権限と逆。','安全な操作だけ明示許可し、それ以外は確認／拒否＝最小権限の正しい設計。','全部拒否で毎回手で足すのは運用が回らず、結局手作業に逆戻り。','決めずに気をつけるのは仕組みでなく記憶頼み。']
+      scenario: 'データ分析基盤のチームは、毎晩のGitHub Actionsジョブで前日のスキーマ変更サマリーをClaude Codeに生成させる仕組みを追加した。ところが初回実行からジョブが6時間のタイムアウトまで進まず、ログには起動直後のバナーが表示されたまま何も出力されない。担当者はタイムアウトを12時間に延ばし、ランナーのスペックも上げたが変わらなかった。APIキーは正しく設定されており、同じコマンドは手元のターミナルでは問題なく動く。',
+      question: '原因と対処の組み合わせとして最も適切なのはどれか。',
+      options: [
+        'APIのレート制限で待機している。リトライ間隔とバックオフの設定を追加する',
+        '--background を付けてバックグラウンド実行に切り替える',
+        '既定の起動は対話モードのため入力待ちでハングしている。-p（--print）で非インタラクティブに1回実行し、結果を標準出力に出す',
+        '権限承認を自動化する環境変数が未設定なので追加する'
+      ],
+      explanations: [
+        'レート制限ならエラーや再試行のログが出るのが普通で、バナーのまま無出力という症状と合わない。',
+        '--backgroundは処理を裏に回すだけで、対話モードで入力を待つという原因は解消しない。',
+        '正解。決め手は「手元のターミナルでは動く（＝人間が入力できる）」という対比。CIには入力する人間がいないため、対話モード起動は入力待ちで止まる。-pが非インタラクティブ実行の正攻法。',
+        '止まっているのは権限承認ではなく起動モード。承認を自動化しても対話モードの入力待ちは残る。'
+      ]
     },
     en: {
-      scenario: 'In permissions you want read commands allowed but write/delete commands to require confirmation — least privilege, safe operation.',
-      question: 'What is the right policy?',
-      options: ['Allow everything for now and remove risky ones later','Explicitly allowlist only safe operations and default everything else to confirm/deny','Deny everything and add exceptions by hand each time (back to manual work)','Do not decide allow/deny and just be careful operationally'],
-      explanations: ['Allow-all-then-remove lets the accident happen first; the opposite of least privilege.','Allowlisting only safe ops and defaulting the rest to confirm/deny is correct least-privilege design.','Deny-all with hand-added exceptions does not scale and reverts to manual work.','Deciding nothing and "being careful" is memory, not a mechanism.']
+      scenario: 'A data-platform team added a nightly GitHub Actions job that has Claude Code generate a summary of the previous day’s schema changes. From the first run, the job sits until the 6-hour timeout; the log shows the startup banner and then nothing. The engineer extended the timeout to 12 hours and upgraded the runner, with no change. The API key is configured correctly, and the same command works fine in a local terminal.',
+      question: 'Which combination of cause and fix is most appropriate?',
+      options: [
+        'It is waiting on API rate limits; add retry intervals and backoff settings',
+        'Add --background to switch to background execution',
+        'The default launch is interactive and is hanging waiting for input; run non-interactively with -p (--print) to execute once and write the result to stdout',
+        'The environment variable that auto-approves permissions is missing; add it'
+      ],
+      explanations: [
+        'Rate limiting would normally show errors or retries in the log, which does not match a silent banner.',
+        '--background just moves the process out of the way; it does not remove the interactive wait for input.',
+        'Correct. The deciding contrast is “works in a local terminal” — where a human can type. CI has no human, so an interactive launch blocks on input. -p is the standard non-interactive execution.',
+        'What blocks is the launch mode, not permission approval; automating approval leaves the interactive wait in place.'
+      ]
     }
   },
   {
-    id: 'cc-015', domain: 'claudecode', answer: 3,
+    id: 'cc2-015', domain: 'claudecode', answer: 1,
     ja: {
-      scenario: '同じバグ調査でも、人によって「ログを見る／再現手順を作る／原因仮説を立てる」のやり方がバラバラで品質が安定しない。',
-      question: 'チームで品質を揃える最善手は？',
-      options: ['一番上手い人のやり方を口頭で共有する','各自が自分流を続け、レビューで都度直す','バグ調査は得意な人に集約する','調査の標準手順をスラッシュコマンド／スキル化し、CLAUDE.md に方針を書いてコミットして全員で使う'],
-      explanations: ['口頭共有は再現性がなく、すぐ崩れる。','自分流＋都度修正はコストが高く品質が安定しない。','一人に集約＝属人化。本人不在で止まる。','調査手順をコマンド化し方針をCLAUDE.mdに書いてコミット＝共有・再現性・品質の標準化ができる正攻法。']
+      scenario: 'モバイルアプリのチームは、PR作成時にClaude Codeへ差分の説明文を生成させるGitHub Actionsステップを作っている。同僚が技術ブログで見たという「CI環境では --ci-mode を付ければよい」という話を共有してきたが、手元のヘルプ出力にそのフラグが見当たらず自信が持てない。パイプラインには他にlintとE2Eテストのジョブがあり、生成した説明文は後続ステップでPRコメントとして投稿する予定である。',
+      question: 'このステップの実装として正しいものはどれか。',
+      options: [
+        'claude --ci-mode "差分を要約して" のようにCI専用モードで起動する',
+        'claude -p "差分を要約して" のように非インタラクティブ実行し、標準出力を後続ステップに渡す',
+        'claude --background で起動し、ログファイルをtailして完了を待つ',
+        'claude --headless で起動してTTYなしでの実行を宣言する'
+      ],
+      explanations: [
+        '--ci-modeというフラグは存在しない。それらしい名前だが、ヘルプに見当たらないという記述がヒントだった。',
+        '正解。決め手は「1回実行して結果を後続ステップに渡す」という要件。-p（--print）が非インタラクティブに1回実行して標準出力に出す正式な方法。',
+        '--backgroundは裏で走らせて即座に制御を返すため、後続ステップが結果を受け取れない。',
+        '--headlessというフラグも存在しない。実在しそうな名前に注意。'
+      ]
     },
     en: {
-      scenario: 'Even for the same bug investigation, people differ in how they read logs, build a repro, and form hypotheses, so quality is unstable.',
-      question: 'What best aligns team quality?',
-      options: ['Share the best person\'s approach verbally','Let everyone keep their own style and fix it in review each time','Funnel bug investigation to one strong person','Turn the investigation steps into a slash command/skill, write the policy in CLAUDE.md, and commit it for everyone'],
-      explanations: ['Verbal sharing is not reproducible and erodes quickly.','Own-style plus per-review fixes is costly and unstable.','Funneling to one person is personal dependency and stalls when they are away.','Turning the steps into a command and committing the policy in CLAUDE.md gives sharing, reproducibility, and standardized quality.']
+      scenario: 'A mobile-app team is building a GitHub Actions step that has Claude Code generate a description of the diff when a PR is opened. A colleague shares advice from a tech blog claiming “just add --ci-mode in CI environments,” but the flag does not appear in the local help output and confidence is low. The pipeline also has lint and E2E jobs, and the generated text will be posted as a PR comment by a later step.',
+      question: 'Which implementation of this step is correct?',
+      options: [
+        'Launch with a CI-specific mode such as claude --ci-mode "summarize the diff"',
+        'Run non-interactively, e.g. claude -p "summarize the diff", and pass stdout to the next step',
+        'Launch with claude --background and tail a log file to wait for completion',
+        'Launch with claude --headless to declare TTY-less execution'
+      ],
+      explanations: [
+        'There is no --ci-mode flag; it sounds plausible, and its absence from the help output was the clue.',
+        'Correct. The deciding requirement is “run once and hand the result to the next step.” -p (--print) is the official non-interactive, run-once-to-stdout mode.',
+        '--background returns control immediately while work continues elsewhere, so the next step cannot receive the result.',
+        'There is no --headless flag either; beware of plausible-sounding inventions.'
+      ]
     }
   },
   {
-    id: 'cc-016', domain: 'claudecode', answer: 0,
+    id: 'cc2-016', domain: 'claudecode', answer: 3,
     ja: {
-      scenario: 'Claude Codeの設定（CLAUDE.md・スラッシュコマンド・権限）を変えたら、誰が・いつ・なぜ変えたかを追えるようにしたい。',
-      question: '適切な運用は？',
-      options: ['.claude/ をリポジトリで管理し、設定変更も通常のコミット／PRとして履歴に残す','設定は各自がローカルで好きに変え、記録は残さない','変更点はSlackに書くだけで済ませる','設定変更は口頭で合意して即反映する'],
-      explanations: ['.claude/ をバージョン管理してコミット／PRで残せば、誰がいつなぜ変えたかが履歴で追え、レビューもできる。','ローカルで好き勝手＋記録なしは追跡不能で属人化する。','Slackメモだけでは設定そのものと履歴が紐づかない。','口頭合意・即反映は記録が残らず再現できない。']
+      scenario: '社内ツールのリポジトリで、CIのドキュメント生成ステップにClaude Codeを組み込んだメンバーが「他のジョブをブロックしないように」と --background を付けた。ステップは数秒でグリーンになるのだが、成果物のはずの docs/summary.md が空だったり、ファイル自体が存在しなかったりする。ランナーのメモリは十分にあり、再実行しても結果は安定しない。ローカルで同じコマンドを実行すると正しいファイルが生成される。',
+      question: '起きていることの説明と修正として最も適切なのはどれか。',
+      options: [
+        '権限プロンプトで停止している。自動承認の環境変数を設定する',
+        '標準出力のバッファリングの問題なので、リダイレクトの書き方を修正する',
+        'ランナーのリソース不足でバックグラウンドプロセスが強制終了されている',
+        '--backgroundは処理を裏で走らせて即座に制御を返すため、CIステップが生成完了を待たずに終了している。-pによる同期実行へ変更する'
+      ],
+      explanations: [
+        '承認待ちならステップは止まるはずで、「数秒でグリーン」という症状と矛盾する。',
+        'バッファリングではファイルが丸ごと欠けることは説明できない。',
+        'メモリは十分と明示されており、リソース不足を疑うのはノイズの追跡。',
+        '正解。決め手は「数秒でグリーンなのに成果物がない」という組み合わせ。--backgroundは制御を即返すためCIは完了を待たない。結果を待つCIステップには-pの同期実行が正しい。'
+      ]
     },
     en: {
-      scenario: 'When you change Claude Code settings (CLAUDE.md, slash commands, permissions), you want to trace who changed what, when, and why.',
-      question: 'What is the right practice?',
-      options: ['Manage .claude/ in the repo so setting changes are normal commits/PRs with history','Let each person change settings locally with no record','Just post changes in Slack','Agree verbally and apply immediately'],
-      explanations: ['Version-controlling .claude/ via commits/PRs records who/when/why and enables review.','Free local edits with no record are untraceable and person-dependent.','A Slack note alone does not tie history to the actual settings.','Verbal agreement applied immediately leaves no record and is not reproducible.']
+      scenario: 'In an internal-tools repo, the member who added Claude Code to a CI documentation step attached --background “so it would not block other jobs.” The step goes green in seconds, but the expected artifact docs/summary.md is sometimes empty and sometimes missing entirely. The runner has plenty of memory, and reruns are inconsistent. Running the same command locally produces the correct file.',
+      question: 'Which explanation and fix is most appropriate?',
+      options: [
+        'It is stopped at a permission prompt; set the auto-approval environment variable',
+        'It is a stdout buffering problem; fix the redirection',
+        'The background process is being killed by runner resource exhaustion',
+        '--background runs the work in the background and returns control immediately, so the CI step finishes without waiting for generation; switch to synchronous execution with -p'
+      ],
+      explanations: [
+        'A permission wait would stall the step, contradicting “green in seconds.”',
+        'Buffering cannot explain an entirely missing file.',
+        'Memory is explicitly sufficient; chasing resources is chasing the noise.',
+        'Correct. The deciding combination is “green in seconds, yet no artifact.” --background returns immediately, so CI never waits; a CI step that needs the result must run synchronously with -p.'
+      ]
     }
   },
   {
-    id: 'cc-017', domain: 'claudecode', answer: 2,
+    id: 'cc2-017', domain: 'claudecode', answer: 0,
     ja: {
-      scenario: 'あるスラッシュコマンドが本番環境に対して破壊的操作を含みうる。誰でも軽い気持ちで実行できる状態は避けたい。',
-      question: '安全側に倒す設計は？',
-      options: ['コマンド名を分かりにくくして気づきにくくする','実行ログだけ後で見て反省する','破壊的操作は権限設定で確認を必須化し、危険コマンドは許可リストから外して明示承認を要求する','実行は早い者勝ちにして速度を優先する'],
-      explanations: ['名前を隠すのは事故防止にならず、むしろ混乱を生む。','後でログを見ても破壊は取り返せない。','破壊的操作に確認必須・明示承認を要求＝最小権限と人の判断を介する正しい設計。','速度優先で危険操作を素通しは最悪。']
+      scenario: '保険系システムのチームは、週次レポートを生成するJenkinsジョブに claude "先週の変更をまとめて" という呼び出しを組み込んだが、ジョブが毎回入力待ちのまま止まる。担当者は「権限確認のダイアログで止まっているに違いない」と推測し、権限承認を自動化する環境変数をジョブに設定した。しかし症状はまったく変わらない。シークレットの注入は正しく行われており、同じコマンドは手元のターミナルでは対話セッションとして正常に立ち上がる。',
+      question: '症状が変わらない理由として最も適切なのはどれか。',
+      options: [
+        'ハングの原因は対話モード起動による入力待ちであり、権限承認の自動化では実行モードの問題は解決しない。-p を付けて非インタラクティブ実行にする必要がある',
+        '環境変数がJenkinsのステップに正しく引き継がれていないため、設定方法を見直す必要がある',
+        '権限承認は環境変数では制御できず、permissions設定ファイルの編集でしか変更できない',
+        'CIランナーにTTYがないため、環境変数自体が読み込まれない'
+      ],
+      explanations: [
+        '正解。決め手は「手元では対話セッションとして立ち上がる」という記述。ジョブは権限ではなく対話モードのプロンプト入力を待っている。承認の自動化は別レイヤーの設定で、実行モードは変わらない。',
+        '環境変数の引き継ぎ問題は実在するが、仮に正しく渡っていても対話モードの入力待ちは解消しない。',
+        '承認の制御方法の議論であり、そもそも止まっている原因が承認ではない。',
+        'TTYの有無と環境変数の読み込みは無関係。もっともらしいが技術的に成り立たない。'
+      ]
     },
     en: {
-      scenario: 'A slash command could include destructive operations against production. You want to avoid anyone running it casually.',
-      question: 'What design errs on the safe side?',
-      options: ['Make the command name obscure so it is hard to notice','Just review the execution log afterward','Require confirmation for destructive ops in permissions and keep dangerous commands off the allowlist so they need explicit approval','Make execution first-come-first-served to prioritize speed'],
-      explanations: ['Hiding the name does not prevent accidents and breeds confusion.','Reviewing logs later cannot undo destruction.','Requiring confirmation/explicit approval for destructive ops applies least privilege and human judgment — correct.','Prioritizing speed and waving through dangerous ops is the worst.']
+      scenario: 'An insurance-systems team wired a Jenkins job to call claude "summarize last week’s changes" for a weekly report, but the job stalls waiting for input every time. The engineer guessed it must be stuck on a permission-approval dialog and set the environment variable that automates permission approval in the job. The symptom did not change at all. Secrets are injected correctly, and the same command launches a normal interactive session in a local terminal.',
+      question: 'What is the most appropriate explanation for why the symptom is unchanged?',
+      options: [
+        'The hang comes from launching in interactive mode and waiting for input; automating permission approval does not solve an execution-mode problem. It needs -p for non-interactive execution',
+        'The environment variable is not being passed into the Jenkins step correctly, so the configuration must be revisited',
+        'Permission approval cannot be controlled by environment variables; it can only be changed by editing the permissions settings file',
+        'The CI runner has no TTY, so environment variables themselves are not loaded'
+      ],
+      explanations: [
+        'Correct. The deciding clue is that locally it starts an interactive session. The job is waiting at the interactive prompt, not on permissions; approval automation is a different layer and does not change the launch mode.',
+        'Variable-passing problems are real, but even a correctly passed variable would not remove the interactive wait.',
+        'That debates how approval is controlled, but approval is not what is blocking in the first place.',
+        'TTY presence has nothing to do with whether environment variables load; plausible-sounding but technically wrong.'
+      ]
     }
   },
   {
-    id: 'cc-018', domain: 'claudecode', answer: 1,
+    id: 'cc2-018', domain: 'claudecode', answer: 2,
     ja: {
-      scenario: 'Claude Code でファイル編集後、毎回「フォーマッタをかける」のを誰かが忘れて差分が汚れる。',
-      question: '根本対策は？',
-      options: ['コミットメッセージに「整形した」と書く運用にする','編集後イベントに hook を設定して、フォーマッタを自動実行する','整形は気づいた人がやる文化にする','整形しないことを許容して差分の汚れは無視する'],
-      explanations: ['メッセージに書くだけでは実際の整形は保証されない。','編集後イベントの hook でフォーマッタを自動実行＝人が忘れても確実に走る根本対策。','気づいた人任せは抜けが出る。','汚れ放置は差分レビューを困難にし品質を下げる。']
+      scenario: '動画配信サービスのエンジニアは、Claude Codeとの長いセッションでキャッシュ層のリファクタ方針Aをほぼ実装し終えたところで、別の方針Bのほうが筋が良いかもしれないと感じ始めた。これまでの調査結果や設計判断の文脈は捨てたくないが、方針Aの検討内容も残しておきたい。同僚から「fork-sessionを使えば」と助言されたが、別の同僚は「forkするとその会話がモデルの学習に使われて、他のセッションにも影響が出る機能でしょ」と言っており、チーム内で認識が割れている。',
+      question: 'fork-sessionの説明として正しいものはどれか。',
+      options: [
+        '現在の会話内容をモデルに学習させ、以降の新規セッションへ反映させる機能である',
+        'gitのブランチを自動作成し、ワークツリーを分離する機能である',
+        '現在の会話コンテキストをコピーした分岐セッションを作り、同じ前提から別のアプローチを試せる機能である',
+        '過去の会話を要約・圧縮して、長いセッションを継続できるようにする機能である'
+      ],
+      explanations: [
+        'forkはモデルの学習とは無関係。会話がモデルの重みに反映されるという理解が典型的な誤解。',
+        'gitのブランチ操作とは別物。名前の連想からの混同に注意。',
+        '正解。決め手は「これまでの文脈を保ったまま別ルートを試したい」という要件。forkはコンテキストをコピーした分岐を作り、元のセッションはそのまま残る。',
+        'それはコンテキスト圧縮（コンパクション）の説明であり、forkの機能ではない。'
+      ]
     },
     en: {
-      scenario: 'After editing files in Claude Code, someone keeps forgetting to run the formatter and the diff gets messy.',
-      question: 'What is the root-cause fix?',
-      options: ['Adopt a rule of writing "formatted" in the commit message','Set a hook on the post-edit event to auto-run the formatter','Make it a culture where whoever notices runs it','Tolerate not formatting and ignore the messy diff'],
-      explanations: ['Writing it in the message does not guarantee the formatting actually happened.','A hook on the post-edit event auto-runs the formatter — a root fix that runs even if forgotten.','Whoever-notices leaves gaps.','Leaving it messy hurts diff review and lowers quality.']
+      scenario: 'An engineer at a video-streaming service has nearly finished implementing cache-layer refactoring approach A in a long Claude Code session, and starts to feel that an alternative approach B might be sounder. They do not want to throw away the accumulated research and design context, but also want to keep the approach-A work. One colleague suggests fork-session, while another insists that “forking feeds the conversation into model training and affects other sessions,” and the team is split.',
+      question: 'Which statement about fork-session is correct?',
+      options: [
+        'It trains the model on the current conversation so future new sessions reflect it',
+        'It automatically creates a git branch and separates the worktree',
+        'It creates a branched session with a copy of the current conversation context, letting you try a different approach from the same premises',
+        'It summarizes and compresses past conversation so a long session can continue'
+      ],
+      explanations: [
+        'Forking has nothing to do with model training; “the conversation gets baked into the weights” is the classic misconception.',
+        'It is unrelated to git branching; beware of the name association.',
+        'Correct. The deciding requirement is trying another route while keeping the context. Fork copies the context into a branch and the original session remains intact.',
+        'That describes context compaction, not forking.'
+      ]
     }
   },
   {
-    id: 'cc-019', domain: 'claudecode', answer: 3,
+    id: 'cc2-019', domain: 'claudecode', answer: 1,
     ja: {
-      scenario: '複数リポジトリで共通の社内規約（命名規則・禁止ライブラリ）を効かせたい。各リポジトリにバラバラに書くと更新が追いつかない。',
-      question: '保守しやすい方法は？',
-      options: ['各リポジトリのCLAUDE.mdに毎回全文をコピペし、更新も全部手で直す','規約は誰かが覚えていて口頭で都度伝える','規約はもう揃えるのを諦める','共通規約はユーザー／組織スコープのメモリに置き、各リポジトリのCLAUDE.mdは固有事項に絞って参照させる'],
-      explanations: ['全文コピペ＋手更新は更新漏れと不一致が必ず起きる。','口頭は再現性がなくスケールしない。','諦めは要件放棄。','共通規約を上位スコープに置き、各リポジトリは固有事項に絞る＝階層を活かして一元管理できる正攻法。']
+      scenario: '医療データ基盤のチームで、あるエンジニアが本番相当データベースに対するマイグレーションスクリプトの検証をしたくなり、進行中のセッションをフォークした。本人は「フォークは実験用のサンドボックスだから、プロジェクトのpermissions設定やCLAUDE.mdのルールは効かなくなる。破壊的なコマンドも自由に試せる」と考えて検証を始めようとしている。リポジトリのpermissionsではDB系の危険コマンドがask設定になっており、環境は本番のスナップショットから毎朝リストアされる。',
+      question: 'この認識について正しい説明はどれか。',
+      options: [
+        'フォークは独立したサンドボックスとして起動し、権限設定は初期状態にリセットされる',
+        'フォークしてもpermissionsやプロジェクトのルールは引き続き適用される。分岐するのは会話コンテキストであり、安全設定が外れるわけではない',
+        'フォーク側のセッションは読み取り専用になるため、そもそもスクリプトの実行はできない',
+        'フォークではCLAUDE.mdが再読み込みされないため、ルールが適用されない状態で動作する'
+      ],
+      explanations: [
+        'フォークで権限がリセットされる仕様はない。「実験用だから緩くなる」という期待が誤り。',
+        '正解。決め手は「分岐するのは会話コンテキストだけ」という点。permissionsやプロジェクトルールはセッションの分岐に関係なく適用され続ける。',
+        'フォークに読み取り専用の制約はない。安全側に倒した誤解だが仕様として誤り。',
+        'フォーク後もプロジェクトのルールは有効。読み込まれない前提が誤り。'
+      ]
     },
     en: {
-      scenario: 'You want common org standards (naming rules, banned libraries) across many repos. Writing them separately in each repo makes updates fall behind.',
-      question: 'What is more maintainable?',
-      options: ['Copy-paste the full text into each repo\'s CLAUDE.md and update them all by hand','Have someone remember the standards and convey them verbally','Give up on keeping them aligned','Put common standards in user/org-scope memory and keep each repo\'s CLAUDE.md to repo-specific items'],
-      explanations: ['Full-text copy-paste plus manual updates guarantees missed updates and inconsistency.','Verbal is not reproducible and does not scale.','Giving up abandons the requirement.','Putting common standards in a higher scope and limiting repo CLAUDE.md to specifics uses the hierarchy for single-source management.']
+      scenario: 'On a medical-data platform team, an engineer wants to test a migration script against a production-equivalent database and forks the ongoing session. They assume that “a fork is an experimental sandbox, so the project’s permissions settings and CLAUDE.md rules stop applying — destructive commands can be tried freely,” and are about to begin. The repo’s permissions set DB-related dangerous commands to ask, and the environment is restored from a production snapshot every morning.',
+      question: 'Which statement about this assumption is correct?',
+      options: [
+        'A fork launches as an independent sandbox and permissions are reset to defaults',
+        'Even after forking, permissions and project rules continue to apply; what branches is the conversation context, not the safety settings',
+        'The forked session becomes read-only, so the script cannot be executed at all',
+        'A fork does not reload CLAUDE.md, so it operates with no rules applied'
+      ],
+      explanations: [
+        'There is no spec that resets permissions on fork; “it is for experiments so it loosens up” is the false expectation.',
+        'Correct. The deciding point is that only the conversation context branches. Permissions and project rules apply regardless of session branching.',
+        'Forks carry no read-only restriction; a safe-sounding but incorrect understanding.',
+        'Project rules remain in effect after a fork; the premise that they are not loaded is wrong.'
+      ]
     }
   },
   {
-    id: 'cc-020', domain: 'claudecode', answer: 0,
+    id: 'cc2-020', domain: 'claudecode', answer: 3,
     ja: {
-      scenario: '大規模リファクタを、調査・分割実装・テスト整備に分けて並行で進めたい。メインの会話の文脈は汚したくない。',
-      question: 'Claude Code内で適切な進め方は？',
-      options: ['独立した部分をサブエージェントに分割して任せ、各自の結果をメインで統合する','全部メインの会話で一気にやって文脈を膨らませる','調査結果を都度手でコピーして貼り直す','一人が全部順番にやり、並行はしない'],
-      explanations: ['独立部分をサブエージェントに分割し結果をメインで統合＝文脈分離と並行を両立する正攻法。','メインで全部は文脈が膨らみ品質が落ちる。','手コピーは属人的で抜けやすい。','順番だけだと並行の利点が得られない（独立作業がある前提）。']
+      scenario: '人材系サービスのモノレポで、APIレスポンスのフィールド名を user_name から display_name に変更するタスクをClaude Codeに依頼した。Claudeはバックエンドのルート定義とシリアライザを修正してPRを作成し、CIはすべてグリーンだったが、ステージングに出すとプロフィール画面が表示されなくなった。フロントエンドは歴史的経緯で、古い画面がaxios、新しい画面がfetchとSWRフックを併用している。デザインチームからは今週中の反映を求められている。',
+      question: 'このタスクの進め方として最も適切だったものはどれか。',
+      options: [
+        'バックエンド修正後にOpenAPIスキーマを再生成すれば、フロントエンドは自動的に追従するので追加作業は不要だった',
+        'フロントエンドはレスポンスを動的に扱うため修正不要で、CDNとブラウザのキャッシュ削除だけで解決できた',
+        'フロントエンドのaxios呼び出し箇所を検索し、該当フィールドを置換すればよかった',
+        'バックエンドのルート定義に加え、axios・fetch・SWRフックなどフロント側のHTTPクライアントを横断検索し、当該フィールドを参照する箇所をすべて洗い出してから修正すべきだった'
+      ],
+      explanations: [
+        'スキーマ再生成が効くのは型やクライアントを自動生成している場合のみで、手書きのフィールド参照は追従しない。',
+        'フィールド名の参照はコードに静的に書かれており、キャッシュ削除では直らない。',
+        'axiosだけではfetchとSWRフックの画面が漏れる。シナリオに埋め込まれた「併用」が決め手だった。',
+        '正解。決め手はフロントが複数のHTTPクライアントを併用している点。API変更はバックエンドのルート定義とフロントの全クライアント呼び出しの両方を横断調査してから修正する。'
+      ]
     },
     en: {
-      scenario: 'You want to run a large refactor in parallel across research, split implementation, and test setup, without polluting the main conversation\'s context.',
-      question: 'What is a good approach within Claude Code?',
-      options: ['Split independent parts to subagents and integrate their results in the main thread','Do it all in the main conversation and let context balloon','Manually copy and re-paste research each time','Have one person do it all sequentially, no parallelism'],
-      explanations: ['Splitting independent parts to subagents and integrating results in main achieves context separation and parallelism.','Doing it all in main balloons context and lowers quality.','Manual copy is personal and error-prone.','Sequential-only forgoes parallel benefits when independent work exists.']
+      scenario: 'In an HR-services monorepo, Claude Code was asked to rename an API response field from user_name to display_name. Claude modified the backend route definitions and serializers and opened a PR; CI was fully green, but on staging the profile screen stopped rendering. For historical reasons the frontend mixes clients: older screens use axios, newer ones use fetch and SWR hooks. The design team wants the change live this week.',
+      question: 'Which way of carrying out this task would have been most appropriate?',
+      options: [
+        'After fixing the backend, regenerating the OpenAPI schema would have made the frontend follow automatically, so no extra work was needed',
+        'The frontend handles responses dynamically and needed no changes; clearing the CDN and browser caches would have resolved it',
+        'Searching the frontend for axios call sites and replacing the field there would have been enough',
+        'In addition to the backend route definitions, search across the frontend HTTP clients — axios, fetch, and SWR hooks — to enumerate every reference to the field before making changes'
+      ],
+      explanations: [
+        'Schema regeneration only helps when types or clients are code-generated; hand-written field references do not follow.',
+        'Field references are written statically in code; cache clearing cannot fix them.',
+        'axios alone misses the fetch and SWR screens; the mixed clients buried in the scenario were the decisive detail.',
+        'Correct. The deciding detail is the mixed HTTP clients. An API change requires investigating both the backend routes and every frontend client call before editing.'
+      ]
     }
   },
   {
-    id: 'cc-021', domain: 'claudecode', answer: 2,
+    id: 'cc2-021', domain: 'claudecode', answer: 0,
     ja: {
-      scenario: 'PR作成時に「テスト結果と影響範囲のサマリーを必ず本文に付ける」を、チーム全員が抜けなくやれるようにしたい。',
-      question: '最も確実なのは？',
-      options: ['本文の書き方を各自のセンスに任せる','付け忘れたらレビューで指摘して直してもらう','PR作成のスラッシュコマンドにサマリー生成を組み込み、CIでも本文要件を自動チェックする','テンプレ文をSlackに置いて毎回コピペしてもらう'],
-      explanations: ['各自のセンス任せは抜け・ばらつきが出る。','レビューでの後追い指摘は手戻りが多い。','PR作成コマンドにサマリー生成を組み込み、CIでも本文要件を自動チェック＝抜けなく再現できる正攻法。','コピペ運用は抜け漏れの温床で、仕組みになっていない。']
+      scenario: '広告配信システムのリポジトリで、共通ユーティリティ関数 formatBudget のリネームと引数変更をClaude Codeに依頼したところ、関数定義と目についた3ヶ所の呼び出しだけが修正され、マージ後に管理画面のバッチ処理と社内CLIの2ヶ所が実行時エラーで停止した。あとから調べると、呼び出しは約30ファイルに散らばっていた。該当箇所はテストで守られておらず、カバレッジも低い。シニアエンジニアは次回から依頼の仕方を変えることにした。',
+      question: '次回の依頼に含める指示として最も適切なのはどれか。',
+      options: [
+        'まず rg（grep）でシンボルの使用箇所を全件洗い出し、一覧を確認してから一括で修正するよう指示する',
+        '修正前にテストスイート全体を実行し、失敗したテストから影響範囲を特定させる',
+        'リネームはIDEのリファクタ機能で人間が行い、Claude Codeには任せないルールにする',
+        '旧名の関数をエイリアスとして残し、呼び出し側を段階的に移行する方式を指示する'
+      ],
+      explanations: [
+        '正解。決め手は「目についた箇所だけ直した」という調査不足。横断的な変更は、編集の前にrg/grepで全使用箇所を機械的に列挙するのが基本動作。',
+        'カバレッジが低いと明記されており、テストでは影響範囲を網羅できない。実際に今回もテストは通っていた。',
+        '道具を取り上げるだけで、調査してから直すという本質的な改善がない。',
+        '段階移行は実在する手法だが、使用箇所を全件把握しないままでは移行漏れが同じように起こる。'
+      ]
     },
     en: {
-      scenario: 'You want everyone to always include a test-results and impact summary in the PR body, with no misses.',
-      question: 'What is most reliable?',
-      options: ['Leave the body format to each person\'s sense','If forgotten, point it out in review and have them fix it','Build summary generation into the PR-creation slash command and also auto-check the body requirement in CI','Put a template in Slack and have people copy-paste it each time'],
-      explanations: ['Leaving it to each person\'s sense yields misses and variance.','After-the-fact review comments cause rework.','Building summary generation into the PR command and enforcing the body requirement in CI reproduces it with no misses.','Copy-paste is a source of omissions and is not a mechanism.']
+      scenario: 'In an ad-delivery repository, Claude Code was asked to rename the shared utility function formatBudget and change its arguments. It fixed the definition and the three call sites it happened to see; after merge, an admin-dashboard batch job and an internal CLI crashed at runtime. It later turned out the calls were scattered across about 30 files. The area had no test protection and coverage is low. A senior engineer decided to change how the next request is phrased.',
+      question: 'What is the most appropriate instruction to include next time?',
+      options: [
+        'Instruct it to first enumerate every usage of the symbol with rg (grep), review the list, and then fix all of them in one pass',
+        'Instruct it to run the full test suite first and identify the impact from failing tests',
+        'Make a rule that renames are done by humans with IDE refactoring tools, never by Claude Code',
+        'Instruct it to keep the old name as an alias and migrate call sites gradually'
+      ],
+      explanations: [
+        'Correct. The deciding failure was fixing only what happened to be visible. Cross-cutting changes require mechanically enumerating all usages with rg/grep before editing.',
+        'Coverage is stated to be low, so tests cannot map the impact — indeed the tests passed this time.',
+        'Taking the tool away skips the essential improvement: investigate first, then edit.',
+        'Gradual migration is a real technique, but without a full usage inventory the same omissions recur.'
+      ]
     }
   },
   {
-    id: 'cc-022', domain: 'claudecode', answer: 1,
+    id: 'cc2-022', domain: 'claudecode', answer: 2,
     ja: {
-      scenario: 'Claude Code に与える権限を見直したい。実際に使われていない広い許可（任意のシェル実行全許可など）が残っている。',
-      question: '最小権限の観点で正しい対応は？',
-      options: ['念のため広い許可は残しておく','実際に必要な操作だけを許可リストに残し、使っていない広い許可は外す','許可は一度決めたら見直さない','迷ったらすべて許可に倒す'],
-      explanations: ['「念のため広め」は攻撃面・事故面を広げる。最小権限に反する。','必要な操作だけ残し不要な広い許可を外す＝最小権限の正しい運用。','見直さない運用は権限が肥大化していく。','迷ったら全許可は最も危険な倒し方。']
+      scenario: 'デザインシステムを内製している事業会社で、社内コンポーネントのドキュメントを返すMCPサーバーを構築した。リード1人が自分の個人設定でサーバーを登録して便利に使っているが、他のメンバーは接続方法を毎回リードに聞いており、1人はURLを打ち間違えて古い検証環境に接続したまま数日作業していた。サーバーのエンドポイントは四半期ごとに変わる可能性があり、利用者は今後さらに増える見込みである。',
+      question: 'チーム全員に同じMCP接続設定を行き渡らせる方法として最も適切なのはどれか。',
+      options: [
+        'READMEにセットアップ手順を書き、各自が個人設定に追加する',
+        'サーバーURLを環境変数として配布し、各自のシェル設定に追記してもらう',
+        'リポジトリ直下の .mcp.json にサーバー設定をコミットし、リポジトリ経由で共有する',
+        'CLAUDE.mdに接続先URLと設定手順を記載する'
+      ],
+      explanations: [
+        '手順書があっても設定作業は各自の手作業のままで、打ち間違いのような事故は防げない。',
+        '環境変数の配布も各自のシェル設定という個人環境に依存し、更新のたびに全員の作業が必要になる。',
+        '正解。決め手は「全員に同じ設定を、更新も含めて配る」という要件。.mcp.jsonをコミットすればリポジトリを持つ全員に同一設定が行き渡り、エンドポイント変更も1コミットで済む。',
+        'CLAUDE.mdは指示や文脈を伝えるファイルであり、MCPサーバーの接続設定として機能する場所ではない。'
+      ]
     },
     en: {
-      scenario: 'You want to review the permissions granted to Claude Code. Broad, unused grants (e.g., allow any shell execution) remain.',
-      question: 'What is correct under least privilege?',
-      options: ['Keep broad grants just in case','Keep only operations actually needed in the allowlist and remove unused broad grants','Never revisit permissions once decided','When unsure, default to allowing everything'],
-      explanations: ['"Broad just in case" widens attack and accident surface — against least privilege.','Keeping only needed ops and removing unused broad grants is correct least-privilege practice.','Never revisiting lets permissions bloat.','Defaulting to allow-all when unsure is the most dangerous choice.']
+      scenario: 'A company with an in-house design system built an MCP server that serves internal component documentation. The lead registered it in a personal configuration and uses it happily, but other members keep asking the lead how to connect, and one person mistyped the URL and worked against an old staging instance for days. The server endpoint may change quarterly, and the number of users is expected to grow.',
+      question: 'What is the most appropriate way to distribute the same MCP connection settings to the whole team?',
+      options: [
+        'Write setup steps in the README and have each person add the server to their personal settings',
+        'Distribute the server URL as an environment variable for everyone’s shell profile',
+        'Commit the server configuration to .mcp.json at the repository root and share it through the repo',
+        'Write the connection URL and setup steps in CLAUDE.md'
+      ],
+      explanations: [
+        'Even with a document, setup stays manual per person, and typo accidents remain possible.',
+        'Environment variables also live in personal shell configs, and every endpoint change requires everyone to act.',
+        'Correct. The deciding requirement is delivering identical settings — including updates — to everyone. A committed .mcp.json reaches every repo user, and an endpoint change is one commit.',
+        'CLAUDE.md conveys instructions and context; it is not a place where MCP server configuration takes effect.'
+      ]
     }
   },
   {
-    id: 'cc-023', domain: 'claudecode', answer: 3,
+    id: 'cc2-023', domain: 'claudecode', answer: 1,
     ja: {
-      scenario: 'チームの誰かがローカルだけで便利なスラッシュコマンドを作って使っているが、他のメンバーは存在を知らない。',
-      question: '組織的に活かす最善手は？',
-      options: ['作った本人だけが使い続ける','使い方を口頭で広める','各自が同じものを自前で再実装する','そのコマンド定義を .claude/ にコミットして共有し、全員が同じものを使えるようにする'],
-      explanations: ['本人だけの利用は属人化で、ノウハウが共有されない。','口頭普及は再現性がなく、実物が行き渡らない。','各自再実装は二重作業で品質もバラつく。','コマンド定義を .claude/ にコミットして共有＝属人化解消・全員が同じものを使える正攻法。']
+      scenario: '在庫管理システムの10年物のモジュールについて「読みにくいのできれいにして」とClaude Codeに依頼したところ、内部整理に加えて公開関数のシグネチャと戻り値の形式まで変更され、そのモジュールを利用していた夜間バッチが翌朝停止した。バッチの存在は依頼者自身も忘れていた。既存のユニットテストはカバレッジ6割程度で、すべて通過した状態でマージされていた。チームは再発防止のためにリファクタ依頼のテンプレートを整備することにした。',
+      question: 'テンプレートの最初に据えるべき制約として最も適切なのはどれか。',
+      options: [
+        '1回の依頼で変更してよい行数の上限を定める',
+        '外部から見える動作を変えないこと・既存テストをすべて通すことを明示する',
+        'リファクタの前にモジュールのドキュメントを整備させる',
+        '変更前にすべての関数へ型注釈を付けさせる'
+      ],
+      explanations: [
+        '行数は変更の安全性の代理指標にすぎない。少ない行数でもシグネチャ変更は起こせる。',
+        '正解。決め手は公開インターフェースが変わって外部利用者が壊れたこと。リファクタリングの定義は「外部動作を保ったままの内部改善」であり、その制約を最初に明示するのが要点。',
+        'ドキュメント整備は有益だが、外部動作を守る制約がなければ同じ事故は防げない。',
+        '型注釈は品質向上の実在する施策だが、戻り値の形式変更そのものは止められない。'
+      ]
     },
     en: {
-      scenario: 'Someone on the team built a handy slash command they use only locally, and others don\'t know it exists.',
-      question: 'What best leverages it organizationally?',
-      options: ['Only the author keeps using it','Spread usage verbally','Have each person reimplement the same thing','Commit the command definition under .claude/ to share it so everyone uses the same one'],
-      explanations: ['Author-only use is person-dependent and shares no know-how.','Verbal spread is not reproducible and the actual tool does not reach people.','Reimplementing each is duplicate work with varying quality.','Committing the command under .claude/ removes personal dependency and lets everyone use the same one.']
+      scenario: 'For a ten-year-old module in an inventory system, Claude Code was asked to “clean it up because it is hard to read.” Along with internal tidying, it changed public function signatures and return formats, and a nightly batch job that consumed the module halted the next morning. Even the requester had forgotten the batch existed. The existing unit tests, at roughly 60% coverage, all passed and the change was merged. The team decided to build a template for refactoring requests.',
+      question: 'What constraint should be placed first in the template?',
+      options: [
+        'Set an upper limit on the number of lines changed per request',
+        'State explicitly that externally visible behavior must not change and all existing tests must pass',
+        'Have the module documentation written before refactoring',
+        'Have type annotations added to every function before changes'
+      ],
+      explanations: [
+        'Line count is only a proxy for safety; a tiny diff can still change a signature.',
+        'Correct. The deciding failure was a changed public interface breaking outside consumers. Refactoring means internal improvement with external behavior preserved — that constraint belongs first.',
+        'Documentation helps, but without the behavior-preservation constraint the same accident recurs.',
+        'Type annotations are a real quality measure but cannot stop a return-format change by themselves.'
+      ]
     }
   },
   {
-    id: 'cc-024', domain: 'claudecode', answer: 0,
+    id: 'cc2-024', domain: 'claudecode', answer: 0,
     ja: {
-      scenario: 'MCPで接続した外部サービスのトークンを、リポジトリにコミットせずに安全に扱いたい。',
-      question: '適切な管理方法は？',
-      options: ['トークンは環境変数や秘密情報の管理に置き、設定では参照のみにしてコミットしない','トークンをCLAUDE.mdに直接書いてコミットする','トークンをスラッシュコマンドの定義にハードコードする','トークンを毎回チャットに貼り付けて使う'],
-      explanations: ['トークンは環境変数／シークレット管理に置き、設定は参照のみにすればコミットされず安全。','CLAUDE.md直書き＋コミットは秘密情報の漏洩そのもの。','コマンド定義へのハードコードも共有時に漏れる。','毎回チャット貼り付けは属人的で漏洩・履歴残りのリスク。']
+      scenario: '料金計算サービスで「深夜割引が二重適用されるバグを直して」とClaude Codeに依頼したところ、バグ修正と同時にファイル全体の再フォーマット、変数名の一括リネーム、日付ライブラリの置き換えまで行われ、差分が900行になった。レビュアーは本質的な修正箇所を差分から特定できず、リリースが2日遅れた。実際のバグ修正は3行だったことが後から判明した。チームのPRレビューは2人承認制で、リリースは週次である。',
+      question: '次回から依頼に含めるべき指示として最も適切なのはどれか。',
+      options: [
+        '変更をバグ修正そのものに限定し、無関係なリネーム・再フォーマット・ライブラリ置換を同じ変更に含めないよう明示する',
+        'hookでPRあたりの差分行数に上限を設け、超過したらブロックする',
+        'フォーマッタのチェックをCIから外して差分が出にくいようにする',
+        '対象ファイルを事前に小さなモジュールへ分割してから修正させる'
+      ],
+      explanations: [
+        '正解。決め手は3行の修正に900行の無関係な変更が混ざったこと。依頼時にスコープを明示的に固定し、リファクタや整形は別の変更として分離させるのが基本。',
+        '行数制限は大きな正当な変更まで機械的に弾いてしまい、スコープの混在という原因には作用しない過剰設計。',
+        'チェックを外すのは品質担保の逆方向で、差分の混在も解決しない。',
+        'モジュール分割は実在する改善だが、それ自体が大規模変更であり、今回のスコープ管理の問題を先送りするだけ。'
+      ]
     },
     en: {
-      scenario: 'You want to handle tokens for an MCP-connected external service safely, without committing them to the repo.',
-      question: 'What is the right management?',
-      options: ['Keep tokens in environment variables/secret management and only reference them in config, not committed','Write tokens directly in CLAUDE.md and commit','Hardcode tokens in the slash command definition','Paste tokens into chat each time'],
-      explanations: ['Keeping tokens in env vars/secret management and only referencing them avoids committing and is safe.','Writing tokens in CLAUDE.md and committing is a secret leak.','Hardcoding into a command definition also leaks when shared.','Pasting into chat each time is personal and risks leakage and history retention.']
+      scenario: 'In a pricing service, Claude Code was asked to “fix the bug where the late-night discount is applied twice.” Along with the fix it reformatted the whole file, mass-renamed variables, and swapped the date library, producing a 900-line diff. Reviewers could not locate the essential fix in the diff, and the release slipped two days. The actual bug fix turned out to be three lines. The team requires two approvals per PR and releases weekly.',
+      question: 'What instruction should be included in future requests?',
+      options: [
+        'Explicitly restrict changes to the bug fix itself and exclude unrelated renames, reformatting, and library swaps from the same change',
+        'Enforce a per-PR diff line limit with a hook and block anything above it',
+        'Remove the formatter check from CI so diffs are less likely to appear',
+        'Have the file split into smaller modules first, then apply the fix'
+      ],
+      explanations: [
+        'Correct. The deciding fact is 900 lines of unrelated churn around a 3-line fix. Fixing the scope in the request — and separating refactors and formatting into their own changes — is the fundamental practice.',
+        'A line cap mechanically rejects large legitimate changes too and does not act on the real cause, mixed scope; over-engineering.',
+        'Removing checks runs against quality and does nothing about mixed scope.',
+        'Module splitting is a real improvement but is itself a large change, merely postponing the scope-management problem.'
+      ]
     }
   },
   {
-    id: 'cc-025', domain: 'claudecode', answer: 2,
+    id: 'cc2-025', domain: 'claudecode', answer: 3,
     ja: {
-      scenario: '「マージ前に必ずレビューが付き、テストが緑であること」をルールにしたい。口頭ルールだと守られないことがある。',
-      question: '確実に効かせる方法は？',
-      options: ['ルールをCLAUDE.mdに書けば自動でブロックされると考える','レビュー有無は各自の良心に任せる','レビュー必須・必須チェック合格をマージ条件として設定し、満たさなければマージできないようにする','緑じゃなくてもとりあえずマージして後で直す'],
-      explanations: ['CLAUDE.md の記述は指示であって、マージのブロックを自動で行う保証ではない。','良心任せは守られないことがある。仕組みで担保すべき。','レビュー必須＋必須チェック合格をマージ条件にすれば、満たさない限りマージできず確実に効く。','緑でないマージは検証を飛ばすアンチパターン。']
+      scenario: '複数案件を掛け持ちするフリーランスエンジニアは、自分の ~/.claude/CLAUDE.md に「コードコメントは最小限にする」「説明は簡潔な日本語で」という好みを設定している。新しく参画した金融系クライアントのリポジトリでは、CLAUDE.mdに「すべての公開関数にdocstringを必須とする」という規約がコミットされている。このリポジトリで新しい関数の追加作業を依頼するとき、docstringがどう扱われるのか本人は確信が持てていない。案件は他に2つ並行している。',
+      question: 'この状況の動作として正しい説明はどれか。',
+      options: [
+        'ユーザースコープの設定は本人の全環境で最優先されるため、docstringは書かれない',
+        '先に読み込まれた側の設定が優先されるため、起動のたびに結果が変わり得る',
+        '矛盾が検出された時点で両方のルールが無効化され、素の動作になる',
+        '作業中のプロジェクト側の規約が優先されてdocstringは書かれる。矛盾しない個人設定（日本語での説明など）はそのまま有効に働く'
+      ],
+      explanations: [
+        'ユーザースコープは最も一般的な既定であり、プロジェクトの具体的な規約と矛盾すればプロジェクト側が勝つ。',
+        '読み込み順のレースで決まる仕様ではない。階層の具体性で優先が決まる。',
+        '矛盾で両方無効になる仕組みはない。',
+        '正解。決め手は「作業地点に近い（具体的な）設定が優先」という階層原則。docstring必須はプロジェクト規約が勝ち、矛盾しない日本語説明などの個人好みは継承されて共存する。'
+      ]
     },
     en: {
-      scenario: 'You want a rule that a review must be present and tests green before merge. Verbal rules sometimes aren\'t followed.',
-      question: 'How do you make it reliably enforced?',
-      options: ['Assume writing it in CLAUDE.md auto-blocks the merge','Leave whether to review to each person\'s conscience','Set required review and required passing checks as merge conditions so it can\'t merge unless met','Merge even if not green and fix later'],
-      explanations: ['A CLAUDE.md note is an instruction, not a guarantee that merges are auto-blocked.','Conscience-based is sometimes not followed; enforce structurally.','Required review plus required passing checks as merge conditions means it cannot merge unless met — reliably enforced.','Merging while not green skips verification — an anti-pattern.']
+      scenario: 'A freelance engineer juggling several clients has personal preferences in ~/.claude/CLAUDE.md: “keep code comments minimal” and “explain concisely in Japanese.” A newly joined financial client’s repository has a committed CLAUDE.md requiring docstrings on all public functions. When asking for a new function in this repo, the engineer is unsure how docstrings will be handled. Two other engagements run in parallel.',
+      question: 'Which statement correctly describes the behavior?',
+      options: [
+        'User-scope settings take absolute precedence across all of the person’s environments, so no docstrings are written',
+        'Whichever file loads first wins, so the result can differ per launch',
+        'Once the conflict is detected, both rules are disabled and behavior reverts to defaults',
+        'The project’s convention wins for work in that repo, so docstrings are written; non-conflicting personal settings (such as Japanese explanations) remain in effect'
+      ],
+      explanations: [
+        'User scope is the most general default; when it conflicts with a specific project convention, the project wins.',
+        'It is not decided by a loading race; precedence follows the specificity of the hierarchy.',
+        'There is no mechanism that voids both rules on conflict.',
+        'Correct. The deciding principle is that settings closer to the work (more specific) take precedence. The docstring requirement wins, while non-conflicting personal preferences are inherited and coexist.'
+      ]
     }
   },
   {
-    id: 'cc-026', domain: 'claudecode', answer: 1,
+    id: 'cc2-026', domain: 'claudecode', answer: 2,
     ja: {
-      scenario: '新しく追加した hook が重く、毎回の編集が遅い／たまに誤って処理を止める。チームに展開する前に確認したい。',
-      question: '適切な進め方は？',
-      options: ['とりあえず全員に配って様子を見る','まず自分の環境で挙動と影響範囲を検証し、問題なければ設定をコミットして展開する','重さは気にせずそのまま本番運用に入れる','誤って止まることは無視して使い続ける'],
-      explanations: ['いきなり全員配布は誤作動が全体に波及する。検証を飛ばすアンチパターン。','自分の環境で挙動・影響範囲を検証→問題なければコミットして展開＝安全な段階展開。','重さを無視した本番投入は生産性と信頼性を損なう。','誤停止の無視は事故を放置すること。']
+      scenario: 'フロントエンド基盤チームは、テスト規約（モックの作り方・describeブロックの命名）を、モノレポ内のあらゆる階層にある *.spec.ts ファイルだけに適用したい。packages/ 配下には12パッケージがあり、ディレクトリの深さはパッケージによって2〜5階層とまちまちである。メンバーが .claude/rules/testing.md のフロントマターに書くpathsの候補を4つ用意した。規約本文は既にレビュー済みで問題ない。',
+      question: '意図どおりに動く記述はどれか。',
+      options: [
+        'paths: ["*.spec.ts"]',
+        'paths: ["/.*\\.spec\\.ts$/"]',
+        'paths: ["**/*.spec.ts"]',
+        'paths: ["packages/*.spec.ts"]'
+      ],
+      explanations: [
+        'このglobはルート直下の *.spec.ts にしかマッチせず、深い階層のテストファイルに適用されない。',
+        'これは正規表現の記法。pathsはグロブパターンの配列で指定するため意図どおりに動かない。',
+        '正解。決め手は「あらゆる階層」という要件。** が任意の深さのディレクトリにマッチするため、モノレポ全体のspecファイルに適用される。',
+        'packages直下の1階層しか見ない。深さが2〜5階層とまちまちという条件を取りこぼす。'
+      ]
     },
     en: {
-      scenario: 'A newly added hook is heavy — edits are slow and it sometimes wrongly halts work. You want to check before rolling it out to the team.',
-      question: 'What is the right approach?',
-      options: ['Just distribute it to everyone and see what happens','First verify behavior and impact in your own environment, then commit and roll out the config if fine','Put it into production regardless of the slowness','Ignore the wrong halts and keep using it'],
-      explanations: ['Distributing to everyone immediately spreads misbehavior; it skips verification.','Verifying behavior/impact locally then committing to roll out is safe staged rollout.','Ignoring slowness in production hurts productivity and reliability.','Ignoring wrong halts leaves an incident unaddressed.']
+      scenario: 'A frontend-platform team wants its testing conventions (how to build mocks, how to name describe blocks) applied only to *.spec.ts files at any depth in the monorepo. There are 12 packages under packages/, with directory depth varying from two to five levels. A member prepared four candidate paths values for the frontmatter of .claude/rules/testing.md. The rule body itself has already passed review.',
+      question: 'Which value behaves as intended?',
+      options: [
+        'paths: ["*.spec.ts"]',
+        'paths: ["/.*\\.spec\\.ts$/"]',
+        'paths: ["**/*.spec.ts"]',
+        'paths: ["packages/*.spec.ts"]'
+      ],
+      explanations: [
+        'This glob matches *.spec.ts only at the repo root and never applies to deeper test files.',
+        'That is regular-expression syntax; paths takes an array of glob patterns, so it does not work as intended.',
+        'Correct. The deciding requirement is “at any depth”: ** matches directories of arbitrary depth, covering spec files across the whole monorepo.',
+        'This looks only one level below packages/, missing the varying two-to-five-level depths.'
+      ]
     }
   },
   {
-    id: 'cc-027', domain: 'claudecode', answer: 0,
+    id: 'cc2-027', domain: 'claudecode', answer: 0,
     ja: {
-      scenario: '「このプロジェクトでは本番ブランチへ直接コミットしない」を、Claude Code 経由でも確実に守らせたい。',
-      question: '最も確実なのは？',
-      options: ['権限／フックで本番ブランチへの直接書き込みを止め、加えてリポジトリ側でブランチ保護を設定する','CLAUDE.md に「直接コミット禁止」と書くだけにする','本人がそのつど気をつける','たまにしか触らないので運用で十分とする'],
-      explanations: ['権限／フックで直接書き込みを止め、ブランチ保護も設定＝Claude Code 側とリポジトリ側の両方で確実に止める正攻法。','文言だけでは自動でブロックされない。','その都度の注意は記憶頼みで抜ける。','「たまにだから運用で十分」は一度の事故で破綻する。']
+      scenario: '入社2週間の新人の環境では、Claude Codeがチームのエラーメッセージ規約や命名規則をまったく守らない出力をする。メンターの環境では同じ依頼で規約どおりの出力になる。メンターはClaude Codeのバージョン差やモデル設定の違いを疑って2時間かけて比較したが、両者は同一だった。最終的に、規約はすべてメンター個人の ~/.claude/CLAUDE.md に書かれており、プロジェクトのリポジトリには何もコミットされていないことが判明した。',
+      question: 'この問題の根本対応として最も適切なのはどれか。',
+      options: [
+        '規約をリポジトリのCLAUDE.mdや .claude/rules/ に移してコミットし、誰の環境でも同じルールが適用されるようにする',
+        'メンターの ~/.claude/ ディレクトリ一式を新人のマシンにコピーする',
+        '2人のClaude Codeのバージョンを固定して揃える運用にする',
+        '新人に規約ドキュメントを渡し、依頼のたびにプロンプトへ貼り付けてもらう'
+      ],
+      explanations: [
+        '正解。決め手は規約の置き場所が個人ディレクトリだったこと。リポジトリにコミットすれば、環境差に関係なく全員に同じルールが効き、次の新人にも自動で行き渡る。',
+        '今日は動くが、メンターが規約を更新するたびにコピーが陳腐化する。属人化の構造が残る。',
+        'バージョンは既に同一と確認済みで、原因ではないノイズを追う対応。',
+        '毎回の手動貼り付けは漏れやすく、他のメンバーが増えるたびに同じ運用負担が増える。'
+      ]
     },
     en: {
-      scenario: 'You want "no direct commits to the production branch" reliably enforced even via Claude Code.',
-      question: 'What is most reliable?',
-      options: ['Block direct writes to the production branch via permissions/hooks, plus set branch protection on the repo side','Just write "no direct commits" in CLAUDE.md','Have the person be careful each time','Decide that since it\'s rare, operational care is enough'],
-      explanations: ['Blocking direct writes via permissions/hooks plus branch protection enforces it on both the Claude Code and repo sides.','Wording alone does not auto-block.','Per-time care relies on memory and leaks.','"Rare, so care is enough" breaks on a single accident.']
+      scenario: 'On a two-week-old new hire’s machine, Claude Code produces output that completely ignores the team’s error-message and naming conventions. On the mentor’s machine the same request follows the conventions. Suspecting version or model-setting differences, the mentor spent two hours comparing — both were identical. It finally turned out all the conventions live in the mentor’s personal ~/.claude/CLAUDE.md, with nothing committed to the project repository.',
+      question: 'What is the most appropriate root fix?',
+      options: [
+        'Move the conventions into the repo’s CLAUDE.md and .claude/rules/ and commit them so the same rules apply in anyone’s environment',
+        'Copy the mentor’s entire ~/.claude/ directory onto the new hire’s machine',
+        'Pin and align both installations to the same Claude Code version',
+        'Give the new hire the conventions document to paste into the prompt with every request'
+      ],
+      explanations: [
+        'Correct. The deciding discovery is that the rules lived in a personal directory. Committed to the repo, they apply regardless of environment and reach the next hire automatically.',
+        'It works today, but the copy goes stale every time the mentor updates the rules; the person-dependence remains.',
+        'Versions were already confirmed identical; this chases noise, not the cause.',
+        'Manual pasting is easy to miss and the operational burden grows with every new member.'
+      ]
     }
   },
   {
-    id: 'cc-028', domain: 'claudecode', answer: 3,
+    id: 'cc2-028', domain: 'claudecode', answer: 1,
     ja: {
-      scenario: 'チームのClaude Code運用をオンボーディング資料にまとめたい。新メンバーが入っても同じ前提で動けるようにしたい。',
-      question: '再現性の観点で最も効くのは？',
-      options: ['口頭オンボーディングだけで済ませる','資料はあるが設定はコミットされておらず各自バラバラ','資料を作るが更新されず実態とずれていく','規約はCLAUDE.md、繰り返し手順はスラッシュコマンド／スキル、自動チェックはhooks／CIとして .claude/ にコミットし、資料はそれを指し示す'],
-      explanations: ['口頭だけは再現性ゼロ。新メンバーごとに前提がずれる。','設定がコミットされていなければ資料があっても実態がバラバラになる。','更新されない資料は実態とずれて信頼できなくなる。','規約・手順・自動チェックを実体としてコミットし、資料がそれを指す＝設定で前提を担保する再現性の正攻法。']
+      scenario: '決済代行会社のチームには2つのニーズがある。1つは「Claudeがコードを編集したら毎回必ずeslintを走らせたい」、もう1つは「ステージングへのデプロイプレビュー作成という7ステップの手順を、必要になったときに誰でも同じ流れで実行したい」。あるメンバーは「どちらもカスタムスラッシュコマンドにすれば作り方が統一できて管理も楽になる」と提案しており、チームはこの案でよいか議論している。監査要件が厳しく、手順の再現性は重視されている。',
+      question: '2つのニーズの実現方法として最も適切な組み合わせはどれか。',
+      options: [
+        'どちらもhooksで実装する。自動化はhooksに寄せるのが原則である',
+        '毎回必ず実行したいeslintは編集イベントのhookに、オンデマンドのデプロイプレビュー手順はカスタムスラッシュコマンドにする',
+        'どちらもカスタムスラッシュコマンドにし、eslintは毎回実行する運用ルールで担保する',
+        'eslintはCLAUDE.mdに指示として書き、デプロイプレビュー手順をhooksに設定する'
+      ],
+      explanations: [
+        'デプロイプレビューは「必要になったとき」に人が起動するもので、イベント連動のhooksでは起動のきっかけが合わない。',
+        '正解。決め手は「毎回必ず（＝イベント連動の自動実行）」と「必要なときに誰でも同じ流れで（＝オンデマンドの定型手順）」の性質の違い。前者がhooks、後者がスラッシュコマンドの守備範囲。',
+        '統一感はあるが、eslintの実行が手動起動と運用ルール頼みになり、「毎回必ず」が保証されない。',
+        '組み合わせが逆。指示は実行の保証にならず、オンデマンド手順はhooksの起動モデルに合わない。'
+      ]
     },
     en: {
-      scenario: 'You want to capture the team\'s Claude Code practice in onboarding docs so new members operate on the same assumptions.',
-      question: 'What works best for reproducibility?',
-      options: ['Do onboarding verbally only','Have docs but uncommitted, per-person settings','Make docs that aren\'t updated and drift from reality','Commit standards as CLAUDE.md, repeatable steps as slash commands/skills, and auto-checks as hooks/CI under .claude/, with docs pointing to them'],
-      explanations: ['Verbal-only has zero reproducibility; assumptions drift per new member.','If settings aren\'t committed, docs exist but reality varies per person.','Unmaintained docs drift from reality and lose trust.','Committing standards/steps/auto-checks as artifacts with docs pointing to them secures assumptions in config — the reproducible way.']
+      scenario: 'A payment-processing team has two needs. First: “every time Claude edits code, eslint must run, without exception.” Second: “a seven-step procedure for creating a staging deploy preview should be runnable by anyone, the same way, whenever needed.” One member proposes making both custom slash commands “so the implementation style is unified and easier to manage,” and the team is debating it. Audit requirements are strict and reproducibility matters.',
+      question: 'Which combination is most appropriate for the two needs?',
+      options: [
+        'Implement both as hooks; automation should always be pushed into hooks',
+        'Put the always-run eslint on an edit-event hook, and make the on-demand deploy-preview procedure a custom slash command',
+        'Make both custom slash commands and guarantee the eslint runs through an operating rule',
+        'Write the eslint requirement in CLAUDE.md as an instruction and configure the deploy-preview procedure as hooks'
+      ],
+      explanations: [
+        'The deploy preview is launched by a person when needed; event-driven hooks are the wrong trigger model for it.',
+        'Correct. The deciding difference is the nature of the two needs: “always, on every edit” means event-driven automation (hooks); “on demand, same flow for anyone” means a committed slash command.',
+        'Uniform, but eslint then depends on manual invocation plus an operating rule, so “always” is not guaranteed.',
+        'The pairing is inverted: instructions do not guarantee execution, and an on-demand procedure does not fit the hook trigger model.'
+      ]
     }
   },
   {
-    id: 'cc-029', domain: 'claudecode', answer: 1,
+    id: 'cc2-029', domain: 'claudecode', answer: 3,
     ja: {
-      scenario: '危険操作の許可リストを更新したが、自分のローカルだけ直して動作確認し、満足して終えてしまいそうになっている。',
-      question: 'チーム運用として正しい締め方は？',
-      options: ['ローカルで効いていれば十分なのでそのまま終える','変更した settings.json をコミット／PRにしてレビューを通し、全員に共有する','変更内容をSlackに文章で説明して終える','次に困った人が同じ修正を各自やればよい'],
-      explanations: ['ローカルだけでは他メンバーに効かず、属人化したまま終わる。','変更をコミット／PR＋レビューで全員に共有＝設定をチームに行き渡らせる正しい締め方。','Slackの説明だけでは実体の設定が共有されない。','各自が同じ修正を繰り返すのは二重作業で不整合の元。']
+      scenario: '開発体験の改善を任されたメンバーが「承認プロンプトが多くて作業が止まる」という声を受け、チーム共用の開発コンテナ設定で権限確認をすべてスキップする設定を有効にした。2週間後、Claude Codeが依頼の解釈を誤り、社内レジストリへのパッケージpublishコマンドを実行する直前まで進んで、人間が気づいて止めるヒヤリハットが起きた。一方で、プロンプト削減による開発速度の向上はチームに好評で、元に戻すことへの抵抗も強い。',
+      question: '権限設定の方針として最も適切なのはどれか。',
+      options: [
+        '全スキップ設定を維持し、週次で実行ログを監査する運用を追加する',
+        'すべての操作を手動承認に戻し、プロンプトの多さは受け入れてもらう',
+        'CLAUDE.mdに「公開・削除系の操作は行わない」という指示を追加した上でスキップ設定を維持する',
+        'permissionsのallowlistで安全な定型コマンドだけを自動許可し、破壊的・外部公開系のコマンドはaskまたはdenyに分類する'
+      ],
+      explanations: [
+        '事後の監査ではpublishのような取り消せない操作を防げない。実行された後では遅い。',
+        '全戻しは元の課題（プロンプト過多で作業が止まる）を復活させる。二択ではなく粒度の問題。',
+        '指示は強制ではないという構造が残ったままで、スキップ設定がある限り同じヒヤリは再発しうる。',
+        '正解。決め手は「全許可か全確認か」の二択に見える状況を、コマンドの危険度で切り分けること。安全な定型操作は自動化の恩恵を残し、不可逆な操作だけツール側で止める。'
+      ]
     },
     en: {
-      scenario: 'You updated the dangerous-ops allowlist, but only fixed it locally, tested it, and are about to call it done.',
-      question: 'What is the correct way to close this out as team practice?',
-      options: ['Local enforcement is enough, so just finish','Commit/PR the changed settings.json, get it reviewed, and share it with everyone','Just explain the change in Slack and finish','Let the next person who hits the issue make the same fix themselves'],
-      explanations: ['Local-only does not apply to others and finishes still person-dependent.','Commit/PR + review shares the change with everyone — the correct close-out that propagates config.','A Slack explanation alone does not share the actual settings.','Repeating the same fix per person is duplicate work and breeds inconsistency.']
+      scenario: 'A member tasked with improving developer experience responded to complaints about frequent approval prompts by enabling a skip-all-permission-checks setting in the team’s shared dev-container config. Two weeks later, Claude Code misinterpreted a request and progressed to the brink of running a package-publish command against the internal registry before a human noticed — a near miss. Meanwhile, the speed gain from fewer prompts is popular, and there is strong resistance to reverting.',
+      question: 'What is the most appropriate permissions policy?',
+      options: [
+        'Keep the skip-all setting and add a weekly audit of execution logs',
+        'Return every operation to manual approval and ask the team to accept the prompts',
+        'Keep the skip setting but add a CLAUDE.md instruction saying publish- and delete-type operations are forbidden',
+        'Auto-allow only safe routine commands via a permissions allowlist, and classify destructive or externally publishing commands as ask or deny'
+      ],
+      explanations: [
+        'After-the-fact audits cannot prevent irreversible operations like publishing; it is too late once executed.',
+        'A full revert resurrects the original problem of prompt fatigue; this is a granularity question, not a binary.',
+        'Instructions are not enforcement; with the skip setting in place, the same near miss can recur.',
+        'Correct. The deciding move is escaping the all-or-nothing framing by splitting on danger: keep automation for safe routine commands and let the tool gate only the irreversible ones.'
+      ]
     }
   },
   {
-    id: 'cc-030', domain: 'claudecode', answer: 2,
+    id: 'cc2-030', domain: 'claudecode', answer: 2,
     ja: {
-      scenario: 'デプロイ前チェック（ビルド・テスト・依存脆弱性スキャン）を、Claude Codeでの作業からCI／CDまで一貫して効かせ、失敗時は止めたい。',
-      question: '一貫性と安全性が最も高い設計は？',
-      options: ['ローカルでだけ手動チェックし、CIには入れない','CIには入れるがローカルでは何もしない（人によって差分が出る）','ローカルは hooks で同等チェックを自動実行し、CI／CD でも必須チェックとして実行し、失敗時はパイプラインを停止する','チェックは重いので本番直前に一度だけ手で回す'],
-      explanations: ['ローカル手動のみはCIで担保されず、人によって差が出る。','CIだけでローカル無しだと手元で気づけず手戻りが増える。','ローカルは hooks で自動実行、CI／CD でも必須チェックにして失敗時停止＝一貫性と安全性を両立する正攻法。','本番直前に一度手で回すだけは抜けと事故のリスクが高い。']
+      scenario: '認証基盤チームのCLAUDE.mdには「.envや認証情報ファイルを読まない・出力しない」と明記されている。ところが障害対応の長いセッション中、環境変数の不一致を調査する流れで .env の内容がトラブルシュートのまとめドキュメントに貼り込まれ、あと一歩でリポジトリにコミットされるところだった。チームは「ルールに明記していたのに」と困惑している。露出しかけたトークンは念のため即座にローテーションされた。',
+      question: 'この事象の理解と対策として最も適切なのはどれか。',
+      options: [
+        'CLAUDE.mdが読み込まれていなかったことが原因なので、ファイルの配置と読み込み状態を確認する',
+        'モデルの更新で指示追従性が向上するのを待ち、当面は運用でカバーする',
+        'CLAUDE.mdの記述は指示であり強制ではない。permissionsで該当ファイルへのアクセスをツール側から制限し、仕組みとして防ぐ',
+        '.envをリポジトリ外のディレクトリへ移動すれば解決する'
+      ],
+      explanations: [
+        '同じセッションで他のルールは守られており、読み込み失敗を疑う根拠はない。ノイズの追跡になる。',
+        '長いセッションで指示が薄れる可能性は常に残る。待つのは対策ではない。',
+        '正解。決め手は「明記していたのに起きた」という事実そのもの。CLAUDE.mdは動作を強制しないため、秘密情報の保護はpermissionsによるアクセス制限という仕組みの層で行う。',
+        '置き場所を変えても参照自体は可能で、実在する軽減策ではあるがアクセス制御という決め手を外している。'
+      ]
     },
     en: {
-      scenario: 'You want pre-deploy checks (build, tests, dependency vulnerability scan) enforced consistently from Claude Code work through CI/CD, stopping on failure.',
-      question: 'What design is highest in consistency and safety?',
-      options: ['Manual checks locally only, not in CI','In CI but nothing locally (people diverge)','Auto-run equivalent checks locally via hooks, run them as required checks in CI/CD too, and stop the pipeline on failure','Since checks are heavy, run them by hand once right before production'],
-      explanations: ['Local-manual-only is not enforced in CI and diverges per person.','CI-only with nothing local means you can\'t catch issues early and rework grows.','Auto-running locally via hooks plus required checks in CI/CD with stop-on-failure achieves both consistency and safety.','Running by hand once before production is high risk for misses and accidents.']
+      scenario: 'An auth-platform team’s CLAUDE.md explicitly says “do not read or output .env or credential files.” Yet during a long incident-response session, while investigating an environment-variable mismatch, the contents of .env were pasted into a troubleshooting summary document and came within a step of being committed to the repository. The team is puzzled — “but it was written in the rules.” The nearly exposed token was rotated immediately as a precaution.',
+      question: 'Which understanding and countermeasure is most appropriate?',
+      options: [
+        'The cause is that CLAUDE.md was not loaded, so verify the file placement and load status',
+        'Wait for model updates to improve instruction-following and cover the gap with process in the meantime',
+        'CLAUDE.md content is instruction, not enforcement; restrict access to the files with permissions so the tool itself blocks it',
+        'Moving .env outside the repository directory resolves the problem'
+      ],
+      explanations: [
+        'Other rules were followed in the same session, so there is no basis for suspecting a load failure; that chases noise.',
+        'Instructions can always fade in long sessions; waiting is not a countermeasure.',
+        'Correct. The deciding fact is that it happened despite being written down. CLAUDE.md does not enforce behavior, so secret protection belongs in the enforcement layer: permissions-based access restriction.',
+        'A relocated file can still be referenced; a real mitigation, but it misses the decisive layer of access control.'
+      ]
     }
   }
 );

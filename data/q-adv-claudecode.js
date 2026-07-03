@@ -364,5 +364,40 @@ window.QUESTIONS.push(
       options: ['Write it as one regex in frontmatter: paths: ["**/*.(old\\.py|service\\.go)"]','Write a glob array in frontmatter: paths: ["**/*.old.py", "**/*.service.go"]','Just name it CLAUDE.coding.md at the repo root so the target extensions are inferred from the filename','Create two separate rule files under .claude/rules/, one per extension'],
       explanations: ['paths expects glob patterns, not regex; a regex-style pattern will not be matched correctly.','Correct. paths takes an array, so listing multiple glob patterns in one file applies the rule to both extensions.','Custom rules live under .claude/rules/ and target files via frontmatter; the filename alone does not determine target extensions.','Since paths takes an array, splitting per extension is unnecessary—one file can manage multiple patterns.']
     }
+  },
+  {
+    id:'cc-adv-012', domain: 'claudecode', answer: 2, level: 'advanced',
+    ja: {
+      scenario: '決済サービスを運営するチームが、GitHub ActionsのPRパイプラインにClaude Codeによる自動コードレビューのステップを追加した。ローカルのターミナルで claude を起動してレビューを頼むと問題なく動く。しかしCI上では、Claude Codeのステップが何も出力しないまま進まず、ジョブが上限の6時間まで毎回ハングしてタイムアウトする。ランナーのスペックを上げ、ネットワーク設定やAPIキーの権限も見直したが変化がなかった。',
+      question: 'この問題の解決策として最も適切なものはどれか。',
+      options: [
+        '--background フラグを付けてClaude Codeをバックグラウンドで実行し、後続ステップをブロックしないようにする',
+        '--ci-mode フラグを付けて、CI環境向けの実行モードに切り替える',
+        'claude -p "..."（--print）で起動し、プロンプトを1回実行して結果を標準出力に出して終了する非インタラクティブモードにする',
+        'CLAUDE_AUTO_APPROVE=true を環境変数に設定し、すべての確認プロンプトを自動承認させる'
+      ],
+      explanations: [
+        'バックグラウンド実行は「裏で動かし続ける」ためのもの。レビュー結果を待って次に進むCIステップの用途と合わず、対話入力待ちというハングの根本原因も解決しない。',
+        '--ci-mode というフラグはClaude Codeに存在しない。それらしい名前の存在しない設定を選ばせる引っかけ。',
+        '決め手は、通常起動が対話モードで「次の入力」を待ち続けること。CIランナーには人間がいないので入力は永遠に来ない。-p / --print なら1回実行・標準出力・終了となり、無人環境で完走できる。',
+        '権限の自動承認と、対話セッションとして起動するかどうかは別の問題。実行モードを変えない限り入力待ちは残る。'
+      ]
+    },
+    en: {
+      scenario: 'A payments team added a Claude Code auto-review step to their GitHub Actions PR pipeline. Running claude locally in a terminal and asking for a review works fine. In CI, however, the Claude Code step produces no output and every job hangs until the 6-hour limit and times out. They upgraded the runner, and double-checked network settings and API key permissions, with no change.',
+      question: 'Which fix is most appropriate?',
+      options: [
+        'Add the --background flag so Claude Code runs in the background and does not block subsequent steps',
+        'Add the --ci-mode flag to switch Claude Code into its CI execution mode',
+        'Invoke claude -p "..." (--print) so it runs the prompt once non-interactively, writes the result to stdout, and exits',
+        'Set CLAUDE_AUTO_APPROVE=true as an environment variable so every confirmation prompt is auto-approved'
+      ],
+      explanations: [
+        'Background execution is for keeping something running on the side. A CI review step must wait for the result, and this does not address the root cause: waiting for interactive input.',
+        'There is no --ci-mode flag in Claude Code. It is a plausible-sounding but nonexistent setting — a classic trap.',
+        'The decisive point: the default launch is an interactive session waiting for the next input, and a CI runner has no human to provide it. With -p / --print it runs once, prints to stdout, and exits, completing in unattended environments.',
+        'Auto-approving permissions and whether it starts as an interactive session are separate concerns. Unless the execution mode changes, the input wait remains.'
+      ]
+    }
   }
 );
