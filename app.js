@@ -8,8 +8,8 @@
   const DOMAIN_MAP = Object.fromEntries(DOMAINS.map(d => [d.key, d]));
   const GLOSSARY = window.GLOSSARY || [];
   const GLOSSARY_MAP = Object.fromEntries(GLOSSARY.map(g => [g.key, g]));
-  const APP_UPDATED_AT = '2026-07-03 14:22';
-  const APP_VERSION = '20260703-1422';
+  const APP_UPDATED_AT = '2026-07-03 14:25';
+  const APP_VERSION = '20260703-1425';
 
   // 問題文に出てくる用語を別名照合で拾う（最大6件）
   function matchTerms(q) {
@@ -152,9 +152,10 @@
       $('#qTag').textContent = (DOMAIN_MAP[q.domain] || {})[lang] || q.domain;
     }
     $('#qCount').textContent = (session.idx + 1) + ' / ' + session.list.length;
-    $('#qScenario').textContent = L.scenario || '';
-    $('#qScenario').style.display = L.scenario ? '' : 'none';
-    $('#qText').textContent = L.question;
+    const promptText = [L.scenario, L.question].filter(Boolean).join(' ');
+    $('#qScenario').textContent = promptText;
+    $('#qScenario').style.display = promptText ? '' : 'none';
+    $('#qText').textContent = '';
 
     const box = $('#qOptions'); box.innerHTML = '';
     L.options.forEach((opt, i) => {

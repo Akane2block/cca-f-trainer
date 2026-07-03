@@ -78,10 +78,10 @@
   .qcount{font-size:13px; color:var(--gray); font-variant-numeric:tabular-nums;}
   .timer{font-size:14px; font-weight:800; font-variant-numeric:tabular-nums;}
   .scenario{
-    border-left:3px solid var(--black); background:var(--light);
-    padding:12px 14px; border-radius:0 10px 10px 0; margin:14px 0; font-size:15px;
+    background:transparent; border:0; border-radius:0; padding:0;
+    margin:16px 0 18px; font-size:15px; font-weight:800; line-height:1.7;
   }
-  .qtext{font-weight:700; font-size:17px; margin:8px 0 14px;}
+  .qtext{display:none;}
   .opt{
     display:block; width:100%; text-align:left; font-family:inherit; font-size:15px;
     border:1px solid var(--border); border-radius:12px; background:var(--white); color:inherit;
@@ -225,7 +225,7 @@
     </div>
   </section>
 
-  <footer class="appmeta" id="appMeta">更新日: 2026-07-03 14:22 / バージョン 20260703-1422</footer>
+  <footer class="appmeta" id="appMeta">更新日: 2026-07-03 14:25 / バージョン 20260703-1425</footer>
 </div>
 
 <!-- 下部固定ボタン -->
@@ -236,19 +236,19 @@
   </div>
 </div>
 
-<script src="questions.js?v=20260703-1422"></script>
-<script src="data/q-agentic.js?v=20260703-1422"></script>
-<script src="data/q-claudecode.js?v=20260703-1422"></script>
-<script src="data/q-prompt.js?v=20260703-1422"></script>
-<script src="data/q-tool.js?v=20260703-1422"></script>
-<script src="data/q-context.js?v=20260703-1422"></script>
-<script src="data/q-adv-agentic.js?v=20260703-1422"></script>
-<script src="data/q-adv-claudecode.js?v=20260703-1422"></script>
-<script src="data/q-adv-prompt.js?v=20260703-1422"></script>
-<script src="data/q-adv-tool.js?v=20260703-1422"></script>
-<script src="data/q-adv-context.js?v=20260703-1422"></script>
-<script src="data/glossary.js?v=20260703-1422"></script>
-<script src="app.js?v=20260703-1422"></script>
+<script src="questions.js?v=20260703-1425"></script>
+<script src="data/q-agentic.js?v=20260703-1425"></script>
+<script src="data/q-claudecode.js?v=20260703-1425"></script>
+<script src="data/q-prompt.js?v=20260703-1425"></script>
+<script src="data/q-tool.js?v=20260703-1425"></script>
+<script src="data/q-context.js?v=20260703-1425"></script>
+<script src="data/q-adv-agentic.js?v=20260703-1425"></script>
+<script src="data/q-adv-claudecode.js?v=20260703-1425"></script>
+<script src="data/q-adv-prompt.js?v=20260703-1425"></script>
+<script src="data/q-adv-tool.js?v=20260703-1425"></script>
+<script src="data/q-adv-context.js?v=20260703-1425"></script>
+<script src="data/glossary.js?v=20260703-1425"></script>
+<script src="app.js?v=20260703-1425"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
