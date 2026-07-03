@@ -8,8 +8,8 @@
   const DOMAIN_MAP = Object.fromEntries(DOMAINS.map(d => [d.key, d]));
   const GLOSSARY = window.GLOSSARY || [];
   const GLOSSARY_MAP = Object.fromEntries(GLOSSARY.map(g => [g.key, g]));
-  const APP_UPDATED_AT = '2026-07-03 14:11';
-  const APP_VERSION = '20260703-1411';
+  const APP_UPDATED_AT = '2026-07-03 14:22';
+  const APP_VERSION = '20260703-1422';
 
   // 問題文に出てくる用語を別名照合で拾う（最大6件）
   function matchTerms(q) {
@@ -28,17 +28,74 @@
     get(k, def) { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
   };
+  const PROGRESS_SNAPSHOT_KEY = 'ccaf_progress_snapshot_v1';
+  const QUESTION_IDS = new Set(Q.map(q => q.id));
+  const LEGACY_ID_MAP = {};
+  for (let i = 1; i <= 40; i++) LEGACY_ID_MAP['ag-' + String(i).padStart(3, '0')] = 'ag2-' + String(i).padStart(3, '0');
+  for (let i = 1; i <= 30; i++) LEGACY_ID_MAP['pr-' + String(i).padStart(3, '0')] = 'pr2-' + String(i).padStart(3, '0');
+
   let lang = LS.get('ccaf_lang', 'ja');
-  let stats = LS.get('ccaf_stats', {});      // {domainKey:{correct,total}}
-  let wrong = LS.get('ccaf_wrong', []);      // [questionId]
+  let stats = normalizeStats(LS.get('ccaf_stats', {}));      // {domainKey:{correct,total}}
+  let wrong = normalizeWrong(LS.get('ccaf_wrong', []));      // [questionId]
+
+  function normalizeStats(value) {
+    const out = {};
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return out;
+    DOMAINS.forEach(d => {
+      const s = value[d.key];
+      const total = Number(s && s.total);
+      const correct = Number(s && s.correct);
+      if (Number.isFinite(total) && total > 0) {
+        out[d.key] = {
+          total: Math.max(0, Math.round(total)),
+          correct: Math.max(0, Math.min(Math.round(correct || 0), Math.round(total)))
+        };
+      }
+    });
+    return out;
+  }
+
+  function normalizeWrong(value) {
+    if (!Array.isArray(value)) return [];
+    const set = new Set();
+    value.forEach(id => {
+      const nextId = LEGACY_ID_MAP[id] || id;
+      if (QUESTION_IDS.has(nextId)) set.add(nextId);
+    });
+    return [...set];
+  }
+
+  function restoreProgressSnapshotIfNeeded() {
+    const snapshot = LS.get(PROGRESS_SNAPSHOT_KEY, null);
+    if (!snapshot || typeof snapshot !== 'object') return;
+    if (!Object.keys(stats).length) stats = normalizeStats(snapshot.stats);
+    if (!wrong.length) wrong = normalizeWrong(snapshot.wrong);
+  }
+
+  function persistProgress() {
+    stats = normalizeStats(stats);
+    wrong = normalizeWrong(wrong);
+    LS.set('ccaf_stats', stats);
+    LS.set('ccaf_wrong', wrong);
+    LS.set(PROGRESS_SNAPSHOT_KEY, {
+      stats,
+      wrong,
+      savedAt: new Date().toISOString(),
+      appVersion: APP_VERSION
+    });
+  }
+
+  restoreProgressSnapshotIfNeeded();
+  persistProgress();
 
   function recordAnswer(q, isCorrect) {
     const s = stats[q.domain] || { correct: 0, total: 0 };
     s.total++; if (isCorrect) s.correct++;
-    stats[q.domain] = s; LS.set('ccaf_stats', stats);
+    stats[q.domain] = s;
     const set = new Set(wrong);
     if (isCorrect) set.delete(q.id); else set.add(q.id);
-    wrong = [...set]; LS.set('ccaf_wrong', wrong);
+    wrong = [...set];
+    persistProgress();
   }
 
   // ---- DOM ----
