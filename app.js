@@ -8,8 +8,8 @@
   const DOMAIN_MAP = Object.fromEntries(DOMAINS.map(d => [d.key, d]));
   const GLOSSARY = window.GLOSSARY || [];
   const GLOSSARY_MAP = Object.fromEntries(GLOSSARY.map(g => [g.key, g]));
-  const APP_UPDATED_AT = '2026-07-03 14:25';
-  const APP_VERSION = '20260703-1425';
+  const APP_UPDATED_AT = '2026-07-03 14:39';
+  const APP_VERSION = '20260703-1439';
 
   // 問題文に出てくる用語を別名照合で拾う（最大6件）
   function matchTerms(q) {
@@ -29,6 +29,7 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
   };
   const PROGRESS_SNAPSHOT_KEY = 'ccaf_progress_snapshot_v1';
+  const PROGRESS_HISTORY_KEY = 'ccaf_progress_history_v1';
   const QUESTION_IDS = new Set(Q.map(q => q.id));
   const LEGACY_ID_MAP = {};
   for (let i = 1; i <= 40; i++) LEGACY_ID_MAP['ag-' + String(i).padStart(3, '0')] = 'ag2-' + String(i).padStart(3, '0');
@@ -65,11 +66,42 @@
     return [...set];
   }
 
-  function restoreProgressSnapshotIfNeeded() {
-    const snapshot = LS.get(PROGRESS_SNAPSHOT_KEY, null);
-    if (!snapshot || typeof snapshot !== 'object') return;
-    if (!Object.keys(stats).length) stats = normalizeStats(snapshot.stats);
-    if (!wrong.length) wrong = normalizeWrong(snapshot.wrong);
+  function progressTotal(s) {
+    return Object.values(normalizeStats(s)).reduce((sum, row) => sum + row.total, 0);
+  }
+
+  function progressCorrect(s) {
+    return Object.values(normalizeStats(s)).reduce((sum, row) => sum + row.correct, 0);
+  }
+
+  function progressScore(candidate) {
+    if (!candidate || typeof candidate !== 'object') return -1;
+    return (progressTotal(candidate.stats) * 1000) + normalizeWrong(candidate.wrong).length;
+  }
+
+  function snapshotCandidate(label, value) {
+    if (!value || typeof value !== 'object') return null;
+    return {
+      label,
+      stats: normalizeStats(value.stats),
+      wrong: normalizeWrong(value.wrong)
+    };
+  }
+
+  function restoreProgress() {
+    const candidates = [
+      { label: 'current', stats, wrong },
+      snapshotCandidate('snapshot', LS.get(PROGRESS_SNAPSHOT_KEY, null))
+    ];
+    const history = LS.get(PROGRESS_HISTORY_KEY, []);
+    if (Array.isArray(history)) history.forEach((item, idx) => candidates.push(snapshotCandidate('history-' + idx, item)));
+
+    const best = candidates.filter(Boolean).sort((a, b) => progressScore(b) - progressScore(a))[0];
+    if (!best || progressScore(best) <= 0) return;
+    if (progressScore(best) > progressScore({ stats, wrong })) {
+      stats = best.stats;
+      wrong = best.wrong;
+    }
   }
 
   function persistProgress() {
@@ -77,15 +109,31 @@
     wrong = normalizeWrong(wrong);
     LS.set('ccaf_stats', stats);
     LS.set('ccaf_wrong', wrong);
+    if (progressTotal(stats) <= 0 && wrong.length <= 0) return;
+    const history = LS.get(PROGRESS_HISTORY_KEY, []);
+    const snapshot = {
+      stats,
+      wrong,
+      correct: progressCorrect(stats),
+      total: progressTotal(stats),
+      savedAt: new Date().toISOString(),
+      appVersion: APP_VERSION
+    };
+    const nextHistory = [snapshot].concat(Array.isArray(history) ? history : [])
+      .filter((item, idx, arr) => idx === arr.findIndex(x => JSON.stringify(x && x.stats) === JSON.stringify(item && item.stats) && JSON.stringify(x && x.wrong) === JSON.stringify(item && item.wrong)))
+      .slice(0, 10);
+    LS.set(PROGRESS_HISTORY_KEY, nextHistory);
     LS.set(PROGRESS_SNAPSHOT_KEY, {
       stats,
       wrong,
-      savedAt: new Date().toISOString(),
+      correct: snapshot.correct,
+      total: snapshot.total,
+      savedAt: snapshot.savedAt,
       appVersion: APP_VERSION
     });
   }
 
-  restoreProgressSnapshotIfNeeded();
+  restoreProgress();
   persistProgress();
 
   function recordAnswer(q, isCorrect) {
