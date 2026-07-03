@@ -8,8 +8,8 @@
   const DOMAIN_MAP = Object.fromEntries(DOMAINS.map(d => [d.key, d]));
   const GLOSSARY = window.GLOSSARY || [];
   const GLOSSARY_MAP = Object.fromEntries(GLOSSARY.map(g => [g.key, g]));
-  const APP_UPDATED_AT = '2026-07-03 14:39';
-  const APP_VERSION = '20260703-1439';
+  const APP_UPDATED_AT = '2026-07-03 14:45';
+  const APP_VERSION = '20260703-1445';
 
   // 問題文に出てくる用語を別名照合で拾う（最大6件）
   function matchTerms(q) {
@@ -30,14 +30,18 @@
   };
   const PROGRESS_SNAPSHOT_KEY = 'ccaf_progress_snapshot_v1';
   const PROGRESS_HISTORY_KEY = 'ccaf_progress_history_v1';
+  const PROGRESS_BACKUPS_KEY = 'ccaf_progress_backups_v2';
+  const PROGRESS_LATEST_NONEMPTY_KEY = 'ccaf_progress_latest_nonempty_v1';
+  const STATS_KEY = 'ccaf_stats';
+  const WRONG_KEY = 'ccaf_wrong';
   const QUESTION_IDS = new Set(Q.map(q => q.id));
   const LEGACY_ID_MAP = {};
   for (let i = 1; i <= 40; i++) LEGACY_ID_MAP['ag-' + String(i).padStart(3, '0')] = 'ag2-' + String(i).padStart(3, '0');
   for (let i = 1; i <= 30; i++) LEGACY_ID_MAP['pr-' + String(i).padStart(3, '0')] = 'pr2-' + String(i).padStart(3, '0');
 
   let lang = LS.get('ccaf_lang', 'ja');
-  let stats = normalizeStats(LS.get('ccaf_stats', {}));      // {domainKey:{correct,total}}
-  let wrong = normalizeWrong(LS.get('ccaf_wrong', []));      // [questionId]
+  let stats = normalizeStats(LS.get(STATS_KEY, {}));      // {domainKey:{correct,total}}
+  let wrong = normalizeWrong(LS.get(WRONG_KEY, []));      // [questionId]
 
   function normalizeStats(value) {
     const out = {};
@@ -88,13 +92,49 @@
     };
   }
 
+  function currentRawProgress(label) {
+    return {
+      label,
+      stats: LS.get(STATS_KEY, {}),
+      wrong: LS.get(WRONG_KEY, []),
+      savedAt: new Date().toISOString(),
+      appVersion: APP_VERSION
+    };
+  }
+
+  function addBackup(candidate) {
+    if (progressScore(candidate) <= 0) return;
+    const backup = {
+      stats: normalizeStats(candidate.stats),
+      wrong: normalizeWrong(candidate.wrong),
+      correct: progressCorrect(candidate.stats),
+      total: progressTotal(candidate.stats),
+      savedAt: candidate.savedAt || new Date().toISOString(),
+      appVersion: candidate.appVersion || APP_VERSION,
+      source: candidate.label || 'backup'
+    };
+    const existing = LS.get(PROGRESS_BACKUPS_KEY, []);
+    const backups = [backup].concat(Array.isArray(existing) ? existing : [])
+      .filter((item, idx, arr) => idx === arr.findIndex(x => JSON.stringify(x && x.stats) === JSON.stringify(item && item.stats) && JSON.stringify(x && x.wrong) === JSON.stringify(item && item.wrong)))
+      .slice(0, 30);
+    LS.set(PROGRESS_BACKUPS_KEY, backups);
+    LS.set(PROGRESS_LATEST_NONEMPTY_KEY, backup);
+  }
+
+  function backupStoredProgress(label) {
+    addBackup(currentRawProgress(label));
+  }
+
   function restoreProgress() {
     const candidates = [
       { label: 'current', stats, wrong },
-      snapshotCandidate('snapshot', LS.get(PROGRESS_SNAPSHOT_KEY, null))
+      snapshotCandidate('snapshot', LS.get(PROGRESS_SNAPSHOT_KEY, null)),
+      snapshotCandidate('latest-nonempty', LS.get(PROGRESS_LATEST_NONEMPTY_KEY, null))
     ];
     const history = LS.get(PROGRESS_HISTORY_KEY, []);
     if (Array.isArray(history)) history.forEach((item, idx) => candidates.push(snapshotCandidate('history-' + idx, item)));
+    const backups = LS.get(PROGRESS_BACKUPS_KEY, []);
+    if (Array.isArray(backups)) backups.forEach((item, idx) => candidates.push(snapshotCandidate('backup-' + idx, item)));
 
     const best = candidates.filter(Boolean).sort((a, b) => progressScore(b) - progressScore(a))[0];
     if (!best || progressScore(best) <= 0) return;
@@ -104,12 +144,13 @@
     }
   }
 
-  function persistProgress() {
+  function persistProgress(reason) {
+    backupStoredProgress(reason || 'before-save');
     stats = normalizeStats(stats);
     wrong = normalizeWrong(wrong);
-    LS.set('ccaf_stats', stats);
-    LS.set('ccaf_wrong', wrong);
     if (progressTotal(stats) <= 0 && wrong.length <= 0) return;
+    LS.set(STATS_KEY, stats);
+    LS.set(WRONG_KEY, wrong);
     const history = LS.get(PROGRESS_HISTORY_KEY, []);
     const snapshot = {
       stats,
@@ -123,6 +164,7 @@
       .filter((item, idx, arr) => idx === arr.findIndex(x => JSON.stringify(x && x.stats) === JSON.stringify(item && item.stats) && JSON.stringify(x && x.wrong) === JSON.stringify(item && item.wrong)))
       .slice(0, 10);
     LS.set(PROGRESS_HISTORY_KEY, nextHistory);
+    LS.set(PROGRESS_LATEST_NONEMPTY_KEY, snapshot);
     LS.set(PROGRESS_SNAPSHOT_KEY, {
       stats,
       wrong,
@@ -134,7 +176,10 @@
   }
 
   restoreProgress();
-  persistProgress();
+  addBackup({ label: 'startup-current', stats, wrong, savedAt: new Date().toISOString(), appVersion: APP_VERSION });
+  if (progressScore({ stats, wrong }) > progressScore(currentRawProgress('stored'))) {
+    persistProgress('restore-better-progress');
+  }
 
   function recordAnswer(q, isCorrect) {
     const s = stats[q.domain] || { correct: 0, total: 0 };
@@ -143,7 +188,7 @@
     const set = new Set(wrong);
     if (isCorrect) set.delete(q.id); else set.add(q.id);
     wrong = [...set];
-    persistProgress();
+    persistProgress('record-answer');
   }
 
   // ---- DOM ----
