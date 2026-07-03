@@ -8,6 +8,8 @@
   const DOMAIN_MAP = Object.fromEntries(DOMAINS.map(d => [d.key, d]));
   const GLOSSARY = window.GLOSSARY || [];
   const GLOSSARY_MAP = Object.fromEntries(GLOSSARY.map(g => [g.key, g]));
+  const APP_UPDATED_AT = '2026-07-03 14:09';
+  const APP_VERSION = '20260703-1409';
 
   // 問題文に出てくる用語を別名照合で拾う（最大6件）
   function matchTerms(q) {
@@ -337,6 +339,7 @@
     if (!sections.quiz.classList.contains('hidden') && session) renderQuestion(true);
     if (!sections.domainPick.classList.contains('hidden')) renderDomainPick();
     if (!sections.glossary.classList.contains('hidden')) renderGlossary($('#glossarySearch').value);
+    renderAppMeta();
     renderCountInfo();
     renderScores();
   });
@@ -348,8 +351,17 @@
       : '収録 ' + Q.length + ' 問（本試験レベル・業務シナリオ形式）';
   }
 
+  function renderAppMeta() {
+    const el = $('#appMeta');
+    if (!el) return;
+    el.textContent = lang === 'en'
+      ? 'Updated: ' + APP_UPDATED_AT + ' / version ' + APP_VERSION
+      : '更新日: ' + APP_UPDATED_AT + ' / バージョン ' + APP_VERSION;
+  }
+
   // ---- 初期化 ----
   document.querySelectorAll('#langToggle button').forEach(x => x.classList.toggle('on', x.dataset.lang === lang));
+  renderAppMeta();
   renderCountInfo();
   renderScores();
   show('home');

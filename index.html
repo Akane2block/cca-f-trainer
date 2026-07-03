@@ -143,6 +143,10 @@
   /* 結果画面 */
   .big{font-size:40px; font-weight:800; font-variant-numeric:tabular-nums;}
   .resultline{display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:14px;}
+  .appmeta{
+    border-top:1px solid var(--border); color:var(--gray); font-size:12px; line-height:1.6;
+    margin:28px 0 8px; padding-top:14px; text-align:center;
+  }
 </style>
 </head>
 <body>
@@ -220,6 +224,8 @@
       <button class="btn primary" data-act="reviewWrong">間違いを復習</button>
     </div>
   </section>
+
+  <footer class="appmeta" id="appMeta"></footer>
 </div>
 
 <!-- 下部固定ボタン -->
