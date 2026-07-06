@@ -1,6 +1,7 @@
 /* 音声学習エピソード。追加時はこの配列に1エントリ足し、audio/ にmp3を置く。
-   style: 'dialogue'（対話・2人） or 'solo'（一人語り）
-   script: 読みながら聞く用の台本。speaker は dialogue のときのみ表示に使う */
+   声の標準: 日本語=AivisSpeech morioki（一人語り）／英語=edge-tts Ava
+   style: 'solo'（一人語り） or 'dialogue'（対話・2人）
+   script: 読みながら聞く用の台本。speaker(s) は dialogue のときのみ表示に使う */
 window.EPISODES = [
   {
     id: 'ep002',
@@ -12,7 +13,7 @@ window.EPISODES = [
       en: 'When is the tool-use loop actually done? Why checking content[0] is a trap.'
     },
     audio: { ja: 'audio/ep002-stopreason-ja.mp3', en: 'audio/ep002-stopreason-en.mp3' },
-    duration: { ja: 109, en: 70 },
+    duration: { ja: 101, en: 70 },
     script: {
       ja: [
         { s: '', t: 'こんにちは。今日も1テーマ、CCA-Fのポイントを一緒に確認していきましょう。今日のテーマは、stop_reason。ツール実行ループを、どこで終わらせるか、という話です。' },
@@ -35,34 +36,28 @@ window.EPISODES = [
   {
     id: 'ep001',
     date: '2026-07-06',
-    style: 'dialogue',
+    style: 'solo',
     topic: { ja: 'Message Batches API', en: 'Message Batches API' },
     summary: {
       ja: '大量リクエストの非同期一括処理。50%オフの条件と、custom_id 突合・非対応プラットフォームの引っかけ。',
       en: 'Async bulk processing at 50% off: the latency trade-off, custom_id matching, and platform traps.'
     },
     audio: { ja: 'audio/ep001-batches-ja.mp3', en: 'audio/ep001-batches-en.mp3' },
-    duration: { ja: 95, en: 49 },
+    duration: { ja: 79, en: 52 },
     script: {
       ja: [
-        { s: 'ホスト', t: 'こんにちは。CCA-F対策ポッドキャスト。今日のテーマは、Message Batches API です。これ、試験でよく出るんですよね。' },
-        { s: '解説', t: 'はい、頻出です。一言でいうと、大量のリクエストをまとめて非同期処理する仕組みです。1件ずつではなく、一括で投げて、あとで結果を回収します。' },
-        { s: 'ホスト', t: '具体的には、どんな場面で使うんですか。' },
-        { s: '解説', t: '例えば、10万件のカスタマーレビューを分類したいとき。急がない大量処理ですね。その代わり、即時応答はしません。多くは1時間以内ですが、最大24時間かかります。' },
-        { s: 'ホスト', t: '待つ代わりに、何かいいことがあるんですか。' },
-        { s: '解説', t: 'コストが50%オフになります。ここが試験のポイントで、レイテンシを犠牲にして、コストを半分にする。このトレードオフを覚えてください。' },
-        { s: 'ホスト', t: '引っかけポイントはありますか。' },
-        { s: '解説', t: '2つあります。1つ目。結果は、投げた順には返ってきません。だから、custom_id で突き合わせます。位置で対応づけたら誤りです。2つ目。Amazon Bedrock と Google Vertex AI では使えません。Anthropic直のAPI、つまりファーストパーティAPIだけです。' },
-        { s: 'ホスト', t: 'なるほど。では今日のまとめ。バッチは、安いけど待つ。結果は custom_id で突合。次回もお楽しみに。' }
+        { s: '', t: 'こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、Message Batches API です。' },
+        { s: '', t: 'これは一言でいうと、大量のリクエストをまとめて非同期処理する仕組みです。1件ずつではなく、一括で投げて、あとで結果を回収します。たとえば、10万件のカスタマーレビューを分類したいとき。急がない大量処理に向いています。' },
+        { s: '', t: 'その代わり、即時応答はしません。多くは1時間以内ですが、最大24時間かかります。では、待つ代わりに何が得られるのか。コストが50%オフになります。ここが試験のポイントで、レイテンシを犠牲にして、コストを半分にする。このトレードオフをまず覚えてください。' },
+        { s: '', t: '引っかけポイントは2つあります。1つ目。結果は、投げた順には返ってきません。だから、custom_id で突き合わせます。位置で対応づけたら誤りです。2つ目。Amazon Bedrock と Google Vertex AI では使えません。Anthropic直のAPI、つまりファーストパーティAPIだけです。' },
+        { s: '', t: '最後にまとめます。バッチは、安いけど待つ。結果は custom_id で突合。ここだけ持ち帰ってください。それでは、また次回。' }
       ],
       en: [
-        { s: 'Host', t: "Welcome back to your CCA-F study podcast. Today's topic: the Message Batches API." },
-        { s: 'Expert', t: "The key idea is simple. You send a large number of requests as one batch, and collect the results later. It's asynchronous." },
-        { s: 'Host', t: "And what's the trade-off?" },
-        { s: 'Expert', t: 'You give up latency, and in return, you get a fifty percent discount. Most batches finish within an hour, but they can take up to twenty-four hours.' },
-        { s: 'Host', t: 'Any exam traps we should watch for?' },
-        { s: 'Expert', t: "Two big ones. First, results don't come back in order, so always match them by custom_id. Second, batches are not supported on Amazon Bedrock or Google Vertex AI. First-party API only." },
-        { s: 'Host', t: 'So remember: cheaper, but slower. And always match by custom_id. See you next time.' }
+        { s: '', t: 'Hello, and welcome back. One topic today: the Message Batches API.' },
+        { s: '', t: "The key idea is simple. You send a large number of requests as one batch, and collect the results later. It's asynchronous. Think of classifying one hundred thousand customer reviews. A big job that isn't urgent." },
+        { s: '', t: 'The trade-off: you give up latency, and in return you get a fifty percent discount. Most batches finish within an hour, but they can take up to twenty-four hours.' },
+        { s: '', t: "Two exam traps. First, results don't come back in order, so always match them by custom ID. Second, batches are not supported on Amazon Bedrock or Google Vertex AI. First-party API only." },
+        { s: '', t: 'So remember: cheaper, but slower. And always match by custom ID. See you next time.' }
       ]
     }
   }

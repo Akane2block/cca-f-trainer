@@ -33,8 +33,9 @@ import asyncio, json, os, subprocess, sys, tempfile, urllib.request, urllib.pars
 
 AIVIS = "http://127.0.0.1:10101"
 # AivisSpeech の話者ID（/speakers で確認できる）
-JA_VOICES = {"host": 888753760, "expert": 1878365376, "": 888753763}
-# host=まお/ノーマル, expert=コハク/ノーマル, 一人語り("")=まお/おちつき
+# 標準は morioki の一人語り（2026-07-06 富永さん決定）。対話にする場合のみ host/expert を分ける
+JA_VOICES = {"host": 497929760, "expert": 606865152, "": 497929760}
+# ""(一人語り)=morioki/ノーマル, host=morioki, expert=fumifumi/ノーマル
 EN_VOICES = {"host": "en-US-AvaNeural", "expert": "en-US-AndrewNeural", "": "en-US-AvaNeural"}
 
 AUDIO_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "audio")
