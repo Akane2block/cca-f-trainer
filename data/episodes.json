@@ -1,6 +1,4 @@
-/* 自動生成ファイル。手で編集しない。
-   正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
-window.EPISODES = [
+[
   {
     "id": "ep003",
     "date": "2026-07-06",
@@ -210,4 +208,4 @@ window.EPISODES = [
       ]
     }
   }
-];
+]
