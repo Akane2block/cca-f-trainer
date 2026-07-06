@@ -1,5 +1,5 @@
 /* オフライン用 Service Worker。問題を更新したら CACHE のバージョンを上げる。 */
-const CACHE = 'ccaf-v14';
+const CACHE = 'ccaf-v15';
 const ASSETS = [
   './',
   './index.html',
@@ -16,6 +16,7 @@ const ASSETS = [
   './data/q-adv-tool.js',
   './data/q-adv-context.js',
   './data/glossary.js',
+  './data/episodes.js',
   './manifest.webmanifest',
   './icons/icon.svg',
   './icons/icon-180.png',
@@ -38,6 +39,8 @@ self.addEventListener('activate', e => {
    オフライン時のみキャッシュへフォールバック（更新が反映されない問題を防ぐ） */
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  // 音声はSWを介さない（RangeリクエストをキャッシュするとSafariで再生が壊れるため）
+  if (new URL(e.request.url).pathname.includes('/audio/')) return;
   e.respondWith(
     fetch(e.request).then(res => {
       const copy = res.clone();

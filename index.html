@@ -140,6 +140,20 @@
   .gitem .gdom{display:inline-block; font-size:10px; font-weight:700; color:var(--gray); border:1px solid var(--border); border-radius:99px; padding:2px 8px; margin-top:8px;}
   .ghead{font-size:13px; font-weight:800; color:var(--gray); margin:20px 0 4px;}
 
+  /* 音声学習 */
+  .ep{border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin:10px 0; cursor:pointer; display:block; width:100%; text-align:left; background:var(--white); font-family:inherit; color:inherit;}
+  .ep:active{background:var(--light);}
+  .ep .et{font-weight:800; font-size:15px; display:block;}
+  .ep .em{font-size:12px; color:var(--gray); margin-top:3px; display:block;}
+  .player{border:2px solid var(--black); border-radius:14px; padding:16px; margin:12px 0;}
+  .player audio{width:100%; margin-top:12px;}
+  .ratebtns{display:flex; gap:8px; margin-top:10px;}
+  .ratebtns button{border:1px solid var(--black); background:var(--white); color:var(--black); border-radius:8px; padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit;}
+  .ratebtns button.on{background:var(--black); color:var(--white);}
+  .scriptbox{margin-top:16px;}
+  .scriptline{border-left:3px solid var(--border); padding:6px 12px; margin:8px 0; font-size:14px;}
+  .scriptline .sp{font-weight:800; font-size:12px; color:var(--gray); display:block;}
+
   /* 結果画面 */
   .big{font-size:40px; font-weight:800; font-variant-numeric:tabular-nums;}
   .resultline{display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:14px;}
@@ -178,6 +192,10 @@
       <span class="t">用語集を見る</span><span class="d">CCA-Fの専門用語を日英・解説つきで一覧／検索</span>
     </button>
 
+    <button class="card full" data-act="openAudio" style="margin-top:12px;border:1px solid var(--border);">
+      <span class="t">音声で学ぶ（ポッドキャスト）</span><span class="d">頻出テーマを対話・一人語りの音声で解説。日英切替・台本つき</span>
+    </button>
+
     <h2>ドメイン別の正答率</h2>
     <div class="scorebox" id="scoreBox"></div>
     <p class="muted" id="totalLine" style="margin-top:10px;"></p>
@@ -213,6 +231,15 @@
     <div style="margin-top:16px;"><button class="btn ghost" data-act="backHome">← 戻る</button></div>
   </section>
 
+  <!-- 音声学習 -->
+  <section id="audio" class="hidden">
+    <h2 id="audioHeading">音声で学ぶ</h2>
+    <p class="muted" id="audioLead"></p>
+    <div id="audioPlayer" class="hidden"></div>
+    <div id="episodeList"></div>
+    <div style="margin-top:16px;"><button class="btn ghost" data-act="backHome">← 戻る</button></div>
+  </section>
+
   <!-- 結果 -->
   <section id="result" class="hidden">
     <h2>結果</h2>
@@ -225,7 +252,7 @@
     </div>
   </section>
 
-  <footer class="appmeta" id="appMeta">更新日: 2026-07-04 05:00 / バージョン 20260704-0500</footer>
+  <footer class="appmeta" id="appMeta">更新日: 2026-07-06 14:40 / バージョン 20260706-1440</footer>
 </div>
 
 <!-- 下部固定ボタン -->
@@ -236,19 +263,20 @@
   </div>
 </div>
 
-<script src="questions.js?v=20260704-0500"></script>
-<script src="data/q-agentic.js?v=20260704-0500"></script>
-<script src="data/q-claudecode.js?v=20260704-0500"></script>
-<script src="data/q-prompt.js?v=20260704-0500"></script>
-<script src="data/q-tool.js?v=20260704-0500"></script>
-<script src="data/q-context.js?v=20260704-0500"></script>
-<script src="data/q-adv-agentic.js?v=20260704-0500"></script>
-<script src="data/q-adv-claudecode.js?v=20260704-0500"></script>
-<script src="data/q-adv-prompt.js?v=20260704-0500"></script>
-<script src="data/q-adv-tool.js?v=20260704-0500"></script>
-<script src="data/q-adv-context.js?v=20260704-0500"></script>
-<script src="data/glossary.js?v=20260704-0500"></script>
-<script src="app.js?v=20260704-0500"></script>
+<script src="questions.js?v=20260706-1440"></script>
+<script src="data/q-agentic.js?v=20260706-1440"></script>
+<script src="data/q-claudecode.js?v=20260706-1440"></script>
+<script src="data/q-prompt.js?v=20260706-1440"></script>
+<script src="data/q-tool.js?v=20260706-1440"></script>
+<script src="data/q-context.js?v=20260706-1440"></script>
+<script src="data/q-adv-agentic.js?v=20260706-1440"></script>
+<script src="data/q-adv-claudecode.js?v=20260706-1440"></script>
+<script src="data/q-adv-prompt.js?v=20260706-1440"></script>
+<script src="data/q-adv-tool.js?v=20260706-1440"></script>
+<script src="data/q-adv-context.js?v=20260706-1440"></script>
+<script src="data/glossary.js?v=20260706-1440"></script>
+<script src="data/episodes.js?v=20260706-1440"></script>
+<script src="app.js?v=20260706-1440"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));

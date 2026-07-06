@@ -8,8 +8,8 @@
   const DOMAIN_MAP = Object.fromEntries(DOMAINS.map(d => [d.key, d]));
   const GLOSSARY = window.GLOSSARY || [];
   const GLOSSARY_MAP = Object.fromEntries(GLOSSARY.map(g => [g.key, g]));
-  const APP_UPDATED_AT = '2026-07-04 05:00';
-  const APP_VERSION = '20260704-0500';
+  const APP_UPDATED_AT = '2026-07-06 14:40';
+  const APP_VERSION = '20260706-1440';
 
   // 問題文に出てくる用語を別名照合で拾う（最大6件）
   function matchTerms(q) {
@@ -193,7 +193,7 @@
 
   // ---- DOM ----
   const $ = sel => document.querySelector(sel);
-  const sections = { home: $('#home'), domainPick: $('#domainPick'), quiz: $('#quiz'), result: $('#result'), glossary: $('#glossary') };
+  const sections = { home: $('#home'), domainPick: $('#domainPick'), quiz: $('#quiz'), result: $('#result'), glossary: $('#glossary'), audio: $('#audio') };
   const navBar = $('#navBar');
 
   function show(name) {
@@ -362,6 +362,86 @@
     if (!list.children.length) list.innerHTML = '<p class="muted">該当する用語がありません。</p>';
   }
 
+  // ---- 音声学習（ポッドキャスト）----
+  const EPISODES = window.EPISODES || [];
+  let currentEp = null;
+  let audioRate = 1.0;
+
+  function fmtDur(sec) {
+    if (!sec) return '';
+    return Math.floor(sec / 60) + ':' + String(Math.round(sec % 60)).padStart(2, '0');
+  }
+
+  function stopAudio() {
+    document.querySelectorAll('#audioPlayer audio').forEach(a => a.pause());
+  }
+
+  function renderAudio() {
+    $('#audioHeading').textContent = lang === 'en' ? 'Audio lessons' : '音声で学ぶ';
+    $('#audioLead').textContent = lang === 'en'
+      ? 'Podcast-style walkthroughs of high-yield CCA-F topics. The language toggle switches the audio and transcript.'
+      : 'ポッドキャスト形式で頻出ポイントを解説。右上の言語切替で音声と台本が日英で切り替わります。';
+    renderPlayer();
+    const list = $('#episodeList'); list.innerHTML = '';
+    EPISODES.forEach(ep => {
+      const b = document.createElement('button');
+      b.className = 'ep';
+      const styleLabel = ep.style === 'dialogue' ? (lang === 'en' ? 'Dialogue' : '対話') : (lang === 'en' ? 'Solo' : '一人語り');
+      b.innerHTML =
+        '<span class="et">' + escapeHtml(ep.topic[lang] || ep.topic.ja) + '</span>' +
+        '<span class="em">' + styleLabel + ' ・ ' + fmtDur((ep.duration || {})[lang] || (ep.duration || {}).ja) + ' ・ ' + escapeHtml(ep.date || '') + '</span>' +
+        '<span class="em">' + escapeHtml((ep.summary || {})[lang] || (ep.summary || {}).ja || '') + '</span>';
+      b.addEventListener('click', () => { currentEp = ep; renderPlayer(true); window.scrollTo(0, 0); });
+      list.appendChild(b);
+    });
+  }
+
+  function renderPlayer(autoplay) {
+    const box = $('#audioPlayer');
+    if (!currentEp) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+    const ep = currentEp;
+    const src = (ep.audio || {})[lang] || ep.audio.ja;
+    box.classList.remove('hidden');
+    box.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'player';
+    const styleLabel = ep.style === 'dialogue' ? (lang === 'en' ? 'Dialogue' : '対話') : (lang === 'en' ? 'Solo' : '一人語り');
+    wrap.innerHTML =
+      '<div style="font-weight:800; font-size:16px;">' + escapeHtml(ep.topic[lang] || ep.topic.ja) + '</div>' +
+      '<div class="muted" style="font-size:12px; margin-top:2px;">' + styleLabel + ' ・ ' + fmtDur((ep.duration || {})[lang] || (ep.duration || {}).ja) + '</div>';
+    const audio = document.createElement('audio');
+    audio.controls = true;
+    audio.preload = 'metadata';
+    audio.src = src;
+    wrap.appendChild(audio);
+    audio.addEventListener('loadedmetadata', () => { audio.playbackRate = audioRate; });
+    const rates = document.createElement('div');
+    rates.className = 'ratebtns';
+    [1.0, 1.25, 1.5].forEach(r => {
+      const rb = document.createElement('button');
+      rb.textContent = '×' + r;
+      if (r === audioRate) rb.classList.add('on');
+      rb.addEventListener('click', () => {
+        audioRate = r; audio.playbackRate = r;
+        rates.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === rb));
+      });
+      rates.appendChild(rb);
+    });
+    wrap.appendChild(rates);
+    const sc = document.createElement('div');
+    sc.className = 'scriptbox';
+    sc.innerHTML = '<div class="muted" style="font-size:12px; font-weight:700;">' + (lang === 'en' ? 'Transcript' : '台本（読みながら聞く用）') + '</div>';
+    (((ep.script || {})[lang]) || ((ep.script || {}).ja) || []).forEach(line => {
+      const d = document.createElement('div');
+      d.className = 'scriptline';
+      d.innerHTML = (line.s ? '<span class="sp">' + escapeHtml(line.s) + '</span>' : '') + escapeHtml(line.t);
+      sc.appendChild(d);
+    });
+    wrap.appendChild(sc);
+    box.appendChild(wrap);
+    if (autoplay) { audio.playbackRate = audioRate; audio.play().catch(() => {}); }
+  }
+
   function nextQuestion() {
     if (!session.answered) return;
     if (session.idx < session.list.length - 1) { session.idx++; renderQuestion(); window.scrollTo(0, 0); }
@@ -474,11 +554,12 @@
   document.addEventListener('click', e => {
     const act = e.target.closest('[data-act]'); if (!act) return;
     const a = act.dataset.act;
-    if (a === 'backHome') { stopTimer(); renderScores(); show('home'); }
+    if (a === 'backHome') { stopTimer(); stopAudio(); renderScores(); show('home'); }
     if (a === 'nextQ') nextQuestion();
     if (a === 'quitQuiz') { if (confirm('この演習をやめてホームに戻る？')) { stopTimer(); renderScores(); show('home'); } }
     if (a === 'reviewWrong') launchMode('review');
     if (a === 'openGlossary') { renderGlossary($('#glossarySearch').value); show('glossary'); }
+    if (a === 'openAudio') { renderAudio(); show('audio'); }
   });
   $('#glossarySearch').addEventListener('input', e => renderGlossary(e.target.value));
   $('#langToggle').addEventListener('click', e => {
@@ -490,6 +571,7 @@
     if (!sections.quiz.classList.contains('hidden') && session) renderQuestion(true);
     if (!sections.domainPick.classList.contains('hidden')) renderDomainPick();
     if (!sections.glossary.classList.contains('hidden')) renderGlossary($('#glossarySearch').value);
+    if (!sections.audio.classList.contains('hidden')) renderAudio();
     renderAppMeta();
     renderCountInfo();
     renderScores();
