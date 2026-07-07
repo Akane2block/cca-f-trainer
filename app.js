@@ -8,8 +8,8 @@
   const DOMAIN_MAP = Object.fromEntries(DOMAINS.map(d => [d.key, d]));
   const GLOSSARY = window.GLOSSARY || [];
   const GLOSSARY_MAP = Object.fromEntries(GLOSSARY.map(g => [g.key, g]));
-  const APP_UPDATED_AT = '2026-07-07 09:28';
-  const APP_VERSION = '20260707-0928';
+  const APP_UPDATED_AT = '2026-07-07 09:42';
+  const APP_VERSION = '20260707-0942';
 
   // 問題文に出てくる用語を別名照合で拾う（最大6件）
   function matchTerms(q) {
