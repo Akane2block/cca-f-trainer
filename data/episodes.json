@@ -12,10 +12,12 @@
       "en": "Evaluate rare but high-risk segments separately."
     },
     "audio": {
-      "ja": "audio/ep029-ja.mp3"
+      "ja": "audio/ep029-ja.mp3",
+      "en": "audio/ep029-en.mp3"
     },
     "duration": {
-      "ja": 72
+      "ja": 72,
+      "en": 69
     },
     "script": {
       "ja": [
@@ -43,6 +45,32 @@
           "s": "",
           "t": "まとめです。全体精度が高いから少数派も大丈夫、とは言えません。医療、金融、法務のような高リスク領域は、少数でも別評価が必要です。"
         }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hi. Today's topic is independent evaluation of minority high risk segments."
+        },
+        {
+          "s": "",
+          "t": "A medical diagnostics lab uses Claude to analyze general checkups and specialized genetic tests. General checkups are ninety eight percent of the volume; the genetic tests are two percent. System wide accuracy comes out at ninety eight percent. So, can we drop human review for the specialized tests?"
+        },
+        {
+          "s": "",
+          "t": "The pitfall here is overall accuracy. Because general checkups are the overwhelming majority, the overall number looks high even if accuracy on the specialized tests is low."
+        },
+        {
+          "s": "",
+          "t": "The right answer is to separate out the genetic test segment and measure field level accuracy independently, on a statistically significant sample."
+        },
+        {
+          "s": "",
+          "t": "Field level means checking each item: the diagnosis name, the test value, the genetic variant, the risk classification. In medicine, a single wrong field can be critical."
+        },
+        {
+          "s": "",
+          "t": "To wrap up: high overall accuracy does not mean the minority is fine. High risk domains like medicine, finance, and law need a separate evaluation even for small segments."
+        }
       ]
     }
   },
@@ -59,10 +87,12 @@
       "en": "If the user explicitly asks for a human, escalate immediately."
     },
     "audio": {
-      "ja": "audio/ep028-ja.mp3"
+      "ja": "audio/ep028-ja.mp3",
+      "en": "audio/ep028-en.mp3"
     },
     "duration": {
-      "ja": 65
+      "ja": 65,
+      "en": 61
     },
     "script": {
       "ja": [
@@ -90,6 +120,32 @@
           "s": "",
           "t": "まとめです。人間に代わって、責任者に代わって、という明示的要求が出たら、能力アピールより即エスカレーション。ユーザーの制御権を優先します。"
         }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hi. Today's topic is escalation when the user asks for a human."
+        },
+        {
+          "s": "",
+          "t": "A home center support bot gets this: I want to return a fifty thousand yen power tool. You are not getting it, so put me through to a supervisor. The bot has an initiate_return tool. So what should it do next?"
+        },
+        {
+          "s": "",
+          "t": "The answer is: do not try to investigate or run a tool. Accept the explicit request to be handed to a human agent."
+        },
+        {
+          "s": "",
+          "t": "The point is not whether a tool could do the job. The user is already clearly frustrated and is asking for a human. If you push the return through here, or ask for a receipt number, it just feels like more runaround."
+        },
+        {
+          "s": "",
+          "t": "Also, a fifty thousand yen return is a significant action. Running initiate_return without explicit permission is inappropriate too."
+        },
+        {
+          "s": "",
+          "t": "To wrap up: the moment you get an explicit put me through to a human, put me through to a supervisor, escalate immediately instead of showing off what you can do. The user's control comes first."
+        }
       ]
     }
   },
@@ -106,10 +162,12 @@
       "en": "Give Claude the full causal chain from bad partitioning to skew to OOM."
     },
     "audio": {
-      "ja": "audio/ep027-ja.mp3"
+      "ja": "audio/ep027-ja.mp3",
+      "en": "audio/ep027-en.mp3"
     },
     "duration": {
-      "ja": 68
+      "ja": 68,
+      "en": 64
     },
     "script": {
       "ja": [
@@ -137,6 +195,32 @@
           "s": "",
           "t": "まとめです。複数のバグがつながっている時は、症状を分けず、原因から下流影響まで1本の因果として渡す。"
         }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hi. Today's topic is PySpark skew and OOM. There is a lot of jargon, but it gets easier when you read it as a chain of cause and effect."
+        },
+        {
+          "s": "",
+          "t": "In the problem, a window function is partitioned on the wrong key. As a result, data piles up in just a few partitions. That is data skew."
+        },
+        {
+          "s": "",
+          "t": "Then a downstream groupBy depends on that skewed output. A few executor nodes end up holding the huge, lopsided data, and they run out of memory. That is OOM, out of memory."
+        },
+        {
+          "s": "",
+          "t": "When you ask Claude for help, do not throw the window function issue and the OOM at it separately. Explain it in one detailed message: the wrong partition key creates skew, and the downstream groupBy hits OOM because of it."
+        },
+        {
+          "s": "",
+          "t": "The traps are options like just add memory, just split the script, or you do not need to mention the OOM. Each one drops the root cause."
+        },
+        {
+          "s": "",
+          "t": "To wrap up: when multiple bugs are linked, do not separate the symptoms. Hand over the whole thing as a single causal chain, from cause to downstream impact."
+        }
       ]
     }
   },
@@ -153,10 +237,12 @@
       "en": "Route the request to only the agents needed."
     },
     "audio": {
-      "ja": "audio/ep026-ja.mp3"
+      "ja": "audio/ep026-ja.mp3",
+      "en": "audio/ep026-en.mp3"
     },
     "duration": {
-      "ja": 67
+      "ja": 67,
+      "en": 61
     },
     "script": {
       "ja": [
@@ -184,6 +270,32 @@
           "s": "",
           "t": "まとめです。単純なクエリには必要な専門家だけ呼ぶ。全部呼ぶのは網羅的ですが、速くも安くもありません。"
         }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hi. Today's topic is routing in multi agent systems."
+        },
+        {
+          "s": "",
+          "t": "A real estate portal bot has three sub agents: property search, viewing booking, and contract status. The problem is it calls all three in parallel for every single question. So even when someone just asks what time their viewing is, it wastes tokens and time."
+        },
+        {
+          "s": "",
+          "t": "The optimization is to let the coordinator analyze the input first and dynamically pick only the sub agents it actually needs. That is the routing pattern."
+        },
+        {
+          "s": "",
+          "t": "For example, what time is my viewing only needs the viewing booking agent. Property search and contract status are not needed."
+        },
+        {
+          "s": "",
+          "t": "The distractors are: run everything and then filter, try them all in sequence, or merge everything into one giant model. With run then filter, the cost and latency have already happened."
+        },
+        {
+          "s": "",
+          "t": "To wrap up: for a simple query, call only the specialists you need. Calling everything is thorough, but it is neither fast nor cheap."
+        }
       ]
     }
   },
@@ -200,10 +312,12 @@
       "en": "Use upfront summaries and clear structure when chunking is not available."
     },
     "audio": {
-      "ja": "audio/ep025-ja.mp3"
+      "ja": "audio/ep025-ja.mp3",
+      "en": "audio/ep025-en.mp3"
     },
     "duration": {
-      "ja": 78
+      "ja": 78,
+      "en": 73
     },
     "script": {
       "ja": [
@@ -230,6 +344,32 @@
         {
           "s": "",
           "t": "まとめです。長文の真ん中落ちは、冒頭要約と明確な構造で軽減する。チャンキングできない時ほど、入力の見出しと要約が大事です。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hi. Today's topic is lost in the middle, the positional effect where the middle of a long prompt tends to get overlooked."
+        },
+        {
+          "s": "",
+          "t": "Picture a financial audit agent. You hand it a fifty page transaction log all at once. It catches the anomalies on the first five pages and the last five pages, but it misses an obvious anomaly sitting between pages twenty and thirty. That is exactly lost in the middle."
+        },
+        {
+          "s": "",
+          "t": "Normally, chunking, that is splitting the input into pieces, would help. But in this problem there is a strict latency requirement, so chunking is not allowed. So what do you do? The answer is to structure the input."
+        },
+        {
+          "s": "",
+          "t": "Put a summary of the key findings right at the top. Then break the log body into clear section headings, by page, by period, by transaction type. That way the model gets a map of the whole thing first."
+        },
+        {
+          "s": "",
+          "t": "The distractor options are: turn it into one continuous block of unformatted text, insert the system prompt over and over in the middle, or have it read in reverse order. None of those fix the root cause."
+        },
+        {
+          "s": "",
+          "t": "To wrap up: you soften the middle drop off with an upfront summary and clear structure. The less you can chunk, the more your headings and summaries matter."
         }
       ]
     }
