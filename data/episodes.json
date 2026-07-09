@@ -1,5 +1,80 @@
 [
   {
+    "id": "ep040",
+    "date": "2026-07-10",
+    "style": "solo",
+    "topic": {
+      "ja": "tool_choice強制のループ 〜エラー後はautoに戻す〜",
+      "en": "Escaping the Forced-Tool Loop"
+    },
+    "summary": {
+      "ja": "強制ツールをかけっぱなしにするとエラー時にループする。1回目だけ強制し、以降はautoに戻して回復させる。",
+      "en": "Leaving a forced tool on causes loops on error. Force once, then switch to auto so the model can recover."
+    },
+    "audio": {
+      "ja": "audio/ep040-ja.mp3",
+      "en": "audio/ep040-en.mp3"
+    },
+    "duration": {
+      "ja": 90,
+      "en": 79
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日は、ツールを強制する設定でボットが無限ループにハマる問題と、その直し方です。"
+        },
+        {
+          "s": "",
+          "t": "財務報告ボットが、最初のターンで税制コードの検証ツールを、ツールチョイスで強制的に呼び出すよう設定されています。ところが検証に失敗すると、ボットは同じ無効なデータで検証ツールを何度も呼び続けて、ループから抜けられなくなりました。"
+        },
+        {
+          "s": "",
+          "t": "正解は、最初の強制ターンの後、それ以降のリクエストではツールチョイスをオートに切り替えることです。"
+        },
+        {
+          "s": "",
+          "t": "理由はこうです。1ターン目は強制のままなので、検証は必ず一回は走る。そのうえで2ターン目以降をオートにすると、モデルはエラーの内容を見て、入力を直して再試行するか、人間に助けを求めるかを、自分で柔軟に選べるようになる。だからループが解けます。"
+        },
+        {
+          "s": "",
+          "t": "引っかけは3つ。エニーに変えると、どれか一つは使うけれど検証をスキップしうるのでダメ。強制のまま、システムプロンプトでペイロードを変えてと指示しても、エーピーアイの強制はプロンプトより強いので解けない。エラーを無視して処理する汎用ツールに置き換えるのは、握りつぶしで最悪の設計です。"
+        },
+        {
+          "s": "",
+          "t": "覚えることは一つ。強制ツールは、一回の保証のために使って、かけっぱなしにしない。回復や分岐が必要になったらオートに戻して、制御をモデルに返す。エーピーアイの強制はプロンプトより強い、です。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today: how a forced-tool setting can trap a bot in a loop, and how to fix it."
+        },
+        {
+          "s": "",
+          "t": "A financial reporting bot is set to force a tax-code verification tool on the very first turn, using tool_choice of type tool. But when verification fails, the bot keeps calling the same tool with the same invalid data and gets stuck in a loop."
+        },
+        {
+          "s": "",
+          "t": "The fix is simple: after that first forced turn, switch tool_choice to auto for all the following requests."
+        },
+        {
+          "s": "",
+          "t": "Here's why. The first turn stays forced, so verification is guaranteed to run once. From the second turn on, auto lets the model read the error and decide freely, fix the input and retry, or ask a human for help. That breaks the loop."
+        },
+        {
+          "s": "",
+          "t": "Three traps. Switching to any might skip verification, so it fails the requirement. Keeping the force and just telling it in a system prompt to change the payload won't work, because the API force overrides the prompt. And replacing it with a tool that ignores errors is silent failure, the worst design."
+        },
+        {
+          "s": "",
+          "t": "Remember one thing. Use forced tools to guarantee a single step, don't leave them on. When recovery is needed, switch back to auto and hand control to the model. The API's force is stronger than any prompt."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep039",
     "date": "2026-07-10",
     "style": "solo",
