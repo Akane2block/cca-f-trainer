@@ -2,6 +2,542 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep038",
+    "date": "2026-07-09",
+    "style": "solo",
+    "topic": {
+      "ja": "並列ツール呼び出しの結果は1メッセージにまとめて返す",
+      "en": "Return all parallel tool results in one message"
+    },
+    "summary": {
+      "ja": "複数のtool_useには、1つのuserメッセージに全tool_resultをまとめて返す。無効化は解決でない。",
+      "en": "For multiple tool calls, return all results in one user message; disabling parallel isn't the fix."
+    },
+    "audio": {
+      "ja": "audio/ep038-ja.mp3",
+      "en": "audio/ep038-en.mp3"
+    },
+    "duration": {
+      "ja": 58,
+      "en": 45
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、並列のツール呼び出しの結果の返し方です。"
+        },
+        {
+          "s": "",
+          "t": "Claudeが一回の返事に、二つのツール呼び出しを同時に入れてきました。開発者が最初の結果だけ返したら、Claudeが二件目の結果を繰り返し要求しました。"
+        },
+        {
+          "s": "",
+          "t": "正解は、返事に入っている全部のツール呼び出しを一つずつ実行して、それぞれの結果を、一つのユーザーメッセージにまとめて返すこと。各結果には、どの呼び出しへの答えかの番号を付けます。"
+        },
+        {
+          "s": "",
+          "t": "ここで、並列を無効にして回避、を選びがちですが、それは処理の直し方ではなく機能を殺しているだけ。ちなみに並列を止める設定は実在しますが、名前が違うし、この問題の正しい解決でもありません。"
+        },
+        {
+          "s": "",
+          "t": "まとめ。複数のツール呼び出しには、一つのメッセージに全部の結果をまとめて返す。失敗した分もエラーとして必ず含めます。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: how to return results for parallel tool calls."
+        },
+        {
+          "s": "",
+          "t": "The model put two tool calls in a single response. When the developer returned only the first result, the model kept asking for the second."
+        },
+        {
+          "s": "",
+          "t": "The fix: run every tool call in the response one by one, and return all the results in a single user message, each tagged with the id of the call it answers."
+        },
+        {
+          "s": "",
+          "t": "It's tempting to just disable parallel calls, but that kills a useful feature instead of fixing the handling. And while a setting to limit parallel calls does exist, its name is different and it isn't the right fix here anyway."
+        },
+        {
+          "s": "",
+          "t": "Takeaway: for multiple tool calls, return all results in one message, including any failures as errors."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep037",
+    "date": "2026-07-09",
+    "style": "solo",
+    "topic": {
+      "ja": "入力ミスのツールエラーは再試行不可で自己修正させる",
+      "en": "Input errors are not retryable — let the model self-correct"
+    },
+    "summary": {
+      "ja": "入力ミスは400 not-retryable＋正しい形式を明記。retryableはサーバー障害だけ。暗黙変換はNG。",
+      "en": "Input mistakes are not retryable; state the correct format. Only server errors are retryable."
+    },
+    "audio": {
+      "ja": "audio/ep037-ja.mp3",
+      "en": "audio/ep037-en.mp3"
+    },
+    "duration": {
+      "ja": 59,
+      "en": 50
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、ツールのエラーを、再試行できるかできないかで正しく区別する話です。"
+        },
+        {
+          "s": "",
+          "t": "予約システムで、バックエンドは年月日の順の日付を求めているのに、ユーザーが月日年の順で入れてパースエラーになりました。"
+        },
+        {
+          "s": "",
+          "t": "正解は、四百番のバリデーションエラーを返し、これは再試行不可、つまり内容を直さないと成功しないと示し、正しい形式が年月日の順だと明記すること。すると、Claudeが自分で直して、新しい呼び出しを作れます。"
+        },
+        {
+          "s": "",
+          "t": "ここで、再試行可能として返すのは誤り。再試行可能は、サーバーの過負荷など一時的な障害のためのものです。入力ミスは、内容を直すまで何度やっても失敗します。黙って自動変換するのも、サイレントフェイラーでダメです。"
+        },
+        {
+          "s": "",
+          "t": "まとめ。入力ミスは再試行不可、正しい形式を書いて返す。再試行可能はサーバー障害のときだけです。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: correctly classifying tool errors as retryable or not."
+        },
+        {
+          "s": "",
+          "t": "In a booking system, the backend wants dates in year-month-day order, but the user entered month-day-year, causing a parse error."
+        },
+        {
+          "s": "",
+          "t": "The fix: return a four hundred validation error, mark it not retryable, meaning it won't succeed without fixing the content, and clearly state the required year-month-day format. Then the model can correct itself and make a new call."
+        },
+        {
+          "s": "",
+          "t": "Returning it as retryable is wrong. Retryable is for temporary server problems like overload. An input mistake keeps failing until the content is fixed. Silently auto-converting is also wrong; that's a silent failure."
+        },
+        {
+          "s": "",
+          "t": "Takeaway: input errors are not retryable, so return the correct format. Only server problems are retryable."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep036",
+    "date": "2026-07-09",
+    "style": "solo",
+    "topic": {
+      "ja": "スキーマ厳密遵守、試験はprefill、現行は構造化出力",
+      "en": "Strict schema: exam says prefill, current is structured outputs"
+    },
+    "summary": {
+      "ja": "試験の正解はprefill。だが現行モデルでprefillは400。実務はstructured outputsで強制する。",
+      "en": "The exam answer is prefill, but on current models prefill 400s; in practice use structured outputs."
+    },
+    "audio": {
+      "ja": "audio/ep036-ja.mp3",
+      "en": "audio/ep036-en.mp3"
+    },
+    "duration": {
+      "ja": 60,
+      "en": 57
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、決まったJSON形式を厳密に守らせる方法。ただし試験の正解と、今のモデルの実態が違う、要注意の問題です。"
+        },
+        {
+          "s": "",
+          "t": "サポートの仕分けで、四つのフィールドだけのJSONを出させたいのに、Claudeが余計なフィールドを捏造する、という場面です。"
+        },
+        {
+          "s": "",
+          "t": "試験の正解は、事前入力。応答の冒頭を、開き波かっこと最初のキーで固定して、続きを埋めさせる古典的な手です。"
+        },
+        {
+          "s": "",
+          "t": "ただし重要な注意。今のモデル、オーパス四点六以降やソネット、フェイブルでは、この事前入力は廃止されていて、送るとエラーになります。今の正解は、構造化出力、アウトプットコンフィグのフォーマットでスキーマを強制することです。Few-shotも有効です。"
+        },
+        {
+          "s": "",
+          "t": "まとめ。試験では事前入力と覚える。でも実務では、事前入力は使えない。厳密なスキーマは構造化出力で守らせます。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: strictly enforcing a fixed JSON format. This one is tricky, because the exam's answer differs from how current models actually behave."
+        },
+        {
+          "s": "",
+          "t": "In a support triage system, the model kept inventing extra fields instead of returning only the four required ones."
+        },
+        {
+          "s": "",
+          "t": "The exam's answer is prefilling: hardcode the start of the response with the opening brace and first key, and let the model complete the rest. That's the classic technique."
+        },
+        {
+          "s": "",
+          "t": "But an important caveat: on current models, like Opus four point six and later, Sonnet, and Fable, prefilling is removed and returns an error. The modern answer is structured outputs, using output config format to enforce the schema. Few-shot examples also work."
+        },
+        {
+          "s": "",
+          "t": "Takeaway: for the exam, remember prefilling. In practice, prefilling no longer works; enforce a strict schema with structured outputs."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep035",
+    "date": "2026-07-09",
+    "style": "solo",
+    "topic": {
+      "ja": "MCP設定は共有はリポジトリ、個人はホームに分ける",
+      "en": "MCP config: shared in the repo, personal in home"
+    },
+    "summary": {
+      "ja": "共有MCPはリポジトリの設定、個人MCPはホームの設定。ルーティングサーバは過剰設計。",
+      "en": "Shared MCP in the repo config, personal MCP in the home config; a routing server is over-engineering."
+    },
+    "audio": {
+      "ja": "audio/ep035-ja.mp3",
+      "en": "audio/ep035-en.mp3"
+    },
+    "duration": {
+      "ja": 54,
+      "en": 46
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、Claude CodeのMCPサーバー設定を、共有用と個人用でどこに置くか、です。"
+        },
+        {
+          "s": "",
+          "t": "三十人のチーム全員が共有のGitHubサーバーを使いたい。一方リードは、個人の実験用サーバーを、まだチームに見せずローカルで試したい、という場面です。"
+        },
+        {
+          "s": "",
+          "t": "正解は、共有のGitHubサーバーはリポジトリの設定ファイルに、個人の実験用サーバーはユーザーのホームの設定ファイルに置くこと。共有はリポジトリ、個人はホーム、で分けるだけです。"
+        },
+        {
+          "s": "",
+          "t": "ここで、権限に応じて振り分ける巨大なサーバーを作る、を選びがちですが、個人テストのためにそれは過剰設計。設定ファイルを二つに分けるだけで足ります。"
+        },
+        {
+          "s": "",
+          "t": "まとめ。共有はリポジトリの設定に、個人はホームの設定に。分けるだけで、凝った仕組みは要りません。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: where to put Claude Code MCP server settings, for shared versus personal use."
+        },
+        {
+          "s": "",
+          "t": "A thirty-person team all needs a shared GitHub server, while the lead wants to test a personal, experimental server locally without showing it to the team yet."
+        },
+        {
+          "s": "",
+          "t": "The fix: put the shared GitHub server in the repository config file, and the personal experimental server in the user's home config file. Shared goes in the repo, personal goes in your home directory."
+        },
+        {
+          "s": "",
+          "t": "It's tempting to build one big server that routes based on permissions, but for personal testing that's over-engineering. Splitting the config into two files is enough."
+        },
+        {
+          "s": "",
+          "t": "Takeaway: shared in the repo config, personal in the home config. Just split them; no fancy machinery needed."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep034",
+    "date": "2026-07-09",
+    "style": "solo",
+    "topic": {
+      "ja": "バッチAPIは実行中に外へ出られない、データは事前注入",
+      "en": "Batch API can't reach out mid-run — prefetch data"
+    },
+    "summary": {
+      "ja": "バッチは非同期・自己完結でツール不可。必要な外部データは送信前にprefetchしてプロンプトに入れる。",
+      "en": "Batch is async and self-contained, no tools mid-run; prefetch external data into the prompt."
+    },
+    "audio": {
+      "ja": "audio/ep034-ja.mp3",
+      "en": "audio/ep034-en.mp3"
+    },
+    "duration": {
+      "ja": 54,
+      "en": 45
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、バッチAPIは実行中に外へ出られない、という話です。"
+        },
+        {
+          "s": "",
+          "t": "旅行会社が夜間に大量のメールをバッチ処理したい。でも今の同期版は、途中で会員情報を取るツールを呼んでいます。"
+        },
+        {
+          "s": "",
+          "t": "バッチAPIは非同期で完結する設計で、実行中に外部とやり取りできません。ツールの呼び出しも、途中で止まって応答を待つこともできない。だから必要な会員情報は、送信する前にあらかじめ取ってきて、プロンプトに直接入れておきます。"
+        },
+        {
+          "s": "",
+          "t": "ここで、途中でツールを呼ぶためにウェブフックを足す、を選びがちですが、バッチにそんな機能はありません。途中でツールが要るなら、同期のメッセージAPIを使います。"
+        },
+        {
+          "s": "",
+          "t": "まとめ。バッチは実行中に外へ出られない。必要な外部データは、送る前に全部プロンプトに入れます。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: the Batch API can't reach out during execution."
+        },
+        {
+          "s": "",
+          "t": "A travel agency wants to batch process thousands of emails overnight, but the current synchronous version calls a tool to fetch member info mid-way."
+        },
+        {
+          "s": "",
+          "t": "The Batch API is asynchronous and self-contained. It can't talk to the outside during a run, can't call tools, and can't pause to wait for a response. So fetch the member info beforehand and put it directly in each prompt."
+        },
+        {
+          "s": "",
+          "t": "It's tempting to add a webhook so tools can run mid-batch, but the Batch API has no such feature. If you need tools mid-conversation, use the synchronous Messages API."
+        },
+        {
+          "s": "",
+          "t": "Takeaway: batch can't reach out mid-run; prefetch all external data into the prompt before sending."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep033",
+    "date": "2026-07-09",
+    "style": "solo",
+    "topic": {
+      "ja": "プロジェクト基準はCLAUDE.mdに書く",
+      "en": "Put project rules in CLAUDE.md"
+    },
+    "summary": {
+      "ja": "一貫して守らせたい基準はCLAUDE.mdに明文化。pre-commitフックや存在しないフラグは事後矯正で不正解。",
+      "en": "Write consistent rules in CLAUDE.md; pre-commit hooks and made-up flags are after-the-fact patches."
+    },
+    "audio": {
+      "ja": "audio/ep033-ja.mp3",
+      "en": "audio/ep033-en.mp3"
+    },
+    "duration": {
+      "ja": 50,
+      "en": 40
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、プロジェクト固有のルールをClaude Codeに守らせる方法です。"
+        },
+        {
+          "s": "",
+          "t": "テストのカスタムモックを一貫して使わせたいのに、Claudeが従わない、という場面です。"
+        },
+        {
+          "s": "",
+          "t": "正解は、テスト基準やカスタムモックの場所を、プロジェクトのCLAUDE.mdに書くこと。これがClaude Codeにプロジェクトの決まりを学習させる標準の方法です。"
+        },
+        {
+          "s": "",
+          "t": "ここで、生成した後にコミット前フックで機械的に書き換える、を選びがちですが、それは事後の矯正で、最初から正しく作らせる事前ガイドにはなりません。存在しないコマンドフラグに頼るのも罠です。"
+        },
+        {
+          "s": "",
+          "t": "まとめ。一貫して守らせたい基準は、CLAUDE.mdに書く。フックやでっち上げのフラグではなく、設定ファイルで導きます。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: making Claude Code follow project-specific rules."
+        },
+        {
+          "s": "",
+          "t": "The goal was to make it consistently use custom test mocks, but it wouldn't."
+        },
+        {
+          "s": "",
+          "t": "The fix: write the test standards and the location of the custom mocks in the project's CLAUDE.md file. That's the standard way to teach Claude Code your project's conventions."
+        },
+        {
+          "s": "",
+          "t": "It's tempting to add a pre-commit hook that rewrites the code afterward, but that's a mechanical fix after the fact, not upfront guidance. Made-up command-line flags are another trap."
+        },
+        {
+          "s": "",
+          "t": "Takeaway: put rules you want consistently followed in CLAUDE.md; guide with the config file, not hooks or invented flags."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep032",
+    "date": "2026-07-09",
+    "style": "solo",
+    "topic": {
+      "ja": "ツールの実行順序はtool_choiceの強制で保証する",
+      "en": "Guarantee tool order with forced tool choice"
+    },
+    "summary": {
+      "ja": "順序を確実に守らせるのは、CoTプロンプトではなくtool_choiceの強制。1ターン目で強制、以降auto。",
+      "en": "Guarantee execution order with forced tool_choice, not a chain-of-thought prompt."
+    },
+    "audio": {
+      "ja": "audio/ep032-ja.mp3",
+      "en": "audio/ep032-en.mp3"
+    },
+    "duration": {
+      "ja": 53,
+      "en": 40
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、ツールの実行順序を確実に守らせる方法です。"
+        },
+        {
+          "s": "",
+          "t": "電子カルテ処理で、分類の前に必ず患者情報を記録したいのに、Claudeが記録をスキップして直接分類に進むことがありました。"
+        },
+        {
+          "s": "",
+          "t": "正解は、最初のターンでツール選択を強制する設定を使い、記録ツールを必ず呼ばせること。その結果を返してから、次のターンで自動選択に戻します。これで順序を百パーセント保証できます。"
+        },
+        {
+          "s": "",
+          "t": "ここで、ステップバイステップで考えて、とプロンプトで指示するのは推論の助けにはなりますが、順序の保証にはなりません。確実性が要るときは、自然言語ではなくプログラム側の制御で担保します。"
+        },
+        {
+          "s": "",
+          "t": "まとめ。順序の保証は、ツール選択の強制でやる。プロンプトのお願いは保証装置ではありません。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: guaranteeing the order in which tools run."
+        },
+        {
+          "s": "",
+          "t": "In a medical records pipeline, the model sometimes skipped recording the patient before classifying."
+        },
+        {
+          "s": "",
+          "t": "The fix: on the first turn, force the tool choice so the recording tool must run, return its result, then switch back to automatic on the next turn. That guarantees the order one hundred percent."
+        },
+        {
+          "s": "",
+          "t": "Telling the model to think step by step helps its reasoning, but it does not guarantee execution order. When you need certainty, enforce it in code, not in natural language."
+        },
+        {
+          "s": "",
+          "t": "Takeaway: guarantee order with forced tool choice; a prompt request is not a guarantee."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep031",
+    "date": "2026-07-09",
+    "style": "solo",
+    "topic": {
+      "ja": "Claude APIはステートレス、会話履歴は毎回渡す",
+      "en": "The Claude API is stateless — send the full history"
+    },
+    "summary": {
+      "ja": "数ターン前を繰り返すボット。全履歴をmessages配列に入れて毎回送る。要約やRAGは長くなってから。",
+      "en": "A bot repeating old questions — send the full history every time; summarize or use RAG only when it gets long."
+    },
+    "audio": {
+      "ja": "audio/ep031-ja.mp3",
+      "en": "audio/ep031-en.mp3"
+    },
+    "duration": {
+      "ja": 54,
+      "en": 42
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、Claude APIはステートレス、という話です。"
+        },
+        {
+          "s": "",
+          "t": "サポートボットが、数ターン前に答えた質問を何度も繰り返してユーザーを困らせていました。原因は、最新のメッセージと直前の質問しか送っていなかったことです。"
+        },
+        {
+          "s": "",
+          "t": "Claude APIは過去を自動で覚えません。だから会話の一貫性を保つには、これまでのやり取り全部を、毎回メッセージ配列に入れて送る必要があります。"
+        },
+        {
+          "s": "",
+          "t": "ここで、発言ごとに要約したり、ベクトル検索を足したり、と凝りたくなりますが、数ターンの短い会話ではそれは過剰設計です。まずは全履歴を素直に渡すのが正解です。"
+        },
+        {
+          "s": "",
+          "t": "まとめ。状態はアプリ側が持つ。過去のやり取りは毎回まとめて送る。要約やRAGは、会話が長くなって上限を超えそうになってから考えます。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: the Claude API is stateless."
+        },
+        {
+          "s": "",
+          "t": "A support bot kept repeating questions it had already answered, because it only sent the latest message and the previous question."
+        },
+        {
+          "s": "",
+          "t": "The Claude API does not remember past turns on its own. To keep a conversation consistent, you send the entire history every time, in the messages array."
+        },
+        {
+          "s": "",
+          "t": "It's tempting to summarize each turn or add vector search, but for a short conversation that's over-engineering. Just pass the full history first."
+        },
+        {
+          "s": "",
+          "t": "Takeaway: the app holds the state, send all prior turns every time, and reach for summarization or retrieval only when the conversation gets long enough to exceed the context window."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep030",
     "date": "2026-07-09",
     "style": "solo",
