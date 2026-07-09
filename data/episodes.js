@@ -2,6 +2,73 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep030",
+    "date": "2026-07-09",
+    "style": "solo",
+    "topic": {
+      "ja": "claude-code の専用機能はスラッシュコマンドで起動する",
+      "en": "Trigger Claude Code specialized features with slash commands"
+    },
+    "summary": {
+      "ja": "自動化パイプラインでセキュリティ分析が普通の会話になった理由。自然言語ではなく security-review のスラッシュコマンドで起動する。",
+      "en": "Why a pipeline's security analysis returned plain chat — use the security-review slash command, not a natural-language prompt."
+    },
+    "audio": {
+      "ja": "audio/ep030-ja.mp3",
+      "en": "audio/ep030-en.mp3"
+    },
+    "duration": {
+      "ja": 70,
+      "en": 61
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、claude-code の専用機能をどうやって起動するか、です。"
+        },
+        {
+          "s": "",
+          "t": "デプロイのパイプラインで claude-code にセキュリティ分析をさせたのに、脆弱性レポートではなく、ふつうの会話みたいな返答が返ってきました。渡したプロンプトは、作ったモジュールのセキュリティ脆弱性をレビューして、という自然言語の文でした。"
+        },
+        {
+          "s": "",
+          "t": "原因は、セキュリティレビュー専用のスラッシュコマンド、security-review を使わず、自然言語でお願いしたことです。claude-code の高度な機能は、スラッシュコマンドで叩いて初めて、適切なツールとコンテキストで動き出します。"
+        },
+        {
+          "s": "",
+          "t": "ここで、サンドボックスの設定が足りないから、と選びたくなりますが、それだと症状はエラーや、そもそも動かない、になるはずです。今回はふつうの会話が返っている。つまりツール自体は動いていて、専用のワークフローだけがトリガーされていない。この切り分けが決め手です。"
+        },
+        {
+          "s": "",
+          "t": "覚える一行。claude-code の専用機能は、自然言語ではなくスラッシュコマンドで叩く。機能の制御は、コマンドラインのフラグよりも、スラッシュコマンドが中心です。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic is how Claude Code triggers its specialized features."
+        },
+        {
+          "s": "",
+          "t": "In a deployment pipeline, Claude Code was asked to run a security analysis, but instead of a vulnerability report it returned a plain, conversational reply. The prompt was the natural-language sentence: review the security vulnerabilities of the new module."
+        },
+        {
+          "s": "",
+          "t": "The cause is using a natural-language prompt instead of the built-in security-review slash command. Claude Code's advanced features only fire with the right tools and context when you invoke them with a slash command."
+        },
+        {
+          "s": "",
+          "t": "It's tempting to blame a missing sandbox setup, but that would cause an error or a failure to run, not a normal conversational answer. A conversational reply means the tool is working and only the dedicated workflow was not triggered. That distinction is the key."
+        },
+        {
+          "s": "",
+          "t": "The takeaway: trigger Claude Code's specialized features with slash commands, not plain prose. Feature control lives in slash commands, not in command-line flags."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep029",
     "date": "2026-07-07",
     "style": "solo",

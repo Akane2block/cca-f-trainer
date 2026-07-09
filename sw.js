@@ -1,5 +1,5 @@
 /* オフライン用 Service Worker。問題を更新したら CACHE のバージョンを上げる。 */
-const CACHE = 'ccaf-v45';
+const CACHE = 'ccaf-v46';
 const ASSETS = [
   './',
   './index.html',
