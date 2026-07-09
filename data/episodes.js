@@ -2,6 +2,81 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep039",
+    "date": "2026-07-10",
+    "style": "solo",
+    "topic": {
+      "ja": "ClaudeでのTDD 〜テストは人間が先に書く〜",
+      "en": "Test-Driven Iteration with Claude"
+    },
+    "summary": {
+      "ja": "厳しい要件のコードをClaudeに書かせるとき、テストは実装から独立させ、人間が先に用意して失敗事実を返す。",
+      "en": "When Claude writes demanding code, keep tests independent, write them first, and feed back concrete failures."
+    },
+    "audio": {
+      "ja": "audio/ep039-ja.mp3",
+      "en": "audio/ep039-en.mp3"
+    },
+    "duration": {
+      "ja": 98,
+      "en": 79
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、Claudeでテスト駆動開発をやるときの鉄則です。"
+        },
+        {
+          "s": "",
+          "t": "たとえば、分散型のレート制限ミドルウェアを作るとします。競合状態、つまりレースコンディションを正しく処理して、しかも厳しいパフォーマンス要件を満たさないといけない。少しずつ、確実に正確性を上げていきたい場面です。"
+        },
+        {
+          "s": "",
+          "t": "正解のワークフローはこうです。まず開発者、つまり人間が、エッジケースと性能要件を網羅した厳格なテストスイートを先に用意する。それをClaudeの初期実装にぶつけて、どのテストがどう失敗したかという結果を渡して直させる。"
+        },
+        {
+          "s": "",
+          "t": "なぜこれが効くかというと、渡すのが客観的な失敗の事実だからです。もっともらしいだけの推測ではなく、テストが落ちたという証拠でフィードバックするので、ハルシネーションを防いで、複雑なコードの正確性を反復的に高められます。"
+        },
+        {
+          "s": "",
+          "t": "一番の引っかけは、コードとテストを同じプロンプトで一緒に生成させることです。これをやると、Claudeは自分の欠陥ロジックに合わせてテストを書いてしまうので、間違ったコードでもテストが通ってしまう。これが確証バイアスです。テストは実装から独立していないと、検証になりません。"
+        },
+        {
+          "s": "",
+          "t": "覚えることは一つ。テストは人間が実装より先に書いて、独立した客観基準にする。手動でデプロイして目視するのも、自然言語でロジックを説明させるのも、テスト駆動ではありません。独立した基準を先に置いて、失敗の事実を返して回す。これがベストプラクティスです。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic is the golden rule of doing test-driven development with Claude."
+        },
+        {
+          "s": "",
+          "t": "Say you're building distributed rate-limiting middleware. It has to handle race conditions correctly and meet strict performance requirements, and you want to improve correctness step by step."
+        },
+        {
+          "s": "",
+          "t": "Here's the right workflow. You, the developer, first write a comprehensive test suite that covers edge cases and performance requirements. Then you run it against Claude's initial implementation and feed the failing results back to guide the fixes."
+        },
+        {
+          "s": "",
+          "t": "Why does this work? Because the feedback is objective failure, not plausible-sounding guesswork. Concrete, failing tests prevent hallucination and let you raise the correctness of complex code iteratively."
+        },
+        {
+          "s": "",
+          "t": "The big trap is asking Claude to generate the code and the tests in a single prompt. It ends up writing tests that match its own flawed logic, so broken code still passes. That's confirmation bias. Tests only validate if they're independent of the implementation."
+        },
+        {
+          "s": "",
+          "t": "Remember one thing. Tests are written by a human, before the implementation, as an independent objective standard. Manually deploying and eyeballing, or explaining the logic in natural language, is not test-driven. Set the independent standard first, then feed back the failures and iterate."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep038",
     "date": "2026-07-09",
     "style": "solo",
