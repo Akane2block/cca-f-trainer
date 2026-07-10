@@ -2,6 +2,89 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep043",
+    "date": "2026-07-10",
+    "style": "solo",
+    "topic": {
+      "ja": "KISS原則と過剰設計を見抜く",
+      "en": "KISS and spotting over-engineering"
+    },
+    "summary": {
+      "ja": "スコープが1ファイルに収まる小タスクに、高度な仕組みを持ち込むのは過剰設計。正解は標準チャットか既存ツール1回。KISSとYAGNI",
+      "en": "For a one-file task, advanced machinery is over-engineering; the answer is plain chat or one tool call. KISS and YAGNI"
+    },
+    "audio": {
+      "ja": "audio/ep043-ja.mp3",
+      "en": "audio/ep043-en.mp3"
+    },
+    "duration": {
+      "ja": 111,
+      "en": 94
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、単純なタスクにおける過剰設計、オーバーエンジニアリングを見抜くことです。"
+        },
+        {
+          "s": "",
+          "t": "問題はこう。新人開発者が、たった一つのコンポーネントファイルの中の電話番号フィールドに、標準的な正規表現バリデーションを数行足したい。しかもスコープはこの一ファイルの中に完全に収まっている、と明記されています。認定アーキテクトとして、いちばん適切な推奨は何でしょう。"
+        },
+        {
+          "s": "",
+          "t": "私はここで、JSON Schemaでルールを一元化して参照させる、を選んで間違えました。一元化って一般には良い作法だし、ベストプラクティスっぽいですよね。でもそこが罠です。"
+        },
+        {
+          "s": "",
+          "t": "正解は、高度なエージェント機能を一切使わず、標準のチャットでコードを生成するか、既存のファイル編集ツールを一回だけ呼ぶこと。KISS、キープ・イット・シンプルです。"
+        },
+        {
+          "s": "",
+          "t": "他の選択肢は全部やりすぎ。computer use はGUI操作用で、テキスト編集にスクショとマウス操作を使うのは浪費。Programmatic Tool Calling でPythonを動的生成するのは不要な複雑さとエラーの元。カスタムツールにfew-shotを足すのは、目の前じゃなく未来のためで論点ずれ。そしてJSON Schemaの一元化は、一ファイルに収まると書いてあるのに将来の拡張を先取りする過剰設計です。"
+        },
+        {
+          "s": "",
+          "t": "つまずいた土台はこれ。問われているのは、このスコープに見合うか。ベストプラクティスは、常に高度化することじゃなくて、スコープに見合った最小の手段を選ぶこと。今いらない拡張性は作らない、YAGNIですね。"
+        },
+        {
+          "s": "",
+          "t": "覚える一行。スコープが小さいと書いてあったら、いちばん何もしない選択肢を疑え。直前に覚えた道具を反射で当てはめない。KISSとYAGNI。これで大丈夫です。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: spotting over-engineering on a simple task."
+        },
+        {
+          "s": "",
+          "t": "Here's the question. A junior dev wants to add a standard regex validation, just a few lines, to a phone-number field inside one single component file. And the prompt states the scope is fully contained in that one file. As a certified architect, what's the best recommendation?"
+        },
+        {
+          "s": "",
+          "t": "I picked defining the rule in a JSON Schema and referencing it, and got it wrong. Centralizing rules is generally good, it sounds like best practice. But that's exactly the trap."
+        },
+        {
+          "s": "",
+          "t": "The correct answer is to use no advanced agent features at all: just generate the code in plain chat, or call the existing file-edit tool once. KISS, keep it simple."
+        },
+        {
+          "s": "",
+          "t": "Everything else is too much. Computer use is for GUI actions, so screenshots and mouse clicks for a text edit are wasteful. Programmatic Tool Calling generating Python adds needless complexity and error risk. Adding few-shot to a custom tool is for the future, not this task. And centralizing into a JSON Schema is over-engineering when the scope is explicitly one file."
+        },
+        {
+          "s": "",
+          "t": "The core lesson: the question asks what fits this scope. Best practice isn't always going more advanced; it's choosing the smallest means that fits the scope. Don't build flexibility you don't need yet. That's YAGNI."
+        },
+        {
+          "s": "",
+          "t": "One line to remember: when the scope is small, be suspicious of the option that does the most. Don't reflexively apply the tool you just learned. KISS and YAGNI."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep042",
     "date": "2026-07-10",
     "style": "solo",
