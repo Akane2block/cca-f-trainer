@@ -2,6 +2,97 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep042",
+    "date": "2026-07-10",
+    "style": "solo",
+    "topic": {
+      "ja": "専門外ツールによるコンテキスト汚染",
+      "en": "Context pollution from off-domain tools"
+    },
+    "summary": {
+      "ja": "創作エージェントにコード実行ツールを足すと出力が汚染される。原因はツールの性質の不一致で、解決はサブエージェント分離",
+      "en": "Adding a code tool to a creative agent pollutes its output; the fix is separating it into a utility sub-agent"
+    },
+    "audio": {
+      "ja": "audio/ep042-ja.mp3",
+      "en": "audio/ep042-en.mp3"
+    },
+    "duration": {
+      "ja": 104,
+      "en": 93
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、専門外のツールが引き起こすコンテキスト汚染です。"
+        },
+        {
+          "s": "",
+          "t": "こんなケース。フィクションを書く創作エージェントに、単語数を数えたりテキストを整形するために、Pythonを実行するツールを足しました。すると物語の質が落ちて、話の中にPythonの構文やロジックのフローチャートが混ざるようになった。なぜでしょう。"
+        },
+        {
+          "s": "",
+          "t": "原因はこれ。ツールの名前や説明や使い方は、プロンプト、つまりコンテキストの一部としてモデルに渡ります。だから、たとえそのツールを一度も呼ばなくても、コードを書くという概念がずっと居座って、出力がそっちに引っ張られるんです。これがコンテキスト汚染です。"
+        },
+        {
+          "s": "",
+          "t": "正解の解決策は、そのツールを外して、整形や計算みたいな技術処理は、専用のユーティリティ・エージェントに任せること。創作エージェントは創作だけに集中させて、コンテキストを純粋に保つ。これがサブエージェント・パターンです。"
+        },
+        {
+          "s": "",
+          "t": "引っかけを潰しておきましょう。Pythonをbashに置き換える、は無意味。コード実行という概念が残る限り汚染は続きます。"
+        },
+        {
+          "s": "",
+          "t": "tool_choice を auto から any に変える、も外れ。any は必ず何かツールを使わせるだけで、出力にコードが漏れる問題は直りません。"
+        },
+        {
+          "s": "",
+          "t": "ツールが多すぎるから汎用ツールに統合、も違う。原因は数じゃなくて性質の不一致。しかも汎用化は説明が曖昧になってモデルが混乱するので、ふつうは非推奨です。"
+        },
+        {
+          "s": "",
+          "t": "覚える一行。問題はツールの数じゃなくて性質。専門エージェントに専門外の道具を混ぜるな、別のエージェントに投げろ。これでオッケーです。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: context pollution caused by off-domain tools."
+        },
+        {
+          "s": "",
+          "t": "Here's the case. A creative agent that writes fiction gets a Python-execution tool added, just to count words and format text. Suddenly the stories get worse, with Python syntax and logic flowcharts leaking into the prose. Why?"
+        },
+        {
+          "s": "",
+          "t": "The cause: a tool's name, description, and usage all go to the model as part of the prompt, part of the context. So even if the tool is never called, the concept of writing code sticks around and drags the output toward it. That's context pollution."
+        },
+        {
+          "s": "",
+          "t": "The correct fix is to remove that tool and route technical work, like formatting and counting, to a dedicated utility sub-agent. Keep the creative agent focused only on writing, so its context stays clean. That's the sub-agent pattern."
+        },
+        {
+          "s": "",
+          "t": "Let's kill the traps. Swapping Python for bash does nothing; as long as code execution stays in context, the pollution continues."
+        },
+        {
+          "s": "",
+          "t": "Changing tool_choice from auto to any is also wrong. Any just forces the agent to use some tool; it doesn't stop code from leaking into the output."
+        },
+        {
+          "s": "",
+          "t": "And blaming the tool count, then merging into one generic tool, misses it too. The issue is mismatched nature, not number, and generic tools blur descriptions and confuse the model, so they're usually discouraged."
+        },
+        {
+          "s": "",
+          "t": "One line to remember: it's not the number of tools, it's their nature. Don't mix off-domain tools into a specialist agent; route them to another agent."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep041",
     "date": "2026-07-10",
     "style": "solo",
