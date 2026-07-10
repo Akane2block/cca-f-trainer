@@ -1,5 +1,88 @@
 [
   {
+    "id": "ep041",
+    "date": "2026-07-10",
+    "style": "solo",
+    "topic": {
+      "ja": "拡張子のないファイルをpathsでスコープする",
+      "en": "Scoping extensionless files with paths"
+    },
+    "summary": {
+      "ja": "Claude Codeのルールを、Jenkinsfileのような拡張子なしファイルに、どの階層でも効かせるpathsの書き方",
+      "en": "How to scope a Claude Code rule to extensionless files like Jenkinsfile at any depth"
+    },
+    "audio": {
+      "ja": "audio/ep041-ja.mp3",
+      "en": "audio/ep041-en.mp3"
+    },
+    "duration": {
+      "ja": 97,
+      "en": 75
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、Claude Codeのルールを、拡張子のないファイルに効かせるパスの書き方です。"
+        },
+        {
+          "s": "",
+          "t": "こんな状況を考えます。リポジトリのあちこちに置かれた Jenkinsfile と Vagrantfile を、Claudeが編集するたびに、決まったフォーマット規則を必ず守らせたい。でもこの二つには拡張子がなく、どのフォルダにあるかも分かりません。"
+        },
+        {
+          "s": "",
+          "t": "正解は、ドットクロード・ルールズのマークダウンの先頭、YAMLフロントマターに paths を書くことです。値は、ダブルアスタリスク・スラッシュ・Jenkinsfile と、ダブルアスタリスク・スラッシュ・Vagrantfile。"
+        },
+        {
+          "s": "",
+          "t": "ダブルアスタリスク・スラッシュは、どの階層でも一致する、という意味。その後ろにファイル名そのものを書けば完全一致です。拡張子がなくても、名前を直接グロブで書けば対象にできます。"
+        },
+        {
+          "s": "",
+          "t": "引っかけはここ。前後にアスタリスクを付けて、アスタリスク・Jenkinsfile・アスタリスクにすると、Old アンダーバー Jenkinsfile アンダーバー backup みたいな別ファイルまで拾ってしまう、過剰一致です。完全一致にワイルドカードは要りません。"
+        },
+        {
+          "s": "",
+          "t": "他のダミーも覚えておきましょう。extensions は、そもそも Jenkinsfile は拡張子じゃないので使えない。files や scope グローバルは、存在しないキーです。正しいのは paths、または globs だけ。"
+        },
+        {
+          "s": "",
+          "t": "まとめ。どこでも、はダブルアスタリスク・スラッシュ。ちょうどこの名前、はファイル名そのまま。拡張子のないファイルは、名前を直にグロブする。これで大丈夫です。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: how to scope a Claude Code rule to files that have no extension."
+        },
+        {
+          "s": "",
+          "t": "Picture this. Jenkinsfile and Vagrantfile are scattered across the repo, and you want Claude to enforce a formatting rule every time it edits them. But these files have no extension, and they can live in any directory."
+        },
+        {
+          "s": "",
+          "t": "The answer is to put paths in the YAML frontmatter of a dot-claude-rules markdown file, set to double-star-slash Jenkinsfile and double-star-slash Vagrantfile."
+        },
+        {
+          "s": "",
+          "t": "Double-star-slash means any directory depth. Follow it with the literal filename for an exact match. No extension needed. You just glob the name itself."
+        },
+        {
+          "s": "",
+          "t": "Here's the trap. Wrapping the name in stars, like star-Jenkinsfile-star, over-matches. It would also catch things like Old-underscore-Jenkinsfile-underscore-backup. For an exact name, you don't add wildcards."
+        },
+        {
+          "s": "",
+          "t": "And the fake keys: extensions won't work because Jenkinsfile isn't an extension, and files with scope global simply don't exist. The only valid key is paths, or globs."
+        },
+        {
+          "s": "",
+          "t": "So: any location, use double-star-slash. Exact name, write the filename as is. For extensionless files, glob the name directly."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep040",
     "date": "2026-07-10",
     "style": "solo",
