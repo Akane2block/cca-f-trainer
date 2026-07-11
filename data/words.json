@@ -8,5 +8,115 @@
     "audio": "audio/word-001-delegate.mp3",
     "duration": 12,
     "date": "2026-07-11"
+  },
+  {
+    "index": 2,
+    "word": "capabilities",
+    "theme": "エージェント設計",
+    "definition_en": "the specific abilities or functions an agent or tool has",
+    "example_en": "Route the task to a sub-agent with the right capabilities, such as web search.",
+    "audio": "audio/word-002-capabilities.mp3",
+    "duration": 13,
+    "date": "2026-07-12"
+  },
+  {
+    "index": 3,
+    "word": "premature",
+    "theme": "エージェント設計",
+    "definition_en": "happening too early, before the right time",
+    "example_en": "Giving the drawing agent the simulation tool caused premature tool execution before the drawing was finished.",
+    "audio": "audio/word-003-premature.mp3",
+    "duration": 13,
+    "date": "2026-07-12"
+  },
+  {
+    "index": 4,
+    "word": "verify",
+    "theme": "検証・構造化出力",
+    "definition_en": "to check that something is true or correct",
+    "example_en": "Use an independent reviewer agent to verify the assignments, not the agent that made them.",
+    "audio": "audio/word-004-verify.mp3",
+    "duration": 12,
+    "date": "2026-07-12"
+  },
+  {
+    "index": 5,
+    "word": "validity",
+    "theme": "検証・構造化出力",
+    "definition_en": "the quality of being logically correct or well founded",
+    "example_en": "The critique block was added to check the validity of the task assignments.",
+    "audio": "audio/word-005-validity.mp3",
+    "duration": 11,
+    "date": "2026-07-12"
+  },
+  {
+    "index": 6,
+    "word": "attention dilution",
+    "theme": "コンテキスト管理",
+    "definition_en": "when too much information weakens the model's focus on what matters",
+    "example_en": "Reading hundreds of files at once causes attention dilution and lowers accuracy.",
+    "audio": "audio/word-006-attention-dilution.mp3",
+    "duration": 14,
+    "date": "2026-07-12"
+  },
+  {
+    "index": 7,
+    "word": "self-justification",
+    "theme": "コンテキスト管理",
+    "definition_en": "the tendency to defend your own previous decision instead of finding its errors",
+    "example_en": "In the same session the model shows self-justification and cannot spot its own mistakes.",
+    "audio": "audio/word-007-self-justification.mp3",
+    "duration": 16,
+    "date": "2026-07-12"
+  },
+  {
+    "index": 8,
+    "word": "confirmation bias",
+    "theme": "コンテキスト管理",
+    "definition_en": "the tendency to favor information that supports your existing conclusion",
+    "example_en": "Generating and critiquing in one context invites confirmation bias.",
+    "audio": "audio/word-008-confirmation-bias.mp3",
+    "duration": 14,
+    "date": "2026-07-12"
+  },
+  {
+    "index": 9,
+    "word": "residential proxy",
+    "theme": "ツール・MCP",
+    "definition_en": "a proxy server that routes requests through a home internet connection to look like a normal user",
+    "example_en": "Delegate the scraping to a sub-agent with residential proxy capabilities to avoid IP blocks.",
+    "audio": "audio/word-009-residential-proxy.mp3",
+    "duration": 17,
+    "date": "2026-07-12"
+  },
+  {
+    "index": 10,
+    "word": "compliant",
+    "theme": "汎用",
+    "definition_en": "following the required rules or standards",
+    "example_en": "The agent flags products that are not compliant with the safety standards.",
+    "audio": "audio/word-010-compliant.mp3",
+    "duration": 11,
+    "date": "2026-07-12"
+  },
+  {
+    "index": 11,
+    "word": "ingest",
+    "theme": "ツール・MCP",
+    "definition_en": "to take in a whole set of data at once",
+    "example_en": "Publish the catalog as an MCP resource so the agent can ingest the entire dataset.",
+    "audio": "audio/word-011-ingest.mp3",
+    "duration": 12,
+    "date": "2026-07-12"
+  },
+  {
+    "index": 12,
+    "word": "middleware",
+    "theme": "ツール・MCP",
+    "definition_en": "a software layer between the app and a tool, used here to filter data before it reaches the model",
+    "example_en": "Filter the payload in middleware so the model receives only the needed fields.",
+    "audio": "audio/word-012-middleware.mp3",
+    "duration": 14,
+    "date": "2026-07-12"
   }
 ]
