@@ -1,5 +1,88 @@
 [
   {
+    "id": "ep045",
+    "date": "2026-07-11",
+    "style": "solo",
+    "topic": {
+      "ja": "大規模コードは全部読むな、Search-then-Read",
+      "en": "Big Codebases: Search-then-Read, Don't Read Everything"
+    },
+    "summary": {
+      "ja": "関連ファイルを一度に全部読むとコンテキストが飽和して精度が落ちる。Grepで入口を1つ見つけ、そこからReadで依存を順次たどる。",
+      "en": "Reading every related file at once saturates the context and drops accuracy. Grep to find one entry point, then Read imports iteratively."
+    },
+    "audio": {
+      "ja": "audio/ep045-ja.mp3",
+      "en": "audio/ep045-en.mp3"
+    },
+    "duration": {
+      "ja": 82,
+      "en": 72
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、大規模なコードは全部読むな、Search-then-Read です。"
+        },
+        {
+          "s": "",
+          "t": "たとえば、五百ファイル以上あるEコマースのリポジトリで、事前知識ゼロの状態で税計算のロジックを直す。こういう場面です。"
+        },
+        {
+          "s": "",
+          "t": "後輩が、ファイル名に tax を含むファイルを全部検索して、一度に全部読み込もう、と提案してきました。これを却下する理由は何でしょう。"
+        },
+        {
+          "s": "",
+          "t": "理由はコンテキストの飽和です。関連しそうを闇雲に全部読むと、無関係な情報がノイズになって、肝心のロジックが埋もれ、モデルの精度が落ちる。コンテキストは、量よりも質なんです。"
+        },
+        {
+          "s": "",
+          "t": "正しい手順は、まず Grep で計算の入口、エントリポイントを一つ特定する。そこから Read で import や依存関係を順番にたどる。必要な糸だけをたぐるので、最小のコンテキストで全容がつかめます。"
+        },
+        {
+          "s": "",
+          "t": "引っかけは、もっともらしい前提の断定。計算ロジックは普通データベース側だから、スキーマだけ読めばいい、という選択肢。でも税計算はたいていアプリのコード内にあります。前提を鵜呑みにしないこと。"
+        },
+        {
+          "s": "",
+          "t": "三十秒まとめ。関連しそうを全部読むな。入口を一つ見つけて、そこから糸をたぐれ。Search-then-Read。量より質です。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's theme: for big codebases, don't read everything. Search, then read."
+        },
+        {
+          "s": "",
+          "t": "Say you must fix tax calculation logic in an e-commerce repo with over 500 files, and you have zero prior knowledge of the project."
+        },
+        {
+          "s": "",
+          "t": "A junior suggests: search every file whose name contains tax, and read them all at once. Why reject this?"
+        },
+        {
+          "s": "",
+          "t": "Because of context saturation. Blindly reading everything related buries the real logic in noise, wastes tokens, and lowers accuracy. Context is about quality, not quantity."
+        },
+        {
+          "s": "",
+          "t": "The right procedure: first use Grep to find one entry point for the calculation. Then Read, following its imports and dependencies step by step. You pull only the threads you need, so you grasp the whole with minimal context."
+        },
+        {
+          "s": "",
+          "t": "The trap is a plausible-sounding assumption: calculation logic usually lives in the database, so just read the schema. But tax logic almost always lives in application code. Don't swallow the premise whole."
+        },
+        {
+          "s": "",
+          "t": "Thirty-second recap. Don't read every related file. Find one entry point and pull the thread from there. Search-then-read. Quality over quantity."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep044",
     "date": "2026-07-11",
     "style": "solo",
