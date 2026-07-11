@@ -160,24 +160,33 @@ def bump_versions():
     return ver
 
 
-def add_to_apple_music(paths):
-    """CCA-F Podcast プレイリストへ追加（無ければ作成）。失敗しても致命的にはしない。"""
+def add_paths_to_playlist(playlist_name, paths):
+    """指定プレイリストへ追加（無ければ作成）。失敗しても致命的にはしない。"""
+    if not paths:
+        return
     adds = "\n".join(
         f'  add (POSIX file "{p}") to pl\n  delay 2' for p in paths)
     script = f'''
 tell application "Music"
-  if not (exists user playlist "CCA-F Podcast") then
-    make new user playlist with properties {{name:"CCA-F Podcast"}}
+  if not (exists user playlist "{playlist_name}") then
+    make new user playlist with properties {{name:"{playlist_name}"}}
   end if
-  set pl to user playlist "CCA-F Podcast"
+  set pl to user playlist "{playlist_name}"
 {adds}
 end tell
 '''
     try:
         subprocess.run(["osascript", "-e", script], capture_output=True, timeout=90, check=True)
-        print("  Apple Music: CCA-F Podcast に追加")
+        print(f"  Apple Music: {playlist_name} に追加")
     except Exception as e:
         print(f"  Apple Music 追加はスキップ（{e}）。あとで手動追加可")
+
+
+def add_to_apple_music(ja_path, en_path=None):
+    """問題エピソードを言語別プレイリストへ振り分け（日→Japanese / 英→English）。"""
+    add_paths_to_playlist("CCA-F Podcast Japanese", [ja_path])
+    if en_path:
+        add_paths_to_playlist("CCA-F Podcast English", [en_path])
 
 
 # ---- メイン ----
@@ -219,7 +228,7 @@ def main():
     tag(ja_path, f"第{track}回 {spec['topic']['ja']}", track)
     dur = {"ja": duration(ja_path)}
     audio = {"ja": f"audio/{eid}-ja.mp3"}
-    music_paths = [ja_path]
+    en_ok = False
 
     if en_lines:
         try:
@@ -227,7 +236,7 @@ def main():
             tag(en_path, f"Ep.{track} {spec['topic']['en']}", track)
             dur["en"] = duration(en_path)
             audio["en"] = f"audio/{eid}-en.mp3"
-            music_paths.append(en_path)
+            en_ok = True
         except Exception as e:
             print(f"  英語生成をスキップ（{e}）。日本語のみで登録")
 
@@ -243,7 +252,7 @@ def main():
     ver = bump_versions()
 
     if not args.no_music:
-        add_to_apple_music(music_paths)
+        add_to_apple_music(ja_path, en_path if en_ok else None)
 
     print(f"\n完了: {eid}（{spec['topic']['ja']}） ja={dur.get('ja')}s en={dur.get('en', '-')}s / version {ver}")
     print("次: cca-f-trainer を git commit（push は富永さんの承認後）")

@@ -2,6 +2,89 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep046",
+    "date": "2026-07-12",
+    "style": "solo",
+    "topic": {
+      "ja": "大量データはツール連打でなくMCPリソースで丸ごと渡す",
+      "en": "Bulk Data: Serve It as an MCP Resource, Don't Loop Tools"
+    },
+    "summary": {
+      "ja": "数百回のツール呼び出しはレートリミットと目的の見失いを招く。データセットはMCPリソースとして文脈ごと渡す。キャッシュは初回の連打を消せない。",
+      "en": "Hundreds of tool calls hit rate limits and lose the goal. Serve the dataset as an MCP resource. Caching can't remove the first-run flood."
+    },
+    "audio": {
+      "ja": "audio/ep046-ja.mp3",
+      "en": "audio/ep046-en.mp3"
+    },
+    "duration": {
+      "ja": 101,
+      "en": 89
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、大量データはツールの連打でなく、MCPリソースで丸ごと渡す、です。"
+        },
+        {
+          "s": "",
+          "t": "たとえば、物流エージェントが数百のサプライヤーの製品仕様をレビューして、安全基準に不適合な製品を見つける。今は list_products で一覧を取って、製品ごとに get_product_spec を何百回も連続で呼んでいます。"
+        },
+        {
+          "s": "",
+          "t": "すると二つ困ることが起きます。一つ、外部のレートリミットに何度も当たる。二つ、繰り返しのやり取りでコンテキストが更新され続けて、本来の目的、つまり適合判定を見失う。"
+        },
+        {
+          "s": "",
+          "t": "答えは、全製品の仕様を、あらかじめ用意したカタログとして MCP のリソースで公開すること。エージェントは探索的なツール呼び出しをせずに、データセット全体を文脈として一度に取り込めます。呼び出し回数そのものが消えるんです。"
+        },
+        {
+          "s": "",
+          "t": "ここで大事な区別。MCP のツールは、動作を一件ずつ呼ぶもの。MCP のリソースは、読み取り専用のデータを丸ごと文脈として渡すもの。探索的に何度も取りに行く形が見えたら、リソース化を疑ってください。"
+        },
+        {
+          "s": "",
+          "t": "引っかけはキャッシュ。私はこれを選んで間違えました。キャッシュは同じデータの二回目以降を速くするだけで、初回の大量呼び出しも、コンテキストの肥大も消せません。繰り返し呼ぶこと自体が問題なら、呼ぶ回数をゼロにするのが正解です。"
+        },
+        {
+          "s": "",
+          "t": "三十秒まとめ。何百回もツールを叩くな。データは MCP リソースで丸ごと渡す。キャッシュは初回の連打を消せない。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's theme: for bulk data, serve it as an MCP resource. Don't loop tools."
+        },
+        {
+          "s": "",
+          "t": "Say a logistics agent reviews product specs from hundreds of suppliers to find items that are not compliant with safety standards. Right now it lists products, then calls get_product_spec hundreds of times in a row."
+        },
+        {
+          "s": "",
+          "t": "Two problems follow. One, it keeps hitting the external rate limits. Two, the repetitive back-and-forth keeps rewriting the context, so the agent loses sight of its real goal: the compliance check."
+        },
+        {
+          "s": "",
+          "t": "The answer: publish all the specs as a pre-compiled catalog, exposed as an MCP resource. The agent ingests the whole dataset as context, with no exploratory tool calls. The call count simply disappears."
+        },
+        {
+          "s": "",
+          "t": "Key distinction. MCP tools are actions you call one item at a time. MCP resources are read-only data handed over as context in one shot. When you see exploratory, repeated fetching, suspect that it should be a resource."
+        },
+        {
+          "s": "",
+          "t": "The trap is caching. I picked it and got it wrong. Caching only speeds up the second fetch of the same data. It doesn't remove the first-run flood of calls, and it doesn't fix context bloat. If repeated calling is the problem, drive the call count to zero."
+        },
+        {
+          "s": "",
+          "t": "Thirty-second recap. Don't hammer a tool hundreds of times. Serve the data as an MCP resource. Caching can't erase the first-run flood."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep045",
     "date": "2026-07-11",
     "style": "solo",

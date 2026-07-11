@@ -1,0 +1,12 @@
+[
+  {
+    "index": 1,
+    "word": "delegate",
+    "theme": "エージェント設計",
+    "definition_en": "to hand a task to another agent instead of doing it yourself",
+    "example_en": "The coordinator delegates the task to a sub-agent with proxy capabilities.",
+    "audio": "audio/word-001-delegate.mp3",
+    "duration": 12,
+    "date": "2026-07-11"
+  }
+]
