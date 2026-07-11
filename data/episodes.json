@@ -1,5 +1,80 @@
 [
   {
+    "id": "ep044",
+    "date": "2026-07-11",
+    "style": "solo",
+    "topic": {
+      "ja": "ファイルの全置換は Edit ではなく Write",
+      "en": "Full File Replacement: Use Write, Not Edit"
+    },
+    "summary": {
+      "ja": "古い中身を全部捨てて別物にするなら Write でまるごと上書き。全体を Edit でマッチさせようとするとマッチ失敗で壊れる。",
+      "en": "If you throw away all the old content, overwrite the whole file with Write. Matching a huge block with Edit just fails."
+    },
+    "audio": {
+      "ja": "audio/ep044-ja.mp3",
+      "en": "audio/ep044-en.mp3"
+    },
+    "duration": {
+      "ja": 72,
+      "en": 61
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、ファイルの全置換は Edit ではなく Write を使う、です。"
+        },
+        {
+          "s": "",
+          "t": "たとえば、三百行の古い Dockerfile を、チームがくれた最新の二十行の構成に完全に置き換えたい。こういう場面です。"
+        },
+        {
+          "s": "",
+          "t": "答えは、Write ツールで全体をまるごと上書きする。これが最短で、いちばん確実です。"
+        },
+        {
+          "s": "",
+          "t": "なぜかというと、古い中身を一文字も残さないからです。残さないなら、古い中身を探す必要がまったくない。だから、検索して差し替える Edit を使う理由がゼロなんです。"
+        },
+        {
+          "s": "",
+          "t": "引っかけは、Edit で最初と最後の行をマッチさせて全体を置換、という選択肢。Edit は、古い文字列が実際のファイルと完全に一致しないと失敗します。三百行を一つのブロックとして渡すと、空白や改行が一つズレただけで、まるごとマッチ失敗する。全置換に Edit は向いていません。"
+        },
+        {
+          "s": "",
+          "t": "三十秒まとめ。捨てて書き直すなら Write、残して一部だけ直すなら Edit。範囲の大きさで選ばない。古い中身を残すか捨てるかで選ぶ。全置換で Edit を選んだら、それがワナです。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's theme: for a full file replacement, use Write, not Edit."
+        },
+        {
+          "s": "",
+          "t": "Say you need to replace a 300-line old Dockerfile with a clean 20-line config from your platform team."
+        },
+        {
+          "s": "",
+          "t": "The answer is to overwrite the whole file with the Write tool. It's the shortest and most reliable path."
+        },
+        {
+          "s": "",
+          "t": "Why? Because you keep none of the old content. If you keep none of it, you never need to find it, so there is zero reason to use Edit, which is find and replace."
+        },
+        {
+          "s": "",
+          "t": "The trap is the option that says: use Edit, match the first and last lines, and replace everything in between. Edit fails unless the old_string matches the file exactly. Pass 300 lines as one block, and a single stray space or newline makes the whole match fail."
+        },
+        {
+          "s": "",
+          "t": "Thirty-second recap. Throwing it away and rewriting? Write. Keeping it and fixing part of it? Edit. Don't choose by how big the change is; choose by whether you keep the old content. Picking Edit for a full replacement is the trap."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep043",
     "date": "2026-07-10",
     "style": "solo",
