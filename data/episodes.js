@@ -2,6 +2,89 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep047",
+    "date": "2026-07-12",
+    "style": "solo",
+    "topic": {
+      "ja": "CLAUDE.mdの探索は上方向だけ。共通ルールはルートか.claude/rulesへ",
+      "en": "CLAUDE.md is discovered upward only. Put shared rules at the root or .claude/rules"
+    },
+    "summary": {
+      "ja": "Claude Codeは開始ディレクトリから親へ、上方向にだけCLAUDE.mdを探す。だからルート起動ではサブディレクトリのbackend/CLAUDE.mdは自動で読まれない。全体で効かせたいルールはルート直下かdot claude slash rulesへ。",
+      "en": "Claude Code searches for CLAUDE.md upward, from the start directory toward parents. So a subdirectory's backend/CLAUDE.md is not loaded when you start at the root. Put shared rules at the root or in dot-claude-slash-rules."
+    },
+    "audio": {
+      "ja": "audio/ep047-ja.mp3",
+      "en": "audio/ep047-en.mp3"
+    },
+    "duration": {
+      "ja": 98,
+      "en": 75
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、Claude Codeで『ディレクトリを移動すると、急にルールを守るようになる』という不思議な現象です。"
+        },
+        {
+          "s": "",
+          "t": "たとえば、フロントエンドとバックエンドに分かれたプロジェクトで、プロジェクトのルートからClaude Codeを立ち上げてAPIの更新を頼むと、データベースのスキーマを勝手にでっち上げて、ハルシネーションを起こします。"
+        },
+        {
+          "s": "",
+          "t": "ところが、バックエンドのフォルダに移動してから、まったく同じ質問をすると、今度はbackendのCLAUDE.mdに書かれたスキーマ規則を、完璧に守るんです。"
+        },
+        {
+          "s": "",
+          "t": "正体は、CLAUDE.mdの自動発見が『今いる場所から親のほう、つまり上方向にだけ』走ることです。ルートで起動すると上を辿るだけなので、下にあるbackendのCLAUDE.mdは読み込まれません。"
+        },
+        {
+          "s": "",
+          "t": "だから解決策は、プロジェクト全体で効かせたいスキーマ規則を、ルート直下のCLAUDE.mdか、ドットクロード・スラッシュ・rulesの中に置くこと。そうすれば、どのフォルダから起動しても自動で見つかります。まずはスラッシュmemoryで、今なにが読み込まれているかを確認しましょう。"
+        },
+        {
+          "s": "",
+          "t": "引っかけは三つ。ユーザーレベルのホームのdotクロードにインポートするのは全プロジェクトを汚染するのでダメ。毎回手動でmemory loadするのは手間で、根本解決になっていない。そして、slash config syncというコマンドは、そもそも存在しません。"
+        },
+        {
+          "s": "",
+          "t": "覚えることは一つ。CLAUDE.mdは上にしか自動で効かない。全体で効かせたいなら、置き場所をルート直下か、ドットクロード・スラッシュ・rulesに直す。これが正解です。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic is a puzzling Claude Code behavior: moving into a different directory suddenly makes the agent follow the rules."
+        },
+        {
+          "s": "",
+          "t": "In a project split into frontend and backend, if you start Claude Code from the project root and ask for API updates, it hallucinates the database schema."
+        },
+        {
+          "s": "",
+          "t": "But move into the backend directory, ask the exact same question, and it perfectly follows the schema rules in backend's CLAUDE.md."
+        },
+        {
+          "s": "",
+          "t": "The reason is that CLAUDE.md is discovered only upward, from your current directory toward its parents. Start at the root, and a subdirectory's backend CLAUDE.md is never loaded."
+        },
+        {
+          "s": "",
+          "t": "So the fix is to move the shared schema rules to the root CLAUDE.md, or into dot-claude-slash-rules, so they are auto-discovered no matter where you start. First, run slash memory to check what is currently loaded."
+        },
+        {
+          "s": "",
+          "t": "Watch the traps: importing into the user-level home dot-claude pollutes every project; manually running memory-load each time is just a workaround; and slash config sync is not a real command."
+        },
+        {
+          "s": "",
+          "t": "Remember one thing: CLAUDE.md only takes effect upward. To apply it project-wide, fix its location, at the root or in dot-claude-slash-rules."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep046",
     "date": "2026-07-12",
     "style": "solo",
