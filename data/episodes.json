@@ -1,5 +1,80 @@
 [
   {
+    "id": "ep051",
+    "date": "2026-07-14",
+    "style": "solo",
+    "topic": {
+      "ja": "圧縮が正解になる場合と、スクラッチパッドが正解になる場合の使い分け",
+      "en": "When compaction is the right call, and when an external scratchpad is the right call instead"
+    },
+    "summary": {
+      "ja": "セキュリティ調査エージェントが大量ログでトークン上限に近づいたら、正解はサブエージェント委譲ではなく/compact。昨日の問題9との対比で使い分けを整理する。",
+      "en": "When a security investigation agent nears the token limit from bulk logs, the answer is /compact, not delegating to a sub-agent. Contrasted with yesterday's question about a proprietary hashing spec, where compact was the wrong choice."
+    },
+    "audio": {
+      "ja": "audio/ep051-ja.mp3",
+      "en": "audio/ep051-en.mp3"
+    },
+    "duration": {
+      "ja": 78,
+      "en": 75
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、コンテキストウィンドウの管理で、圧縮ことコンパクトが正解になる場合と、外部のスクラッチパッドが正解になる場合の使い分けです。"
+        },
+        {
+          "s": "",
+          "t": "サイバーセキュリティの調査エージェントが、大量のアクセスログや診断データを取り込みすぎて、トークンの上限に近づいています。これまでの調査の経緯と、見つかった重要な異常は、絶対に失えません。"
+        },
+        {
+          "s": "",
+          "t": "正解は、プログラムからコンパクトを発動して、冗長な診断データを要約させながら、調査の核となる経緯と重要な異常だけは保持させることです。"
+        },
+        {
+          "s": "",
+          "t": "サブエージェントに処理を丸投げすれば上限を回避できる、という考え方は罠です。コンテキストを引き継ぐ時点で、そのサブエージェント自身がトークンを消費します。"
+        },
+        {
+          "s": "",
+          "t": "昨日学んだ問題では、独自のハッシュ関数の仕様という、一言一句正確に残したい情報だったので、コンパクトは不正解でした。今日は逆に、大量の冗長なログの中から要点だけ残せばいい場面なので、コンパクトが正解になります。"
+        },
+        {
+          "s": "",
+          "t": "残したいものが正確な仕様そのものなら外部ファイルに書く。残したいものが大量データの中の要点なら、コンパクトで圧縮する。この使い分けを覚えてください。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic is knowing when compaction is the right call for managing a context window, and when an external scratchpad is the right call instead."
+        },
+        {
+          "s": "",
+          "t": "A cybersecurity investigation agent has ingested huge volumes of access logs and diagnostic data, and it's approaching the token limit. It absolutely cannot lose the investigation history or the key anomalies it already found."
+        },
+        {
+          "s": "",
+          "t": "The correct answer is triggering a compact operation from the program, letting the model summarize the redundant diagnostic output while keeping the core history and key anomalies intact."
+        },
+        {
+          "s": "",
+          "t": "Handing everything off to a sub-agent to dodge the limit is a trap. The moment context is handed over, that sub-agent burns tokens on it too."
+        },
+        {
+          "s": "",
+          "t": "In yesterday's question, the information that mattered was an exact technical specification, a proprietary hashing rule, so compacting was the wrong move. Today, the information that matters is the key findings buried inside a mountain of redundant logs, so compacting is exactly right."
+        },
+        {
+          "s": "",
+          "t": "If what you must preserve is an exact specification, write it to an external file. If what you must preserve is the key takeaway inside a pile of bulk data, compact it. That's the distinction to remember."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep050",
     "date": "2026-07-14",
     "style": "solo",
