@@ -2,6 +2,156 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep050",
+    "date": "2026-07-14",
+    "style": "solo",
+    "topic": {
+      "ja": "サブエージェントの失敗は構造化データで返し、回復を助ける",
+      "en": "Reporting a sub-agent's failure as structured data to enable recovery"
+    },
+    "summary": {
+      "ja": "農業IoTのサブエージェントがAPI認証仕様の変更でデータ取得に失敗。コーディネーターが自律的に回復できるよう、失敗の種類・試行内容・部分データ・代替案を構造化して返すのが正解。",
+      "en": "When a sub-agent fails to fetch data after an API auth change, the right move is returning a structured object with the failure type, attempted endpoint, partial data, and alternatives, not a vague error, a hard stop, or silent continuation."
+    },
+    "audio": {
+      "ja": "audio/ep050-ja.mp3",
+      "en": "audio/ep050-en.mp3"
+    },
+    "duration": {
+      "ja": 62,
+      "en": 54
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、サブエージェントが失敗したとき、何を上位のコーディネーターに返すべきか、です。"
+        },
+        {
+          "s": "",
+          "t": "農業IoTのプラットフォームで、収穫データを取るサブエージェントが、API認証仕様の変更によってデータを取得できませんでした。"
+        },
+        {
+          "s": "",
+          "t": "正解は、失敗の種類、試みたエンドポイント、部分的に取得できたデータ、そして代替のアクセス手段まで含めた、構造化されたJSONオブジェクトを返すことです。"
+        },
+        {
+          "s": "",
+          "t": "汎用的なエラーメッセージだけを返して停止を促すのはダメです。情報が足りず、コーディネーターは何も判断できません。"
+        },
+        {
+          "s": "",
+          "t": "サブエージェント側で勝手にプロセスを止めるのもダメ。原因究明や適切な報告の機会を奪ってしまいます。空文字列で誤魔化して処理を続けるのはもっと危険で、サイレント・フェイラーを引き起こします。"
+        },
+        {
+          "s": "",
+          "t": "失敗したときこそ、次の判断者が自律的に動けるだけの詳しい情報を、構造化して渡す。これが鉄則です。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic: what should a sub-agent report back when it fails?"
+        },
+        {
+          "s": "",
+          "t": "On an agricultural IoT platform, a sub-agent fetching yield data failed because the API's authentication requirements changed."
+        },
+        {
+          "s": "",
+          "t": "The right answer is returning a structured JSON object: the type of failure, the endpoint it attempted, any partial data it managed to get, and alternative access methods."
+        },
+        {
+          "s": "",
+          "t": "A generic error message that just tells the coordinator to stop doesn't work. There's not enough information to make a real decision."
+        },
+        {
+          "s": "",
+          "t": "Letting the sub-agent terminate the whole process on its own is also wrong, since it removes any chance to diagnose the issue. And returning an empty string to quietly keep going is worse still. That's a silent failure waiting to happen."
+        },
+        {
+          "s": "",
+          "t": "When something fails, hand the next decision maker everything it needs to recover, structured and complete. That's the rule."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep049",
+    "date": "2026-07-14",
+    "style": "solo",
+    "topic": {
+      "ja": "ツールが許可されているだけでは呼ばれない。システムプロンプトの明示指示が必要",
+      "en": "A tool being allowed isn't enough — the system prompt must explicitly instruct its use"
+    },
+    "summary": {
+      "ja": "allowedToolsにTaskツールがあるのに、コーディネーターがサブエージェントを起動しない。原因はツールの有無でなく、いつ使うかをシステムプロンプトで教えていないこと。",
+      "en": "The Task tool is already allowed, yet the coordinator never spawns the sub-agent, because capability without an explicit instruction in the system prompt isn't enough."
+    },
+    "audio": {
+      "ja": "audio/ep049-ja.mp3",
+      "en": "audio/ep049-en.mp3"
+    },
+    "duration": {
+      "ja": 71,
+      "en": 56
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、ツールが使える状態になっているのに、モデルがそれを使わない、という失敗パターンです。"
+        },
+        {
+          "s": "",
+          "t": "ITヘルプデスクのコーディネーターエージェントに、専門のデータベースエキスパートへ引き継ぐためのTaskツールを許可していました。ところがテストすると、コーディネーターはただ会話的に応答するだけで、サブエージェントを一向に起動しません。"
+        },
+        {
+          "s": "",
+          "t": "原因は、専用のエスカレーション用ツールが足りないことではありません。Taskツール自体はもう許可されています。"
+        },
+        {
+          "s": "",
+          "t": "正解は、コーディネーターのシステムプロンプトに、データベースの問題を検出したら必ずTaskツールを使ってデータベースエキスパートを起動する、という具体的な実行指示を追加することです。"
+        },
+        {
+          "s": "",
+          "t": "ツールが許可されているという能力と、いつ使うべきかという指示は、まったく別のものです。指示がなければ、モデルはいつもの会話的な応答を優先してしまいます。"
+        },
+        {
+          "s": "",
+          "t": "存在しないtrigger_intentフィールドや、セッション管理の話に気を取られないでください。答えはいつもシンプルで、システムプロンプトに使用条件を明示すること、これに尽きます。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's failure pattern: a tool is fully allowed, yet the model never actually uses it."
+        },
+        {
+          "s": "",
+          "t": "An IT helpdesk coordinator was given the Task tool to escalate database issues to a specialist sub-agent. But in testing, the coordinator just responds conversationally and never spawns anything."
+        },
+        {
+          "s": "",
+          "t": "The problem isn't a missing dedicated escalation tool. The Task tool is already there, sitting in allowedTools."
+        },
+        {
+          "s": "",
+          "t": "The fix is updating the coordinator's system prompt with an explicit instruction: when a database issue is detected, use the Task tool to spawn the DatabaseExpert."
+        },
+        {
+          "s": "",
+          "t": "Being allowed to use a tool and being told when to use it are two completely different things. Without the instruction, the model defaults to ordinary conversation."
+        },
+        {
+          "s": "",
+          "t": "Don't get distracted by a fabricated trigger underscore intent field or session management talk. The answer is almost always the same: spell out the usage condition in the system prompt."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep048",
     "date": "2026-07-14",
     "style": "solo",
