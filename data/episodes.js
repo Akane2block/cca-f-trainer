@@ -2,6 +2,81 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep048",
+    "date": "2026-07-14",
+    "style": "solo",
+    "topic": {
+      "ja": "共有スクラッチパッドでエージェント間の発見を引き継ぐ",
+      "en": "Passing discoveries between agent phases with a shared scratchpad"
+    },
+    "summary": {
+      "ja": "調査サブエージェントの発見（独自ハッシュ関数）を、数時間後のコード生成エージェントへ確実に引き継ぐには、外部の共有スクラッチパッドファイルを使う。",
+      "en": "How a shared scratchpad file preserves a sub-agent's discovery of a proprietary hashing library across phases, so the generation agent doesn't silently revert to a standard default."
+    },
+    "audio": {
+      "ja": "audio/ep048-ja.mp3",
+      "en": "audio/ep048-en.mp3"
+    },
+    "duration": {
+      "ja": 79,
+      "en": 68
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、フェーズをまたぐ自律型エージェントが、調査で見つけた大事な仕様を忘れてしまう問題です。"
+        },
+        {
+          "s": "",
+          "t": "レガシーなJavaの金融システムをGoに移行するケースを考えます。調査フェーズでは、独自の非標準なハッシュ関数ライブラリがコードベース全体で使われていることを、サブエージェントがちゃんと見つけていました。"
+        },
+        {
+          "s": "",
+          "t": "ところが数時間後のコード生成フェーズになると、メインのエージェントは標準のクリプトSHA256を使い始めてしまい、データの整合性が崩れてしまいました。"
+        },
+        {
+          "s": "",
+          "t": "正解は、調査担当のサブエージェントが独自のハッシュ計算ルールを書き込む共有スクラッチパッドファイルを用意し、生成担当のメインエージェントがGoのコードを書く前に必ずそのファイルを読む、という設計です。"
+        },
+        {
+          "s": "",
+          "t": "プレゼンスペナルティで特定のトークンを抑制しても、モデルが正しい代わりの仕様を思い出せるわけではありません。トークンストリームを丸ごと再注入するのはコンテキストウィンドウをすぐ超えてしまい、コンパクトによる圧縮は肝心の技術的詳細を消してしまうリスクがあります。"
+        },
+        {
+          "s": "",
+          "t": "長時間にわたる移行作業では、モデルの記憶に期待せず、フェーズをまたいで必ず外部ファイルに書いて、次のエージェントに読ませる。これが鉄則です。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic is a classic failure in long running autonomous agents: forgetting a critical discovery between phases."
+        },
+        {
+          "s": "",
+          "t": "Picture a migration from legacy Java financial code to Go. During the investigation phase, a sub-agent correctly identifies a proprietary, non-standard hashing library used throughout the codebase."
+        },
+        {
+          "s": "",
+          "t": "Hours later, in the code generation phase, the main agent quietly switches back to the standard crypto sha256 library, breaking data integrity."
+        },
+        {
+          "s": "",
+          "t": "The fix is a shared scratchpad file. The investigation sub-agent writes down the proprietary hashing rules, and the generation agent is instructed to read that file before writing any Go code."
+        },
+        {
+          "s": "",
+          "t": "Suppressing tokens with a presence penalty does not restore the correct knowledge. Replaying the entire raw token stream blows past the context window. And compacting memory tends to summarize away exactly the technical details you need to keep."
+        },
+        {
+          "s": "",
+          "t": "For long multi-phase agent work, do not trust the model's memory across time. Persist the key facts in an external file, and make the next agent read it first."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep047",
     "date": "2026-07-12",
     "style": "solo",
