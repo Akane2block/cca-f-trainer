@@ -1,5 +1,72 @@
 [
   {
+    "id": "ep052",
+    "date": "2026-07-14",
+    "style": "solo",
+    "topic": {
+      "ja": "サブエージェントの並列化は1ターン複数Task呼び出しで",
+      "en": "Parallelizing sub-agents with multiple Task calls in one turn"
+    },
+    "summary": {
+      "ja": "3つのデータプロバイダーへの逐次呼び出しを、1回のターンで複数のTask呼び出しにまとめて並列化する話。セッションを複製する誤答との違いを押さえる。",
+      "en": "Turning three sequential provider calls into parallel sub-agent calls within a single turn, and why forking the session is overkill."
+    },
+    "audio": {
+      "ja": "audio/ep052-ja.mp3",
+      "en": "audio/ep052-en.mp3"
+    },
+    "duration": {
+      "ja": 48,
+      "en": 43
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、サブエージェントの並列化です。"
+        },
+        {
+          "s": "",
+          "t": "市場分析システムが3つの金融データプロバイダーに、1社ずつ順番に問い合わせていて、待ち時間がどんどん積み重なっていました。"
+        },
+        {
+          "s": "",
+          "t": "正解は、コーディネーターが1回のターンの中で3つのTask呼び出しをまとめて出力し、オーケストレーション層に並列実行させることです。"
+        },
+        {
+          "s": "",
+          "t": "私が選んでしまった誤答は、セッションを丸ごと3つに複製するというやり方でしたが、これはコンテキストを分岐させたいときの機能で、単純な並列処理には過剰な設計でした。"
+        },
+        {
+          "s": "",
+          "t": "並列化したいときは、重い仕組みを新しく作るのではなく、1回の応答に複数のツール呼び出しを含めるという標準機能で足りる、と覚えておきましょう。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic is parallelizing sub-agents."
+        },
+        {
+          "s": "",
+          "t": "A market analysis system was calling three financial data providers one at a time, waiting for each response before starting the next, and the wait times kept stacking up."
+        },
+        {
+          "s": "",
+          "t": "The correct fix is having the coordinator emit three separate Task calls within a single turn, so the orchestration layer can run them in parallel."
+        },
+        {
+          "s": "",
+          "t": "The wrong answer I picked was forking the session into three identical copies, which is meant for branching context, and duplicating an entire session just to parallelize one task is overkill."
+        },
+        {
+          "s": "",
+          "t": "The takeaway: when you want parallelism, you don't need a heavy new mechanism. A single response with multiple tool calls is enough."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep051",
     "date": "2026-07-13",
     "style": "solo",
