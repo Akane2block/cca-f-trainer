@@ -2,6 +2,78 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep054",
+    "date": "2026-07-15",
+    "style": "solo",
+    "topic": {
+      "ja": "オンデマンドの指示はスキルに切り出す",
+      "en": "Put on-demand instructions in a skill, not CLAUDE.md"
+    },
+    "summary": "CLAUDE.md は全対話で常時ロードされるので、書いた指示は常に効く。特定タスクを要求時だけ実行させたい場合はカスタムスキル（.claude/skills/）に切り出す。チーム共有が要件ならユーザースコープ（~/.claude/）でなくプロジェクトスコープ（.claude/）を選ぶ。disable-model-invocationのような偽オプション名に飛びつかない。",
+    "audio": {
+      "ja": "audio/ep054-ja.mp3",
+      "en": "audio/ep054-en.mp3"
+    },
+    "duration": {
+      "ja": 93,
+      "en": 80
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、オンデマンドの指示はCLAUDE.mdではなくスキルに切り出す、です。"
+        },
+        {
+          "s": "",
+          "t": "例えば、Objective-CからSwiftへ移行中のチーム。変換を手伝ってほしいけれど、明示的に頼んだときだけ。普段のバグ修正中に、うっかりSwiftを生成されるのは困る。変換ルールをどこに置くか、という問題です。"
+        },
+        {
+          "s": "",
+          "t": "まず土台。CLAUDE.mdは、すべての対話で毎回読み込まれる常時ロードのファイルです。だからそこに変換指示を書くと、常に効いてしまう。要求したときだけ、という条件はつけられません。"
+        },
+        {
+          "s": "",
+          "t": "正解はカスタムスキル。ドット.claudeスラッシュskills配下にSKILL.mdとして置く。スキルは明示的に呼んだときだけ発動するので、通常のメンテにSwiftが混ざらない。しかもプロジェクトの中に入るので、リポジトリ経由でチーム全員に共有できます。"
+        },
+        {
+          "s": "",
+          "t": "私が選んだ誤答は、CLAUDE.mdにdisable-model-invocation true をフロントマターで書く、でした。でもCLAUDE.mdは常時ロード。書いた時点で常に効くし、そんな標準オプションもない。それっぽい偽の名前に引っかかったんです。"
+        },
+        {
+          "s": "",
+          "t": "三十秒まとめ。常に効かせたい普遍ルールはCLAUDE.md、特定タスクのときだけ呼びたいならスキル。そしてチーム共有が要件なら、チルダ.claudeの個人スコープではなく、ドット.claudeのプロジェクトスコープを選ぶ。この二つの軸で切り分けます。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's theme: put on-demand instructions in a skill, not in CLAUDE dot md."
+        },
+        {
+          "s": "",
+          "t": "A team is migrating from Objective-C to Swift. They want conversion help, but only when they explicitly ask. During normal bug fixes they must not accidentally get Swift code. Where do the conversion rules go?"
+        },
+        {
+          "s": "",
+          "t": "First, the foundation. CLAUDE dot md is loaded into every single conversation. So anything you write there is always active. You cannot make it conditional on being requested."
+        },
+        {
+          "s": "",
+          "t": "The answer is a custom skill, placed under dot claude, skills, as a SKILL dot md. A skill only fires when you explicitly call it, so Swift never leaks into routine maintenance. And because it lives inside the project, it ships in the repository and the whole team shares it."
+        },
+        {
+          "s": "",
+          "t": "My wrong answer was writing disable model invocation true in the front matter of CLAUDE dot md. But CLAUDE dot md is always loaded, it would always be active, and that option is not a real standard mechanism. I fell for an official-sounding fake name."
+        },
+        {
+          "s": "",
+          "t": "Thirty second wrap-up. Universal, always-on rules go in CLAUDE dot md. Task-specific, call-it-when-you-need-it goes in a skill. And when team sharing is required, choose the project scope, dot claude, over the personal scope, tilde dot claude."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep053",
     "date": "2026-07-15",
     "style": "solo",
