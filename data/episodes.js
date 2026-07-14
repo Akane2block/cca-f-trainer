@@ -2,6 +2,78 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep053",
+    "date": "2026-07-15",
+    "style": "solo",
+    "topic": {
+      "ja": "固定パイプラインからエージェントループへ",
+      "en": "From hard-coded pipeline to agent loop"
+    },
+    "summary": "決定木・ハードコードの固定パイプラインは、条件でのスキップや予期しないエラーへの動的対応が苦手。要件がその2つなら、各機能をツールとして渡しClaudeの推論に順序とエラー処理を委ねるエージェントループへ移行するのが正解。2つ目のLLM追加は単一で足りる課題を複雑化するオーバーエンジニアリングの罠。",
+    "audio": {
+      "ja": "audio/ep053-ja.mp3",
+      "en": "audio/ep053-en.mp3"
+    },
+    "duration": {
+      "ja": 83,
+      "en": 73
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、固定パイプラインからエージェントループへの移行です。"
+        },
+        {
+          "s": "",
+          "t": "たとえばスマート農業のエージェント。土壌検査、施肥、作業記録、という順番がコード側でガチガチに決め打ちされているとします。"
+        },
+        {
+          "s": "",
+          "t": "ここに事業側が二つ要件を出してきました。栄養が十分なら施肥を飛ばしてほしい。そして、予期しないセンサーエラーにもその場で対応してほしい。"
+        },
+        {
+          "s": "",
+          "t": "この二つが揃ったら、答えはエージェントループへの移行です。検査、施肥、記録の三つをツールとしてClaudeに渡し、固定ロジックは撤去する。実行順序もエラー処理も、Claudeが前のステップの結果を見て自分で決める。だからスキップもリトライもできます。"
+        },
+        {
+          "s": "",
+          "t": "引っかけは、二つ目のLLMを足して施肥の要否を判定させる案。これは単一のエージェントで足りる課題を、わざわざ複雑にするオーバーエンジニアリングです。tool_choiceで順番を固定するのも、動的に変えたいという要件に逆行しています。"
+        },
+        {
+          "s": "",
+          "t": "三十秒まとめ。動的に対応、予期しないエラー、条件でスキップ。このキーワードが揃ったらエージェントループ。そして、追加のLLMやコンポーネントは、単一エージェントでは無理と証明できて初めて正当化される。まず単一で解けないかを疑いましょう。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's theme: moving from a hard-coded pipeline to an agent loop."
+        },
+        {
+          "s": "",
+          "t": "Picture a smart agriculture agent. Soil inspection, then fertilization, then record work, in a fixed order baked into the application code."
+        },
+        {
+          "s": "",
+          "t": "Now the business adds two requirements. Skip fertilization if the soil already has enough nutrients. And respond on the fly to unexpected sensor errors."
+        },
+        {
+          "s": "",
+          "t": "When you see those two together, the answer is an agent loop. Give Claude all three tools, remove the fixed logic, and let Claude decide the execution order and error handling from its own reasoning. That's how it can skip a step or retry after a failure."
+        },
+        {
+          "s": "",
+          "t": "The trap here is adding a second LLM just to judge whether fertilization is needed. That's overengineering a problem a single agent can already solve. Forcing the order with tool_choice also fights the very requirement to stay dynamic."
+        },
+        {
+          "s": "",
+          "t": "Thirty second wrap-up. Respond dynamically, unexpected errors, conditional skip. When those line up, choose the agent loop. And extra LLMs or components are only justified once you can prove a single agent cannot do it. Always suspect the single agent first."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep052",
     "date": "2026-07-14",
     "style": "solo",
