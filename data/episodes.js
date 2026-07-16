@@ -2,6 +2,73 @@
    正本は data/episodes.json、追加は tools/add_episode.py（/cca 問題モードから自動実行）。 */
 window.EPISODES = [
   {
+    "id": "ep055",
+    "date": "2026-07-16",
+    "style": "solo",
+    "topic": {
+      "ja": "enumのエスケープハッチ設計",
+      "en": "Escape Hatch Pattern for Enums"
+    },
+    "summary": {
+      "ja": "enumで拾えない想定外の値を、otherと補足フィールドでスキーマ違反なく捕捉する設計パターン",
+      "en": "How to capture values an enum wasn't built for, without ever breaking the schema"
+    },
+    "audio": {
+      "ja": "audio/ep055-ja.mp3",
+      "en": "audio/ep055-en.mp3"
+    },
+    "duration": {
+      "ja": 73,
+      "en": 66
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、enumで想定外の値が来たときの設計、エスケープハッチパターンです。"
+        },
+        {
+          "s": "",
+          "t": "カスタマーサポートのチケット分類ツールが、issue_typeというenumフィールドで5つの固定カテゴリに振り分けています。でも実際には、その5つに当てはまらない問い合わせが頻繁に来て、Claudeは無理やり一番近いカテゴリに誤分類させられてしまいます。"
+        },
+        {
+          "s": "",
+          "t": "正解は、enumの値にotherを追加して、詳細を書ける任意の文字列フィールド、issue_type_other_detailを横に用意することです。既存の5カテゴリの構造化は保ちながら、想定外のデータもスキーマ違反なく安全に取り込めます。"
+        },
+        {
+          "s": "",
+          "t": "自由記述に変えてしまうと分類の価値が消えますし、プロンプトの指示だけでenum外の値を出させようとしても、厳格なスキーマ検証があればエラーになります。tool_choice autoも、ツールを呼ぶかどうかの制御であって、スキーマの中身を動かす機能ではありません。"
+        },
+        {
+          "s": "",
+          "t": "まとめると、enumで拾いきれない現実が出てきたら、制約を外すのではなく、otherと補足フィールドという逃げ道を1つ用意する。これがエスケープハッチパターンです。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic is the escape hatch pattern, for handling values an enum wasn't designed for."
+        },
+        {
+          "s": "",
+          "t": "A support ticket classifier uses an issue_type enum field with five fixed categories. But users constantly submit tickets that don't fit any of them, so Claude ends up forced to categorize them incorrectly."
+        },
+        {
+          "s": "",
+          "t": "The right fix is to add other to the enum, and introduce an optional string field, issue_type_other_detail, right next to it. You keep the structured five categories, and you can still capture the unexpected ones without ever breaking the schema."
+        },
+        {
+          "s": "",
+          "t": "Switching to free text throws away the value of classification. Instructing Claude in the prompt to bend the enum still fails validation, because a strict schema doesn't care what the prompt says. And tool_choice auto only controls whether a tool gets called, it doesn't let Claude invent new schema keys on the fly."
+        },
+        {
+          "s": "",
+          "t": "So the rule is simple. When an enum can't cover reality, don't remove the constraint. Add one official escape hatch, other plus a detail field, and reality gets captured without breaking anything."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep054",
     "date": "2026-07-15",
     "style": "solo",
