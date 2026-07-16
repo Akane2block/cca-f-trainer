@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AUDIO_DIR = os.path.join(ROOT, "audio")
 WORDS_JSON = os.path.join(ROOT, "data", "words.json")
 EN_VOICE = "en-US-AvaNeural"
-PLAYLIST = "音声学習"
+PLAYLIST = "CCA-F音声学習"
 
 
 def slug(w):

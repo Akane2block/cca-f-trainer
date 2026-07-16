@@ -7,7 +7,7 @@
   3. data/episodes.json の先頭に新エピソードを追記（＝アプリで最新が一番上）
   4. data/episodes.js を episodes.json から再生成
   5. index.html / app.js / sw.js のバージョン3点セットを自動更新
-  6. Apple Music プレイリスト「音声学習」（単語と共通・日英とも1本）にも追加（--no-music で無効化）
+  6. Apple Music プレイリスト「CCA-F音声学習」（単語と共通・日英とも1本）にも追加（--no-music で無効化）
 までを一気に行う。git commit と push はしない（呼び出し側＝Claudeが確認のうえ行う）。
 
 使い方:
@@ -182,11 +182,11 @@ end tell
         print(f"  Apple Music 追加はスキップ（{e}）。あとで手動追加可")
 
 
-PLAYLIST = "音声学習"
+PLAYLIST = "CCA-F音声学習"
 
 
 def add_to_apple_music(ja_path, en_path=None):
-    """問題エピソード（日英とも）を単語と共通の1プレイリスト「音声学習」へ追加。"""
+    """問題エピソード（日英とも）を単語と共通の1プレイリスト「CCA-F音声学習」へ追加。"""
     paths = [ja_path]
     if en_path:
         paths.append(en_path)
