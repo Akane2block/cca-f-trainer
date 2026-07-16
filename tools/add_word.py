@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""英単語 → 英語のみの短い音声トラック を作り、Apple Music「CCA-F Podcast English」に追加する。
+"""英単語 → 英語のみの短い音声トラック を作り、Apple Music「音声学習」（問題エピソードと共通の1本）に追加する。
 
 1単語=1トラック（英語のみ・edge-tts Ava）。テーマは曲のアルバム名「CCA-F単語_<テーマ>」に入れ、
 Apple Music上でテーマごとに固まって見えるようにする（2026-07-11 富永要望）。
@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AUDIO_DIR = os.path.join(ROOT, "audio")
 WORDS_JSON = os.path.join(ROOT, "data", "words.json")
 EN_VOICE = "en-US-AvaNeural"
-PLAYLIST = "CCA-F Podcast English"
+PLAYLIST = "音声学習"
 
 
 def slug(w):
