@@ -1,5 +1,72 @@
 [
   {
+    "id": "ep056",
+    "date": "2026-07-16",
+    "style": "solo",
+    "topic": {
+      "ja": "ツール過負荷とオーケストレーターパターン",
+      "en": "Tool Overload and the Orchestrator Pattern"
+    },
+    "summary": {
+      "ja": "強力なツールをフロントのエージェントから外し、専門のサブエージェントへルーティングして誤用を構造的に防ぐ設計",
+      "en": "Why powerful tools belong on a specialized sub-agent, not the front-line one"
+    },
+    "audio": {
+      "ja": "audio/ep056-ja.mp3",
+      "en": "audio/ep056-en.mp3"
+    },
+    "duration": {
+      "ja": 75,
+      "en": 70
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "今日のテーマは、ツール過負荷とオーケストレーターパターンです。"
+        },
+        {
+          "s": "",
+          "t": "ホテルのコンシェルジュボットに、部屋のアップグレード、全額返金、支配人への緊急連絡という3つの強力なツールを追加したところ、タオル追加のような些細な要望にまで、支配人への緊急連絡を誤用するようになりました。"
+        },
+        {
+          "s": "",
+          "t": "正解は、この3つの強力なツールをフロントのL1ボットから外して、予約詳細確認だけを残すことです。エスカレーションが必要なリクエストは、専門のL2エージェントへルーティングします。強力な権限を特定の文脈だけに限定することで、誤用を構造的に防げます。"
+        },
+        {
+          "s": "",
+          "t": "モデルの推論を完全に排除してハードコードのスクリプトに置き換えるのは、方向性は正しくても手段が過剰で、柔軟性と拡張性を失います。tool_choice anyは、必ず何かのツールを使わせる設定なので、優先度判断の代わりにはなりません。ツールをもっと増やすのは、そもそもの原因であるツール過負荷をさらに悪化させます。"
+        },
+        {
+          "s": "",
+          "t": "まとめると、強力なツールは1つのエージェントに持たせすぎず、専門のサブエージェントへ委譲する。これがオーケストレーターパターンです。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Today's topic is tool overload, and the orchestrator pattern."
+        },
+        {
+          "s": "",
+          "t": "A hotel concierge bot got three powerful tools: room upgrade, full refund, and emergency contact to the general manager. Soon it started misusing the emergency contact tool for tiny requests, like asking for extra towels."
+        },
+        {
+          "s": "",
+          "t": "The right fix is to remove those three powerful tools from the front line L1 bot, leaving only check reservation details. Requests that need escalation get routed to a specialized L2 agent instead. Confining high risk tools to one specific context structurally prevents the misuse."
+        },
+        {
+          "s": "",
+          "t": "Replacing the tools with a hard-coded script that bypasses the model's reasoning has the right instinct but the wrong method, it kills flexibility and scalability. Tool_choice any just forces some tool to be used, it doesn't add priority judgment. And adding even more tools only makes the root cause, tool overload, worse."
+        },
+        {
+          "s": "",
+          "t": "So the rule is simple. Don't hand one agent every powerful tool. Delegate the risky ones to a specialized sub-agent. That's the orchestrator pattern."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep055",
     "date": "2026-07-16",
     "style": "solo",
