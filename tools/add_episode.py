@@ -7,12 +7,14 @@
   3. data/episodes.json の先頭に新エピソードを追記（＝アプリで最新が一番上）
   4. data/episodes.js を episodes.json から再生成
   5. index.html / app.js / sw.js のバージョン3点セットを自動更新
-  6. Apple Music プレイリスト「CCA-F音声学習」（単語と共通・日英とも1本）にも追加（--no-music で無効化）
+  6. Apple Music プレイリスト「CCA-F音声学習」（単語と共通・日英とも1本）と、
+     日本語だけ／英語だけの「CCA-F音声学習（日本語）」「CCA-F音声学習（English）」にも追加（--no-music で無効化）
 までを一気に行う。git commit と push はしない（呼び出し側＝Claudeが確認のうえ行う）。
 
 使い方:
   python3 tools/add_episode.py <台本.json> [--no-music]
   python3 tools/add_episode.py --rebuild-only   # episodes.json から js を作り直すだけ
+  python3 tools/add_episode.py --backfill-playlists   # 既存の全エピソードを日英別プレイリストへ一括登録（初回のみ）
 
 事前条件:
   AivisSpeech Engine を起動しておく:
@@ -176,21 +178,43 @@ tell application "Music"
 end tell
 '''
     try:
-        subprocess.run(["osascript", "-e", script], capture_output=True, timeout=90, check=True)
+        subprocess.run(["osascript", "-e", script], capture_output=True,
+                       timeout=max(90, len(paths) * 3 + 30), check=True)
         print(f"  Apple Music: {playlist_name} に追加")
     except Exception as e:
         print(f"  Apple Music 追加はスキップ（{e}）。あとで手動追加可")
 
 
 PLAYLIST = "CCA-F音声学習"
+PLAYLIST_JA = "CCA-F音声学習（日本語）"
+PLAYLIST_EN = "CCA-F音声学習（English）"
 
 
 def add_to_apple_music(ja_path, en_path=None):
-    """問題エピソード（日英とも）を単語と共通の1プレイリスト「CCA-F音声学習」へ追加。"""
+    """問題エピソード（日英とも）を単語と共通の1プレイリスト「CCA-F音声学習」、
+    および日本語だけ／英語だけのまとめプレイリストへ追加。"""
     paths = [ja_path]
     if en_path:
         paths.append(en_path)
     add_paths_to_playlist(PLAYLIST, paths)
+    add_paths_to_playlist(PLAYLIST_JA, [ja_path])
+    if en_path:
+        add_paths_to_playlist(PLAYLIST_EN, [en_path])
+
+
+def backfill_playlists(episodes):
+    """既存の全エピソードを古い順に日英別プレイリストへ一括登録する（初回セットアップ用）。"""
+    ordered = list(reversed(episodes))  # episodes.json は新しい順→古い順に並べ替え
+    ja_paths, en_paths = [], []
+    for e in ordered:
+        audio = e.get("audio", {})
+        if "ja" in audio:
+            ja_paths.append(os.path.join(ROOT, audio["ja"]))
+        if "en" in audio:
+            en_paths.append(os.path.join(ROOT, audio["en"]))
+    print(f"backfill: ja={len(ja_paths)}話 / en={len(en_paths)}話")
+    add_paths_to_playlist(PLAYLIST_JA, ja_paths)
+    add_paths_to_playlist(PLAYLIST_EN, en_paths)
 
 
 # ---- メイン ----
@@ -199,6 +223,8 @@ def main():
     ap.add_argument("script_json", nargs="?", help="台本JSONのパス")
     ap.add_argument("--no-music", action="store_true", help="Apple Music へ追加しない")
     ap.add_argument("--rebuild-only", action="store_true", help="episodes.json から js を作り直すだけ")
+    ap.add_argument("--backfill-playlists", action="store_true",
+                    help="既存の全エピソードを日英別プレイリストへ一括登録するだけ")
     args = ap.parse_args()
 
     episodes = load_episodes()
@@ -206,6 +232,10 @@ def main():
     if args.rebuild_only:
         regenerate_js(episodes)
         print("rebuilt data/episodes.js from data/episodes.json")
+        return
+
+    if args.backfill_playlists:
+        backfill_playlists(episodes)
         return
 
     if not args.script_json:
