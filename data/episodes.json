@@ -1,14 +1,684 @@
 [
   {
+    "id": "ep066",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "ノイズに敏感なタスクはクリーンなサブエージェントに委譲する",
+      "en": "Delegate Noise-Sensitive Tasks to a Clean Sub-Agent"
+    },
+    "summary": {
+      "ja": "過去履歴の誤推論は「無視して」では消えない。まっさらなコンテキストのサブエージェントに切り出して遮断する",
+      "en": "You can't prompt away contamination. Cut the task out into a sub-agent with a fresh context window"
+    },
+    "audio": {
+      "ja": "audio/ep066-ja.mp3",
+      "en": "audio/ep066-en.mp3"
+    },
+    "duration": {
+      "ja": 142,
+      "en": 126
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、ノイズに敏感なタスクは、クリーンなサブエージェントに委譲する、です。"
+        },
+        {
+          "s": "",
+          "t": "こんな場面を想像してください。通貨を必須パラメータとする、返金処理のカスタムスキルを運用しています。ところがこのスキルが、過去の会話履歴の無関係な部分、たとえば別の国の店舗の話などから、誤って通貨を推論してしまい、間違った通貨で返金してしまいます。このタスクをメインの履歴から切り離した、クリーンなコンテキストで動かして、必要なパラメータを確実に取得する、最も効果的な方法は何でしょうか。"
+        },
+        {
+          "s": "",
+          "t": "正解は、返金ロジックを専用のサブエージェントにリファクタリングすることです。メインのエージェントがそれを呼び出し、サブエージェントは自分専用の、まっさらなコンテキストウィンドウで返金タスクを処理します。サブエージェントは新しいコンテキストで起動するので、メインの過去会話がそもそも入ってきません。コンテキスト汚染を、アーキテクチャのレベルで確実に遮断できるわけです。ポイントは、指示で無視させるのではなく、そもそも見えないように分離すること。プロンプトではなく、アーキテクチャで解きます。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけは複数あります。まず、スキルのフロントマターに、context、forkという設定を追加する案。もっともらしく見えますが、フラグ1行でコンテキストを完全遮断する標準機能は存在しません。実在しない設定を正解っぽく見せる、繰り返し出てくるニセ設定の引っかけです。次に、呼び出し前にcompaction、つまり履歴の圧縮でノイズを削る案。要約でノイズは減っても、要約の過程に誤った推論が残るリスクがあって、完全にクリーンにはなりません。汚染源が薄まるだけです。最後に、スキルの本文に、過去履歴を全部無視して通貨を尋ねて、と明示的に書く案。無視して、と言っても、入力に含まれてしまった情報の影響は、アテンションの仕組み上、完全には排除できません。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。過去履歴のノイズに引きずられるタスクは、無視して、では直らない。まっさらなコンテキストを持つ専用サブエージェントに切り出して、汚染をアーキテクチャで断つ。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today: delegating noise-sensitive tasks to a clean sub-agent."
+        },
+        {
+          "s": "",
+          "t": "Picture this scenario. You run a custom refund-processing skill that requires a currency parameter. But the skill keeps inferring the currency from irrelevant parts of the earlier conversation, say, a mention of a store in another country, and issues refunds in the wrong currency. You want this task to run in a clean context, isolated from the main history, and reliably obtain its required parameters. What's the most effective approach?"
+        },
+        {
+          "s": "",
+          "t": "The correct answer is to refactor the refund logic into a dedicated sub-agent. The main agent invokes it, and the sub-agent handles the refund task in its own fresh, clean context window. Because a sub-agent starts with a brand-new context, the main conversation's history simply never enters it. Context contamination is cut off at the architecture level, reliably. The key idea: don't instruct the model to ignore the noise, make the noise invisible by separation. Solve it with architecture, not prompts."
+        },
+        {
+          "s": "",
+          "t": "There are several traps here. Adding context colon fork to the skill's frontmatter looks plausible, but no standard one-line flag exists that fully isolates context, it's a recurring fake-setting trap, an invented option dressed up as the clean answer. Running compaction before the call, summarizing the history to strip noise, reduces the noise but can bake the wrong inference into the summary itself, the contamination gets diluted, not removed. And writing an explicit instruction in the skill, ignore all previous history and ask for the currency, can't fully work either, once information is in the input, attention mechanics mean its influence is never completely eliminated."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: when a task gets dragged around by noise in the history, ignore it doesn't fix it. Carve the task out into a dedicated sub-agent with a fresh context window, and cut the contamination off architecturally. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep065",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "大規模PRレビューは局所分析から横断統合の2段階で",
+      "en": "Review Large PRs in Two Passes: Local, Then Cross-File"
+    },
+    "summary": {
+      "ja": "50ファイル超を一度に読ませない。ファイルごとに分析して要点を抽出し、別パスで依存関係を統合チェック",
+      "en": "Analyze each file locally, extract the essentials, then run a separate integration pass across files"
+    },
+    "audio": {
+      "ja": "audio/ep065-ja.mp3",
+      "en": "audio/ep065-en.mp3"
+    },
+    "duration": {
+      "ja": 144,
+      "en": 134
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、大規模プルリクエストのレビューは、局所分析から横断統合の2段階で、です。"
+        },
+        {
+          "s": "",
+          "t": "こんな場面を想像してください。開発チームが、50ファイル以上にまたがる大規模なプルリクエストのレビューにClaudeを使っています。個々のファイルの構文エラーは見つけられるのですが、ファイル間の複雑な依存関係を見落としたり、注意力の分散によって、無関係なファイルの変数名を混同するハルシネーションが起きたりします。このレビューのワークフローを、どう再設計すべきでしょうか。"
+        },
+        {
+          "s": "",
+          "t": "正解は、ワークフローを2段階に分割することです。第1段階は、ファイルごとのローカル分析パス。各ファイルを個別にレビューして、要約やインターフェース定義といった要点を抽出します。第2段階は、独立したファイル横断の統合パス。第1段階で抽出した高レベルの情報だけを集めて、ファイル間の依存関係の整合性をチェックします。いわゆるMap-Reduceの構造で、情報の密度を最適化しながら、注意力を必要な箇所に集中させられるので、ハルシネーションを抑えつつ、深い依存関係のチェックができます。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけは複数あります。まず、5ファイルずつのバッチに分けて、完全に独立して実行する案。コンテキストは小さくなりますが、バッチ間で情報が遮断されるので、ファイル間の依存関係はむしろ見えなくなります。分割するだけでは駄目で、分割したあとに統合するステップが必要なんです。次に、temperatureを上げて、単一プロンプト内でXMLタグ区切りにする案。タグは整理には役立ちますが、注意力の分散という根本問題は解決しませんし、temperatureを上げるのはコードレビューの正確性を損ないます。最後に、どのファイルを読むべきかClaude自身に決めさせる案。効率化にはなりますが、50ファイル全体の網羅的な品質保証としては、見落としが構造的に起こりえます。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。巨大な入力は、バラして終わりでも、1回で全部読ませるでもなく、局所分析で要点を抽出してから、その要点だけを別パスで統合する。分割と統合はセット。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today: reviewing large pull requests in two passes, local analysis first, then cross-file integration."
+        },
+        {
+          "s": "",
+          "t": "Picture this scenario. A development team uses Claude to review a massive pull request spanning over 50 files. It catches syntax errors within individual files just fine, but it misses complex dependencies between files, and attention dilution causes hallucinations, like confusing variable names from completely unrelated files. How should the review workflow be redesigned?"
+        },
+        {
+          "s": "",
+          "t": "The correct answer is to split the workflow into two stages. Stage one is a per-file local analysis pass: review each file individually and extract the essentials, summaries, interface definitions, key metadata. Stage two is a separate cross-file integration pass: take only that extracted high-level information and verify the consistency of dependencies across files. It's the map-reduce structure, optimize the information density, concentrate attention where it's needed, and you get deep dependency checking with hallucinations suppressed."
+        },
+        {
+          "s": "",
+          "t": "There are several traps here. Splitting the PR into batches of five files and running them completely independently does shrink the context, but it cuts off information between batches, making cross-file dependencies even harder to spot. Splitting alone isn't the fix, splitting followed by integration is. Raising temperature and separating files with XML tags in one giant prompt doesn't work either, tags help with structure, but they don't cure attention dilution, and higher temperature actively hurts the precision a code review needs. And letting Claude itself decide which files to read, dynamic adaptive decomposition, helps efficiency, but for comprehensive quality assurance across all 50 files, it structurally risks missing errors in unexpected places."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: with huge inputs, don't just chop them up, and don't feed them whole. Analyze locally, extract the essentials, then integrate just those essentials in a separate pass. Splitting and integrating come as a pair. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep064",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": ".mcp.jsonは共通・不変はハードコード、変動は環境変数",
+      "en": "In .mcp.json, Hardcode the Stable, Expand the Variable"
+    },
+    "summary": {
+      "ja": "全員共通の静的URLはベタ書き、人や環境で変わる値は${VAR}の環境変数展開。この二分法で即断",
+      "en": "Shared static values go inline, per-user changing values go through environment variable expansion"
+    },
+    "audio": {
+      "ja": "audio/ep064-ja.mp3",
+      "en": "audio/ep064-en.mp3"
+    },
+    "duration": {
+      "ja": 146,
+      "en": 134
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、.mcp.jsonの設定値の使い分け、ハードコードと環境変数展開です。"
+        },
+        {
+          "s": "",
+          "t": "こんな場面を想像してください。物流会社が、社内の在庫管理MCPサーバーに接続するための共有設定ファイル、.mcp.jsonをチームに配布します。サーバーは2つの引数を要求します。1つはWAREHOUSE_CODE、担当する倉庫ごとに頻繁に変わる値です。もう1つはAPI_ENDPOINT、全社員共通で変わらない、静的なURLです。セキュリティと効率を両立するには、この設定ファイルをどう構成すべきでしょうか。"
+        },
+        {
+          "s": "",
+          "t": "正解は、API_ENDPOINTはファイルに直接ハードコードして、WAREHOUSE_CODEだけをドル記号と波かっこのWAREHOUSE_CODE、つまり環境変数展開にすることです。全員共通で不変のURLは、ベタ書きしておけば各自の設定の手間がゼロになります。一方、人や環境ごとに変わる値は、実行環境のシェル環境変数から差し込む形にすれば、共有ファイル本体を書き換えずに、それぞれの倉庫コードで動かせます。共通で不変なものは固定、変動するものは環境変数。この二分法です。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけは複数あります。まず、両方とも環境変数にする案。全員共通の静的なURLまで、各自がシェルで設定する羽目になり、セットアップの手間が無駄に増えます。次に、WAREHOUSE_CODEを設定から外して、Claudeに文脈から推論させて自動注入させる案。必須の引数は、設定ファイルか実行環境で明示的に定義する必要があります。AIが設定に無い値を勝手に推測して注入することはありません。最後に、両方ベタ書きして、倉庫が変わるたびに手で編集する案。ヒューマンエラーの温床ですし、共有ファイルを個別に書き換える運用はスケールしません。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。.mcp.jsonの鉄則は、共通で不変で機密でない値はハードコード、変動する値や人ごとの値、機密情報は環境変数展開。そして、AIが必須引数を文脈から自動注入してくれる、という選択肢は必ず誤り。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today: how to split values in .mcp.json between hardcoding and environment variable expansion."
+        },
+        {
+          "s": "",
+          "t": "Picture this scenario. A logistics company distributes a shared .mcp.json file so the whole team can connect to the internal inventory MCP server. The server requires two arguments. WAREHOUSE_CODE, which changes frequently depending on which warehouse you're working with. And API_ENDPOINT, a static URL that's identical for every employee and never changes. How should the file be structured to balance security and efficiency?"
+        },
+        {
+          "s": "",
+          "t": "The correct answer is to hardcode the API_ENDPOINT directly in the file, and expand only WAREHOUSE_CODE through an environment variable, dollar sign, curly braces, WAREHOUSE_CODE. The shared, immutable URL written inline means zero setup effort for anyone. The value that varies per person gets injected from each user's shell environment, so the shared file itself never needs editing. Stable and shared goes inline, variable and personal goes through the environment. That's the whole rule."
+        },
+        {
+          "s": "",
+          "t": "There are several traps here. Making both values environment variables forces every employee to configure even the common static URL in their own shell, pointless setup overhead. Removing WAREHOUSE_CODE from the config and letting Claude infer and inject it from context is flatly wrong, required arguments must be explicitly defined in configuration or the runtime environment, the AI never invents values that aren't defined. And hardcoding both, editing the file by hand every time the warehouse changes, is a breeding ground for human error, and editing a shared file per person simply doesn't scale."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: in .mcp.json, hardcode what's shared, immutable, and non-secret, and use environment variable expansion for what varies per user or is sensitive. And any option where the AI magically infers a required argument from context is always wrong. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep063",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "Claude Code三機能の役割分担 〜Explore・Plan・直接実行〜",
+      "en": "Explore, Plan, and Direct Execution in Claude Code"
+    },
+    "summary": {
+      "ja": "探索はExploreサブエージェント、方針はPlanモード、実装は直接実行。1対1対応で覚える",
+      "en": "Discovery goes to Explore, strategy goes to Plan, implementation goes to direct execution"
+    },
+    "audio": {
+      "ja": "audio/ep063-ja.mp3",
+      "en": "audio/ep063-en.mp3"
+    },
+    "duration": {
+      "ja": 142,
+      "en": 124
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、Claude Codeの三機能の役割分担、Explore、Plan、直接実行です。"
+        },
+        {
+          "s": "",
+          "t": "こんな場面を想像してください。古いロギングライブラリを、新しい標準ライブラリへ移行するタスクがあります。作業は3段階です。第1段階、何千ものファイルにまたがる旧ライブラリの出現箇所を、会話履歴を汚さずに全部探し出す。第2段階、新しいライブラリのラッパーをどう設計するか、デザインパターンを決める。第3段階、実際にコードを書き換える。この3段階に完璧に一致する、Claude Codeの機能の組み合わせは何でしょうか。"
+        },
+        {
+          "s": "",
+          "t": "正解は、第1段階がExploreサブエージェント、第2段階がPlanモード、第3段階が直接実行です。Exploreサブエージェントは、広いコードベースから情報を収集する専用の機能で、別のコンテキストで処理するので、メインの会話履歴を汚さないのが売りです。Planモードは、コードを変更する前に方針や設計、手順を練るためのモードで、書き込みはしません。そして直接実行は、方針が決まったあとに、実際にコードを書き換えるフェーズです。探索、戦略、実装。各機能の設計意図と、フェーズの性質が1対1で対応しています。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけは複数あります。まず、探索を直接実行でやる案。ツールの実行ログが会話履歴を埋め尽くしてしまいます。会話履歴を汚さずに、という条件が出たら、迷わずExploreです。次に、実装をExploreにやらせる案。Exploreは情報収集専用で、コードを書く役ではありません。そして、探索をPlanモードでやる案。Planは計画立案のためのモードで、網羅的な探索ツールではありません。それぞれの機能を、本来の設計意図と違うフェーズに割り当てる選択肢は、全部誤りです。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。探索はExploreサブエージェント、方針はPlanモード、実装は直接実行。この3点セットの1対1対応で覚える。会話履歴を汚したくない探索、と来たらExplore一択。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today: the division of labor between Explore, Plan, and direct execution in Claude Code."
+        },
+        {
+          "s": "",
+          "t": "Picture this scenario. You're migrating from a legacy logging library to a new standard one, in three stages. Stage one, find every occurrence of the old library across thousands of files, without cluttering the chat history. Stage two, decide the design pattern for the new library's wrapper. Stage three, actually rewrite the code. Which combination of Claude Code features maps perfectly onto these three stages?"
+        },
+        {
+          "s": "",
+          "t": "The correct answer is: the Explore subagent for stage one, Plan mode for stage two, and direct execution for stage three. The Explore subagent is purpose-built for gathering information across a large codebase, and because it works in a separate context, it never clutters your main conversation history. Plan mode is where you work out strategy, design, and steps before touching any code, it doesn't write. And direct execution is the normal mode where the actual code changes happen. Discovery, strategy, implementation, each feature matches its phase one to one."
+        },
+        {
+          "s": "",
+          "t": "There are several traps here. Doing the discovery in direct execution floods the chat history with tool output, exactly what the requirement said to avoid, whenever you hear without cluttering the history, the answer is Explore. Having Explore do the implementation misreads it, Explore gathers information, it doesn't write code. And using Plan mode for the search misreads that too, Plan is for reasoning about strategy, not an exhaustive discovery tool. Any option that assigns a feature outside its design intent is wrong."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: Explore for discovery, Plan for strategy, direct execution for implementation. Learn the one-to-one mapping, and when the phrase without cluttering the chat history appears, that's Explore, every time. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep062",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "エージェント間の受け渡しは構造化JSONとメタデータで",
+      "en": "Hand Off Between Agents with Structured JSON and Metadata"
+    },
+    "summary": {
+      "ja": "自然文の要約で渡すと時系列と根拠が壊れる。タイムスタンプ・ID・出典ファイル名を構造化して渡す",
+      "en": "Narrative summaries break chronology and provenance. Pass exact timestamps, IDs, and source filenames instead"
+    },
+    "audio": {
+      "ja": "audio/ep062-ja.mp3",
+      "en": "audio/ep062-en.mp3"
+    },
+    "duration": {
+      "ja": 137,
+      "en": 122
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、エージェント間の受け渡しは構造化JSONとメタデータで、です。"
+        },
+        {
+          "s": "",
+          "t": "こんな場面を想像してください。サプライチェーン管理のプラットフォームで、TrackingAgentが数千件の配送ログを走査し、その結果をもとにLogisticsStrategyAgentがイベントのタイムラインを組み立てます。TrackingAgentは、関連ログの内容を自然な文章の要約として渡しています。ところが下流のエージェントは、出来事の時系列をしばしば間違え、さらに、どのログがどの主張の裏づけなのか、出典を示すこともできません。どう直すべきでしょうか。"
+        },
+        {
+          "s": "",
+          "t": "正解は、TrackingAgentの出力を構造化JSONに変えることです。抽出した事実と一緒に、正確なタイムスタンプ、送り主と受け取り主のID、出典のファイル名を、メタデータとして明示的に持たせます。自然文の要約では、日付やIDが文章の中に溶け込んでしまって、機械的な並べ替えや照合に使えません。構造化されていれば、下流のエージェントは推論に頼らず、タイムスタンプの数値でソートして正確な時系列を作れますし、出典フィールドをそのまま根拠として提示できます。順序のミスと根拠の欠落が、同時に解決します。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけは複数あります。まず、2つのエージェントを1つのプロンプトに統合して、数千件のログを一度に読ませる案。コンテキストウィンドウを超過して情報が欠落しますし、分業を壊す悪手です。次に、要約の文脈から時系列を推論させる案。今まさに壊れている推論頼みの部分を、さらに強化するだけです。最後に、temperatureを上げて創造的に統合させる案。ランダム性が増えて正確さが落ちる、事実系タスクでは真逆の操作です。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。エージェント間の受け渡しで、順序が狂う、根拠を示せない、と来たら、渡し方を疑う。自然文の要約ではなく、タイムスタンプ、ID、出典ファイル名を持つ構造化JSONで渡す。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today: handing off between agents with structured JSON and metadata."
+        },
+        {
+          "s": "",
+          "t": "Picture this scenario. On a supply chain platform, a tracking agent scans thousands of delivery logs, and a logistics strategy agent downstream builds a timeline of events from its output. The tracking agent passes along a narrative summary, plain prose describing the relevant logs. But the strategy agent keeps getting the chronology wrong, and it can't show which log supports which claim, no provenance. How do you fix it?"
+        },
+        {
+          "s": "",
+          "t": "The correct answer is to have the tracking agent output structured JSON instead, carrying exact timestamps, sender and receiver IDs, and source filenames as explicit metadata alongside each extracted fact. In a narrative summary, dates and IDs dissolve into the prose, useless for mechanical sorting or cross-referencing. With structured data, the downstream agent doesn't have to infer anything, it sorts numerically by timestamp for a correct chronology, and cites the source field directly for provenance. Both failures, wrong order and missing evidence, are fixed by the same change: the format of the handoff."
+        },
+        {
+          "s": "",
+          "t": "There are several traps here. Merging both agents into a single prompt so they read the thousands of logs together blows past the context window and loses information, it breaks the division of labor for nothing. Telling the strategy agent to infer the chronology from the summary's context just doubles down on the inference that's already failing. And raising temperature for more creative synthesis adds randomness exactly where you need precision, for factual tasks that's the opposite of what you want."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: when an inter-agent handoff produces scrambled order or missing evidence, suspect the format. Replace narrative summaries with structured JSON, timestamps, IDs, and source filenames included. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep061",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "依存と条件のある複数タスクはDAGで制御する",
+      "en": "Use a DAG for Dependent, Conditional Multi-Agent Tasks"
+    },
+    "summary": {
+      "ja": "独立タスクは並列、依存タスクは待つ、条件タスクは結果を見てから呼ぶ。司令塔が実行順序を握る",
+      "en": "Independent runs in parallel, dependent waits, conditional fires only when needed. The coordinator owns the order"
+    },
+    "audio": {
+      "ja": "audio/ep061-ja.mp3",
+      "en": "audio/ep061-en.mp3"
+    },
+    "duration": {
+      "ja": 157,
+      "en": 142
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、依存と条件のある複数タスクをDAGで制御する、です。"
+        },
+        {
+          "s": "",
+          "t": "こんな場面を想像してください。スマートエネルギー管理のプラットフォームで、司令塔のCoordinatorエージェントがユーザーの要求を処理します。要求はこうです。今月の自宅の太陽光発電量を要約して、地域平均と比較して、もし平均を下回っていたら、保守業者への点検依頼メールの下書きを作って。現状のCoordinatorは、このプロンプト全体を、SolarAgent、MarketDataAgent、DraftAgentの3つに同時にブロードキャストしています。すると、比較が終わる前にDraftAgentが走ってしまい、失敗やハルシネーションが頻発します。どう再設計すべきでしょうか。"
+        },
+        {
+          "s": "",
+          "t": "正解は、DAG、有向非巡回グラフの実行モデルです。Coordinatorが依存関係を評価して、独立しているSolarとMarketのデータ取得は先に並列で走らせます。両方の結果が揃ったら集約して比較し、発電量が平均を下回ったときだけ、条件付きでDraftAgentを呼びます。独立なものは並列で速く、依存があるものは揃うまで待って正確に、条件付きのものは結果を見てから。不完全な情報のまま走ることがなくなるので、ハルシネーションも抑えられます。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけは複数あります。まず、3つのエージェントを1つの巨大エージェントに統合する案。注意力が分散して精度が落ちる、attention dilutionを招きます。複雑だから1個にまとめる、は逆効果です。次に、SolarからMarket、Draftへと単純に直列でつなぐ案。独立しているSolarとMarketまで順番待ちになって非効率ですし、生のプロンプトを丸ごと渡して条件判定を各エージェント任せにするのは不安定です。最後に、DraftAgent側にリトライループを組んで、他の2つの完了をポーリングし続けさせる案。実行制御の責任を子エージェントに持たせるのは設計ミスで、無駄なリソース消費と複雑なエラー処理を抱え込みます。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。依存関係と条件分岐のある複数タスクは、司令塔がDAGで実行順序を握る。独立は並列、依存は待つ、条件は判定してから呼ぶ。オーケストレーションの責任は子に分散させず、Coordinatorに集約する。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today: using a DAG to control multi-agent tasks with dependencies and conditions."
+        },
+        {
+          "s": "",
+          "t": "Picture this scenario. On a smart energy management platform, a coordinator agent handles this user request: summarize my home's solar generation this month, compare it to the regional average, and if we're below average, draft an inspection request email to the maintenance vendor. Right now, the coordinator broadcasts the entire prompt to all three agents at once, SolarAgent, MarketDataAgent, and DraftAgent. So the DraftAgent runs before the comparison even exists, and failures and hallucinations pile up. How should this be redesigned?"
+        },
+        {
+          "s": "",
+          "t": "The correct answer is a DAG execution model, a directed acyclic graph. The coordinator evaluates the dependencies: Solar and Market are independent, so they run first, in parallel. Once both results are in, the coordinator aggregates and compares them, and only if generation is below average does it conditionally invoke the DraftAgent. Independent work runs in parallel for speed, dependent work waits for its inputs for accuracy, and conditional work fires only after the condition is checked. Nothing ever executes on incomplete information, which is exactly what suppresses the hallucinations."
+        },
+        {
+          "s": "",
+          "t": "There are several traps here. Merging all three into one monolithic agent with every tool causes attention dilution, accuracy drops as the context bloats, complexity is a reason to separate, not to merge. A simple serial chain, Solar then Market then Draft, passing the raw prompt along, wastes time by serializing independent work, and leaving the conditional judgment to each downstream agent is unreliable. And building a retry loop into the DraftAgent so it keeps polling for the others to finish puts orchestration responsibility inside a child agent, that's a design error, burning resources and complicating error handling."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: when tasks have dependencies and conditions, the coordinator owns the execution order through a DAG. Parallel for independent, wait for dependent, check before conditional. Orchestration lives in the coordinator, never in the workers. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep060",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "Few-shotにはnull例も入れてハルシネーションを防ぐ",
+      "en": "Include Null Examples in Your Few-Shot Prompts"
+    },
+    "summary": {
+      "ja": "多様な形式の抽出例に加えて、データが無いときの正解＝null出力の例を必ず含める。指示より例示が強い",
+      "en": "Show the model what to do when the data isn't there. Examples beat instructions"
+    },
+    "audio": {
+      "ja": "audio/ep060-ja.mp3",
+      "en": "audio/ep060-en.mp3"
+    },
+    "duration": {
+      "ja": 145,
+      "en": 136
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、Few-shotにnull例を入れてハルシネーションを防ぐ、です。"
+        },
+        {
+          "s": "",
+          "t": "こんな場面を想像してください。不動産ポータルサイトが、Claudeを使って物件紹介メールから、仲介手数料の割引コードを抽出しています。メールの形式はバラバラで、HTMLもあればプレーンテキストもあります。さらに、割引コードが無くて、キャンペーンが直接リンクだけで案内されているメールでは、Claudeが存在しないコードをでっち上げたり、URLを誤って抽出したりします。文書構造の多様性と、存在しない項目のハルシネーション。この両方を同時に解決する、最良のプロンプト戦略は何でしょうか。"
+        },
+        {
+          "s": "",
+          "t": "正解は、多様なメール形式からの正しい抽出例をFew-shotで示すこと。そして特に大事なのが、コードが存在しない場合に期待される出力、つまりnullを返す例を、必ず含めることです。モデルには、何かを出力しなければ、というバイアスがあります。正解例だけを見せると、無いものまで無理に抽出しようとします。データが無いときは何も抽出しない、という負の例、ネガティブエグザンプルを具体的に見せることで、このバイアスを打ち消せます。多様な構造パターンの例示が、形式のバラつきにも同時に効きます。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけは複数あります。まず、コードを含む一文を先に引用させて、無ければnullを出させるcitation方式。引用は精度を高める有効な技術ですが、多種多様なHTML構造への対応力では、パターンを直接見せるFew-shotに劣ります。次に、タスクを2つに分割して、まずコードの有無を分類し、あれば抽出する案。有効な手法ではありますが、1つのプロンプトでFew-shotを使う方が効率的です。最後に、temperatureをゼロにして、推測するなと厳しく指示する案。足しにはなりますが、複雑な構造の理解や出力パターンの学習には、指示よりも例示の方が強力です。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。Few-shotには、何を抽出すべきかの例だけでなく、無いときは何も抽出しない、というnull例も必ず入れる。指示よりも例示。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today: including null examples in your few-shot prompts to prevent hallucination."
+        },
+        {
+          "s": "",
+          "t": "Picture this scenario. A real estate portal uses Claude to extract brokerage fee discount codes from property introduction emails. The formats vary wildly, some are HTML, some plain text. And when there's no code at all, because the campaign is presented as a direct link only, Claude starts hallucinating codes that don't exist, or extracting URLs by mistake. Two problems at once: diverse document structures, and hallucinated missing items. What's the best prompt engineering strategy to solve both?"
+        },
+        {
+          "s": "",
+          "t": "The correct answer is to add few-shot examples showing correct extractions from a variety of email formats, and, critically, to include examples of the expected output when no code exists, which is null. Models carry a bias toward producing something, anything. If your examples only ever show successful extractions, the model learns that there's always something to find, and invents one when there isn't. A concrete negative example, here's an email with no code, and here's the correct output, null, explicitly cancels that bias. And the variety of structural patterns in the examples handles the format diversity at the same time."
+        },
+        {
+          "s": "",
+          "t": "There are several traps here. The citation approach, quote the exact sentence containing the code first, output null if no such sentence exists, does improve precision, but for handling wildly varied HTML structures, showing concrete patterns through few-shot is the more comprehensive fix. Splitting the task into two prompts, classify first, then extract, is a legitimate technique, but a single prompt with good few-shot examples is more efficient and generalizes better. And lowering temperature to zero with a strict instruction, never guess, helps at the margins, but for learning complex structures and output patterns, examples beat instructions."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: teach the model not just what to extract, but what to do when there's nothing to extract. Put a null example in your few-shot set. Examples over instructions. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep059",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "生の技術エラーはビジネスエラーに翻訳して返す",
+      "en": "Translate Raw Technical Errors into Business Errors"
+    },
+    "summary": {
+      "ja": "DB例外をそのまま渡さず、分かりやすい文言と次の一手を添えてbusinessカテゴリ・リトライ不可で返すMCPツール設計",
+      "en": "Catch the raw exception, return a friendly message with a next step, business category, not retryable"
+    },
+    "audio": {
+      "ja": "audio/ep059-ja.mp3",
+      "en": "audio/ep059-en.mp3"
+    },
+    "duration": {
+      "ja": 141,
+      "en": 126
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、生の技術エラーをビジネスエラーに翻訳して返す、というMCPツール設計です。"
+        },
+        {
+          "s": "",
+          "t": "こんな場面を想像してください。図書館の座席予約エージェントが、MCPツールで個室を予約します。プラチナ会員ではないユーザーがプレミアム個室を予約しようとすると、バックエンドのデータベースは、ConstraintViolationException、Membership_Required、という生のエラーを返してきます。この専門用語だらけの例外をそのままエージェントに渡すと、ユーザーを混乱させてしまいます。このMCPツールの最適な設計はどれでしょうか。"
+        },
+        {
+          "s": "",
+          "t": "正解は、例外をキャッチして、ユーザーフレンドリーなメッセージに変換して返すことです。この部屋の予約にはプラチナ会員資格が必要です、まず会員ステータスの更新を案内してください、というように、原因と次の一手を自然言語で添えます。そしてisErrorはtrue、errorCategoryはbusiness、isRetryableはfalseにします。会員資格の不足はビジネスルール違反であって、何度リトライしても資格が変わらない限り成功しないからです。モデルはこの情報を受け取って、ユーザーに正確で建設的な案内ができます。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけは複数あります。まず、isErrorをfalseにして予約成功と返し、裏でペンディング扱いにする案。エラーなのに成功と報告するのは、データ不整合と誤った期待を生む最悪手です。次に、生の例外をそのまま渡して、transient扱いでリトライさせる案。一時的エラーではないので、無意味なリトライがトークンを浪費するだけです。最後に、validation扱いにして別の部屋で再予約させる案。これは入力形式の問題ではなくビジネスルール違反ですし、原因を説明せずに別のリソースを試させるのは、ユーザーの意図に反します。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。生のデータベース例外はそのまま渡さない。人間が読める文言と、次に何をすべきかに翻訳して返す。資格や権限の不足はbusinessカテゴリで、isRetryableはfalse。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today: translating raw technical errors into business errors in your MCP tools."
+        },
+        {
+          "s": "",
+          "t": "Picture this scenario. A library seat reservation agent books private rooms through an MCP tool. When a user without Platinum membership tries to reserve a premium room, the backend throws a raw database error: ConstraintViolationException, Membership_Required. Pass that jargon straight to the agent, and the user ends up confused. What's the optimal design for this MCP tool?"
+        },
+        {
+          "s": "",
+          "t": "The correct answer is to catch the exception and return a user-friendly message instead, something like, Platinum membership is required to reserve this room, please guide the user to update their membership status first. Along with that message, you return isError true, errorCategory business, and isRetryable false. A membership requirement is a business rule violation, and no amount of retrying will change the user's membership, so retries are pointless. With this structure, the model can give the user an accurate, constructive explanation and a clear next step."
+        },
+        {
+          "s": "",
+          "t": "There are several traps here. Returning isError false with reservation successful, while quietly marking it pending membership verification in the database, reports success on a failure, that creates data inconsistency and false expectations, the worst option. Passing the raw ConstraintViolationException through with category transient invites meaningless retries that burn tokens, this is not a temporary glitch. And labeling it validation and steering the user to book a different room misreads the situation, it's not an input format problem, and pushing another resource without explaining the real cause goes against the user's intent."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: never pass raw exceptions through. Translate them into a human-readable message plus a concrete next step. And for permission or eligibility failures, that's category business, with isRetryable false. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep058",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "関心の分離と最小権限 〜使うなと書くな、そもそも持たせるな〜",
+      "en": "Separation of Concerns and Least Privilege"
+    },
+    "summary": {
+      "ja": "時期尚早なツール実行は、説明文の警告ではなくツールセットの制限とルーティングで構造的に防ぐ",
+      "en": "Premature tool execution is fixed by restricting toolsets and routing, not by warnings in descriptions"
+    },
+    "audio": {
+      "ja": "audio/ep058-ja.mp3",
+      "en": "audio/ep058-en.mp3"
+    },
+    "duration": {
+      "ja": 128,
+      "en": 109
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、関心の分離と最小権限です。"
+        },
+        {
+          "s": "",
+          "t": "こんな場面を想像してください。建築設計のマルチエージェントシステムに、図面を作る作図エージェントと、強度を検証する構造検証エージェントがいます。処理を速くしようとして、作図エージェントにも物理シミュレーションのツールを持たせました。すると作図エージェントが、図面が完成する前にシミュレーションを実行してしまい、パイプラインエラーが頻発するようになりました。最も適切なアーキテクチャ上の修正は何でしょうか。"
+        },
+        {
+          "s": "",
+          "t": "正解は、作図エージェントのツールセットを作図系のツールだけに制限して、検証のタスクは構造検証エージェントへ専属でルーティングすることです。作図エージェントは、そもそもシミュレーションのツールを持っていないので、時期尚早な実行はアーキテクチャのレベルで物理的に起こせなくなります。これが関心の分離と、最小権限の原則です。タスクの受け渡しは、ツールのショートカットではなく、作図が終わったら検証へ、という明示的なルーティングで制御します。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけは複数あります。まず、ツールの説明文に、図面完成まで使うな、と警告を書く案。プロンプトや説明文への依存は、モデルの確率的な挙動頼みで、守られる保証がありません。次に、tool_choiceをanyにして、作図と検証を同じターンで実行させる案。anyは、どれかのツールを必ず使え、という強制であって、作ってから検証する、という実行順序を保証する機能ではありません。最後に、2つのエージェントを1つに統合する案。関心の分離が失われて、プロンプトとコンテキストが肥大化し、推論の精度が下がる、巨大エージェントのアンチパターンです。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。使うな、と書くのではなく、そもそも持たせない。ツールは役割ごとに最小権限で絞って、受け渡しはルーティングで明示的に制御する。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today: separation of concerns, and least privilege."
+        },
+        {
+          "s": "",
+          "t": "Picture this scenario. An architectural design system has two agents, a drawing creation agent and a structural verification agent. To speed things up, someone also gave the drawing agent a run physics simulation tool. Now the drawing agent keeps firing the simulation before the drawing is even finished, and the pipeline fails constantly. What's the right architectural fix?"
+        },
+        {
+          "s": "",
+          "t": "The correct answer is to restrict the drawing agent's toolset to drawing tools only, and route all verification tasks exclusively to the structural verification agent. If the drawing agent simply doesn't have the simulation tool, premature execution becomes physically impossible at the architecture level. That's separation of concerns combined with least privilege. And the handoff between phases isn't a tool shortcut, it's explicit routing: drawing completes, then verification begins."
+        },
+        {
+          "s": "",
+          "t": "There are several traps here. Writing a warning into the tool description, do not use until the drawing is complete, relies on the model's probabilistic behavior, and compliance is never guaranteed. Forcing tool_choice any so drawing and verification happen in the same turn misses the point, any only forces some tool to be used, it says nothing about the order of execution. And merging the two agents into one destroys the separation of concerns, bloats the prompt and context, and degrades reasoning, the classic giant agent anti-pattern."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: don't write don't use it, just don't hand it over. Scope each agent's tools to its role with least privilege, and control the handoffs with explicit routing. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep057",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "400はvalidationで再試行不可、503はtransientで再試行可",
+      "en": "400 Means Validation, 503 Means Transient"
+    },
+    "summary": {
+      "ja": "エラー分類の頻出パターン。クライアント起因の400は直すまで無駄、サーバー起因の503はバックオフ付きで再試行",
+      "en": "The recurring error-semantics pattern: client errors need fixing, server errors need retrying"
+    },
+    "audio": {
+      "ja": "audio/ep057-ja.mp3",
+      "en": "audio/ep057-en.mp3"
+    },
+    "duration": {
+      "ja": 137,
+      "en": 125
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、400と503のエラー分類とisRetryableです。"
+        },
+        {
+          "s": "",
+          "t": "こんな場面を想像してください。Claude APIで航空券の予約システムを作っています。ユーザーが入力した便名の形式が不正なら、バックエンドは400 Bad Requestを返します。サーバーが一時的に過負荷なら、503 Service Unavailableを返します。この2つのエラーを、エージェントに正しく扱わせるには、どういうロジックを組むべきでしょうか。"
+        },
+        {
+          "s": "",
+          "t": "正解は、どちらもisErrorをtrueにした上で、分類を分けることです。400は、errorCategoryをvalidation、isRetryableをfalseにします。入力ミスはユーザーが直さない限り、何回再試行しても失敗するからです。エージェントには、正しい形式での入力を促させます。一方503は、errorCategoryをtransient、isRetryableをtrueにします。サーバー側の一時的な障害なので、間隔を空けて、つまり指数バックオフで再試行すれば通る見込みがあります。判定の軸は、クライアント起因の入力の問題か、サーバー起因の一時障害か、です。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけは複数あります。一番もっともらしいのは、503にretryableをfalseにする案です。過負荷のサーバーを守るためにリトライを止めるべきだ、と聞こえますが、正しくは、間隔を空けて再試行、です。再試行の全面禁止ではありません。逆に、両方ともretryableをtrueにする案は、カテゴリ名が合っているだけに釣られやすいのですが、400の入力ミスは直すまで何回投げても無駄です。400は必ずfalse、と覚えてください。カテゴリを逆に振る、400をtransient、503をvalidationにする選択肢も定番のダミーです。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。400はvalidationで再試行不可、ユーザーに修正を促す。503はtransientで再試行可、指数バックオフで待って再送する。分類の軸は、入力が悪いのか、サーバーが一時的に悪いのか。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today: classifying 400 versus 503, and the isRetryable flag."
+        },
+        {
+          "s": "",
+          "t": "Picture this scenario. You're building a flight reservation system on the Claude API. If the user enters a flight number in an invalid format, the backend returns 400 Bad Request. If the server is temporarily overloaded, it returns 503 Service Unavailable. How should your agent logic treat these two errors?"
+        },
+        {
+          "s": "",
+          "t": "The correct answer is to mark both with isError true, but classify them differently. The 400 gets errorCategory validation, and isRetryable false, because a malformed input will fail every single time until the user fixes it, so the agent should prompt for the correct format instead of retrying. The 503 gets errorCategory transient, and isRetryable true, because it's a temporary server-side failure, and retrying with exponential backoff, spacing out the attempts, is likely to succeed. The axis is simple: is the problem client-side input, or a temporary server-side condition?"
+        },
+        {
+          "s": "",
+          "t": "There are several traps here. The most plausible one says the 503 should be isRetryable false, to protect the overloaded server. It sounds responsible, but the right behavior is retrying with backoff, not banning retries altogether. The opposite trap marks both as retryable true, and it's tempting because the category names look right, but retrying a 400 is pure waste, the input never fixes itself. A 400 is always false. And of course there's the swapped version, 400 as transient and 503 as validation, which is just the categories reversed."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: 400 means validation, not retryable, ask the user to fix the input. 503 means transient, retryable, back off and try again. Client-caused versus server-caused, that's the whole test. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep056",
-    "date": "2026-07-16",
+    "date": "2026-07-17",
     "style": "solo",
     "topic": {
       "ja": "ツール過負荷とオーケストレーターパターン",
       "en": "Tool Overload and the Orchestrator Pattern"
     },
     "summary": {
-      "ja": "強力なツールをフロントのエージェントから外し、専門のサブエージェントへルーティングして誤用を構造的に防ぐ設計",
+      "ja": "強力なツールをフロントのエージェントから外し、専門のL2エージェントへルーティングして誤用を構造的に防ぐ設計",
       "en": "Why powerful tools belong on a specialized sub-agent, not the front-line one"
     },
     "audio": {
@@ -16,59 +686,59 @@
       "en": "audio/ep056-en.mp3"
     },
     "duration": {
-      "ja": 75,
-      "en": 70
+      "ja": 152,
+      "en": 131
     },
     "script": {
       "ja": [
         {
           "s": "",
-          "t": "今日のテーマは、ツール過負荷とオーケストレーターパターンです。"
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、ツール過負荷とオーケストレーターパターンです。"
         },
         {
           "s": "",
-          "t": "ホテルのコンシェルジュボットに、部屋のアップグレード、全額返金、支配人への緊急連絡という3つの強力なツールを追加したところ、タオル追加のような些細な要望にまで、支配人への緊急連絡を誤用するようになりました。"
+          "t": "こんな場面を想像してください。ホテルのコンシェルジュボットが、予約詳細の確認ツールで動いています。VIPサービスのために、部屋のアップグレード、全額返金、支配人への緊急連絡という、3つの強力なAPIツールを追加しました。するとボットは、タオルを追加してほしい、というような些細な要望にまで、支配人への緊急連絡ツールを誤用し始めました。このエスカレーション処理に対する、最適なアーキテクチャ上の対応は何でしょうか。"
         },
         {
           "s": "",
-          "t": "正解は、この3つの強力なツールをフロントのL1ボットから外して、予約詳細確認だけを残すことです。エスカレーションが必要なリクエストは、専門のL2エージェントへルーティングします。強力な権限を特定の文脈だけに限定することで、誤用を構造的に防げます。"
+          "t": "正解は、3つの強力なツールをフロントのL1ボットから取り外して、予約詳細の確認だけを残すことです。エスカレーションが必要なリクエストは、専門のL2エージェントへルーティングします。1つのエージェントに多数のツール、特に強力な権限を持つツールを集中させると、ツール過負荷という状態に陥って、モデルはツールの選択を誤りやすくなります。高リスクなツールをL2という特定の文脈だけに限定して配置すれば、誤用を構造的に防ぎながら、L1の処理精度も保てます。これがオーケストレーター、つまりルーターパターンです。"
         },
         {
           "s": "",
-          "t": "モデルの推論を完全に排除してハードコードのスクリプトに置き換えるのは、方向性は正しくても手段が過剰で、柔軟性と拡張性を失います。tool_choice anyは、必ず何かのツールを使わせる設定なので、優先度判断の代わりにはなりません。ツールをもっと増やすのは、そもそもの原因であるツール過負荷をさらに悪化させます。"
+          "t": "ここでの引っかけは複数あります。まず、全ツールを残したままtool_choiceをanyにして、優先度を評価させるという案。anyは、必ず何らかのツールを選ばせる強制であって、優先度判断の仕組みではありません。むしろ不適切な場面でも無理にツールを使わせるので、誤用は悪化します。次に、実行前に毎回、社内のエスカレーション方針をWeb検索で確認させる案。ツールを増やすことは、選択ミスの根本原因であるツール過負荷をさらに悪化させて、レイテンシも増やします。最後に、3つのツールを、モデルの推論を完全にバイパスするハードコードの自動化スクリプトに置き換える案。厳格にしたい方向性は正しいのですが、手段が過剰です。自然言語理解の柔軟さが失われて、複雑な条件分岐をコード側で抱え込むことになり、拡張性が下がります。"
         },
         {
           "s": "",
-          "t": "まとめると、強力なツールは1つのエージェントに持たせすぎず、専門のサブエージェントへ委譲する。これがオーケストレーターパターンです。"
+          "t": "まとめます。強力なツールは、1つのエージェントに持たせすぎない。使うなと指示するのでもなく、モデルを排除するのでもなく、そもそも持たせずに、専門のサブエージェントへルーティングで委譲する。ここだけ持ち帰ってください。それでは、また次回。"
         }
       ],
       "en": [
         {
           "s": "",
-          "t": "Today's topic is tool overload, and the orchestrator pattern."
+          "t": "Hello, and welcome back. One topic today: tool overload, and the orchestrator pattern."
         },
         {
           "s": "",
-          "t": "A hotel concierge bot got three powerful tools: room upgrade, full refund, and emergency contact to the general manager. Soon it started misusing the emergency contact tool for tiny requests, like asking for extra towels."
+          "t": "Picture this scenario. A hotel concierge bot runs on a check reservation details tool. To provide VIP service, three powerful API tools were added: room upgrade, full refund, and emergency contact to the general manager. Soon the bot starts misusing that emergency contact tool for trivial requests, like extra towels. What's the optimal architectural approach for this escalation process?"
         },
         {
           "s": "",
-          "t": "The right fix is to remove those three powerful tools from the front line L1 bot, leaving only check reservation details. Requests that need escalation get routed to a specialized L2 agent instead. Confining high risk tools to one specific context structurally prevents the misuse."
+          "t": "The correct answer is to remove the three powerful tools from the front-line L1 bot, leaving only check reservation details, and route any request that needs escalation to a specialized L2 agent. When a single agent carries too many tools, especially high-privilege ones, it slips into tool overload, and starts picking the wrong tool. Confining the risky tools to one specific context, the L2 agent, structurally prevents the misuse while keeping the L1 agent accurate. That's the orchestrator, or router, pattern."
         },
         {
           "s": "",
-          "t": "Replacing the tools with a hard-coded script that bypasses the model's reasoning has the right instinct but the wrong method, it kills flexibility and scalability. Tool_choice any just forces some tool to be used, it doesn't add priority judgment. And adding even more tools only makes the root cause, tool overload, worse."
+          "t": "There are several traps here. Keeping all the tools and setting tool_choice to any sounds like forcing careful evaluation, but any just forces the model to call some tool every time, it adds no priority judgment, and actually makes misuse worse. Giving the bot a web search tool to check escalation policies before every action adds yet another tool, which deepens the root cause, tool overload, and inflates latency. And replacing the three tools with a hard-coded automation script that completely bypasses the model's reasoning has the right instinct, being strict about risky actions, but the wrong method: you lose the flexibility of natural language understanding, and every condition ends up managed in code, hurting scalability."
         },
         {
           "s": "",
-          "t": "So the rule is simple. Don't hand one agent every powerful tool. Delegate the risky ones to a specialized sub-agent. That's the orchestrator pattern."
+          "t": "So, to recap: don't pile every powerful tool onto one agent. Don't just tell it to be careful, and don't rip the model out either. Simply don't give the front-line agent the risky tools, and delegate those cases to a specialized sub-agent through routing. That's your takeaway. See you next time."
         }
       ]
     }
   },
   {
     "id": "ep055",
-    "date": "2026-07-16",
+    "date": "2026-07-17",
     "style": "solo",
     "topic": {
       "ja": "enumのエスケープハッチ設計",
@@ -83,52 +753,52 @@
       "en": "audio/ep055-en.mp3"
     },
     "duration": {
-      "ja": 73,
-      "en": 66
+      "ja": 147,
+      "en": 125
     },
     "script": {
       "ja": [
         {
           "s": "",
-          "t": "今日のテーマは、enumで想定外の値が来たときの設計、エスケープハッチパターンです。"
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日のテーマは、enumのエスケープハッチ設計です。"
         },
         {
           "s": "",
-          "t": "カスタマーサポートのチケット分類ツールが、issue_typeというenumフィールドで5つの固定カテゴリに振り分けています。でも実際には、その5つに当てはまらない問い合わせが頻繁に来て、Claudeは無理やり一番近いカテゴリに誤分類させられてしまいます。"
+          "t": "こんな場面を想像してください。カスタマーサポートのプラットフォームが、issue_typeというenumフィールドを持つツールで、届いたチケットを5つの固定カテゴリに分類しています。ところが実際には、その5つに当てはまらない問い合わせが頻繁に届きます。enumには逃げ場がないので、Claudeは一番近い間違ったカテゴリに無理やり分類させられてしまいます。JSONスキーマは厳格に守ったまま、この新しい問題タイプを将来の分析用に取り込みたい。さて、スキーマをどう変えるべきでしょうか。"
         },
         {
           "s": "",
-          "t": "正解は、enumの値にotherを追加して、詳細を書ける任意の文字列フィールド、issue_type_other_detailを横に用意することです。既存の5カテゴリの構造化は保ちながら、想定外のデータもスキーマ違反なく安全に取り込めます。"
+          "t": "正解は、enumの値にotherを追加して、その隣に、新しいカテゴリの詳細を書ける任意の文字列フィールド、issue_type_other_detailを新設することです。otherも正式なenumの値なので、スキーマ違反は起きません。既存の5カテゴリの構造化された集計は保ったまま、今まで捨てられていた想定外のデータが補足フィールドに残るので、あとから人間が見て新しいカテゴリの設計に活かせます。これがエスケープハッチ、つまり逃げ道を1つだけ正式に用意するパターンです。"
         },
         {
           "s": "",
-          "t": "自由記述に変えてしまうと分類の価値が消えますし、プロンプトの指示だけでenum外の値を出させようとしても、厳格なスキーマ検証があればエラーになります。tool_choice autoも、ツールを呼ぶかどうかの制御であって、スキーマの中身を動かす機能ではありません。"
+          "t": "ここでの引っかけは複数あります。まず、enum制約を丸ごと外して自由記述にする案。取りこぼしは無くなりますが、5カテゴリの統一性が壊れて、構造化データとして集計する利点が全部消えます。次に、システムプロンプトで、一番近いenum値の末尾にハイフンOtherを付けて出力しろと指示する案。厳格なenumが定義されている限り、スキーマに無い文字列は検証エラーになります。プロンプトの指示では、スキーマの制約は突破できません。最後に、tool_choiceをautoにすれば新しいJSONキーを動的に生成できる、という案。autoはツールを呼ぶかどうかをモデルに任せる設定であって、スキーマから逸脱して勝手にキーを作らせる機能ではありません。"
         },
         {
           "s": "",
-          "t": "まとめると、enumで拾いきれない現実が出てきたら、制約を外すのではなく、otherと補足フィールドという逃げ道を1つ用意する。これがエスケープハッチパターンです。"
+          "t": "まとめます。enumで拾いきれない現実が出てきたら、制約を外すのではなく、otherという正式な逃げ道と、詳細を書ける補足フィールドをセットで用意する。スキーマの制約はプロンプトでは曲げられない、直すならスキーマ側。ここだけ持ち帰ってください。それでは、また次回。"
         }
       ],
       "en": [
         {
           "s": "",
-          "t": "Today's topic is the escape hatch pattern, for handling values an enum wasn't designed for."
+          "t": "Hello, and welcome back. One topic today: the escape hatch pattern for enums."
         },
         {
           "s": "",
-          "t": "A support ticket classifier uses an issue_type enum field with five fixed categories. But users constantly submit tickets that don't fit any of them, so Claude ends up forced to categorize them incorrectly."
+          "t": "Picture this scenario. A customer support platform classifies incoming tickets using a tool with an issue_type enum field, locked to five fixed categories. But users keep submitting tickets that don't fit any of the five. The enum gives Claude nowhere to go, so it's forced to shove them into the closest wrong category. You want to capture these new issue types for future analysis, while strictly adhering to the JSON schema. What's the right schema change?"
         },
         {
           "s": "",
-          "t": "The right fix is to add other to the enum, and introduce an optional string field, issue_type_other_detail, right next to it. You keep the structured five categories, and you can still capture the unexpected ones without ever breaking the schema."
+          "t": "The correct fix is to add other to the enum values, and introduce an optional string field right next to it, something like issue_type_other_detail, to record what the new category actually was. Since other is now a legitimate enum value, nothing ever violates the schema. You keep the structured five categories for clean aggregation, and the unexpected data that used to be thrown away now lands in the detail field, where a human can later review it and design new categories. That's the escape hatch: one official way out."
         },
         {
           "s": "",
-          "t": "Switching to free text throws away the value of classification. Instructing Claude in the prompt to bend the enum still fails validation, because a strict schema doesn't care what the prompt says. And tool_choice auto only controls whether a tool gets called, it doesn't let Claude invent new schema keys on the fly."
+          "t": "There are several traps here. Removing the enum entirely and making it free text stops the misclassification, but it destroys the whole point of structured categories, you can no longer aggregate or analyze consistently. Instructing Claude in the system prompt to append dash Other to the closest enum value fails too, because a strict schema rejects any string that isn't in the enum, prompt instructions cannot override schema validation. And setting tool_choice to auto doesn't help either, auto only controls whether Claude calls a tool at all, it never lets the model invent new JSON keys outside the schema."
         },
         {
           "s": "",
-          "t": "So the rule is simple. When an enum can't cover reality, don't remove the constraint. Add one official escape hatch, other plus a detail field, and reality gets captured without breaking anything."
+          "t": "So, to recap: when reality doesn't fit your enum, don't loosen the schema and don't fight it with prompts. Add one official escape hatch, an other value plus an optional detail field, and the unexpected gets captured without ever breaking validation. That's your takeaway. See you next time."
         }
       ]
     }
