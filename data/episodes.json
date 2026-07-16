@@ -1,5 +1,541 @@
 [
   {
+    "id": "ep074",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "用語解説: 補完バイアスと確証バイアス",
+      "en": "Term Deep-Dive: Completion Bias and Confirmation Bias"
+    },
+    "summary": {
+      "ja": "無いものを埋めてしまう補完バイアスはスキーマとnull例で、自分に甘い確証バイアスは独立した基準で防ぐ",
+      "en": "The model fills gaps and grades its own homework. Two biases, two structural defenses"
+    },
+    "audio": {
+      "ja": "audio/ep074-ja.mp3",
+      "en": "audio/ep074-en.mp3"
+    },
+    "duration": {
+      "ja": 148,
+      "en": 142
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日は用語の回です。テーマは、モデルの2大バイアス、補完バイアスと確証バイアス。"
+        },
+        {
+          "s": "",
+          "t": "1つ目、補完バイアス。completionは補完、続きを完成させること。LLMは、空欄や足りない情報を、もっともらしく埋めようとする傾向を持っています。物件の説明文にプールの記載が無いだけなのに、has_poolをfalseで埋めてしまう。割引コードが存在しないメールから、存在しないコードをでっち上げてしまう。どちらもこのバイアスの仕業です。対策は、プロンプトで注意することではなく、構造で受け止めることでした。スキーマにUNKNOWNという明示的な選択肢を用意する。Few-shotに、無いときはnullを返す、という負の例を含める。埋める代わりに、無い、を選べるようにしてあげるわけです。"
+        },
+        {
+          "s": "",
+          "t": "2つ目、確証バイアス。confirmationは確証、裏付け。自分の仮説を肯定する方向に、証拠を集めたり作ったりしてしまう偏りです。LLM文脈での典型例が、テスト駆動開発で、実装コードとテストコードを、同じAIに同じプロンプトで同時に作らせるパターン。実装の欠陥がそのままテストにコピーされるので、欠陥ごとテストが緑になって、誰も気づけません。検証が成立する条件は、検証する基準が、検証される対象から独立していることです。だから正解の型は、人間が実装より先に、エッジケースを含む厳格なテストスイートを用意して、AIの出力にぶつける、でした。"
+        },
+        {
+          "s": "",
+          "t": "この2つのバイアスに共通する教訓が、CCA-F全体を貫いています。モデルの善意や注意深さに期待するのではなく、構造で偏りを封じる、ということです。補完バイアスにはスキーマとnull例という構造。確証バイアスには、独立した基準を先に置くという構造。プロンプトで、正直に、慎重に、と頼む選択肢は、たいてい誤答です。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。補完バイアスは、無いものを埋めてしまう癖。UNKNOWNとnull例で受け止める。確証バイアスは、自分の答えに甘くなる癖。採点者と被採点者を分けて、独立した基準を先に置く。バイアスは頼んで直すものではなく、構造で封じるもの。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today, and it's a terminology episode: the model's two great biases, completion bias and confirmation bias."
+        },
+        {
+          "s": "",
+          "t": "First, completion bias. Completion, finishing what's started. LLMs have a tendency to fill gaps and missing information with something plausible. The property listing never mentions a pool, and the model fills in has_pool false anyway. The email contains no discount code, and the model invents one. Both are this bias at work. The defense isn't a warning in the prompt, it's structure. Give the schema an explicit UNKNOWN option. Include a negative example in your few-shot set, showing null as the correct output when nothing is there. You give the model a legitimate way to say nothing, instead of forcing it to fill."
+        },
+        {
+          "s": "",
+          "t": "Second, confirmation bias. Confirmation, backing up your own hypothesis. It's the tendency to gather or even manufacture evidence that supports what you already believe. The classic LLM case is test-driven development where the same AI, in the same prompt, writes both the implementation and its tests. The implementation's flaws get copied straight into the tests, so the broken code passes green, and nobody notices. Verification only works when the standard doing the judging is independent of the thing being judged. So the winning pattern was: a human writes a strict test suite first, edge cases included, before the implementation, and the AI's output gets thrown against it."
+        },
+        {
+          "s": "",
+          "t": "The shared lesson behind both biases runs through the entire CCA-F. Don't rely on the model's good intentions or carefulness, block the bias with structure. Against completion bias, the structure is the schema and the null example. Against confirmation bias, the structure is an independent standard set up in advance. Options that just ask the model to be honest and careful are almost always the wrong answer."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: completion bias fills in what isn't there, catch it with UNKNOWN and null examples. Confirmation bias grades its own homework kindly, catch it by separating the grader from the graded with an independent standard. Biases aren't fixed by asking, they're blocked by structure. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep073",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "用語解説: Extended Thinking（拡張思考）",
+      "en": "Term Deep-Dive: Extended Thinking"
+    },
+    "summary": {
+      "ja": "モデルに推論の余地を増やす機能。難しい推論には効くが、入力設計の問題は「もっと考えさせる」では直らない",
+      "en": "More reasoning room helps hard problems, but it never fixes a broken input design"
+    },
+    "audio": {
+      "ja": "audio/ep073-ja.mp3",
+      "en": "audio/ep073-en.mp3"
+    },
+    "duration": {
+      "ja": 139,
+      "en": 116
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日は用語の回です。テーマは、Extended Thinking、拡張思考。"
+        },
+        {
+          "s": "",
+          "t": "Extended Thinkingとは、モデルに、より多くの推論ステップと計算の余地を使わせる機能です。extendedは、拡張された、長くした。thinkingは思考。回答を出す前に、モデルが内部で考える時間と場所を増やしてあげる、というイメージです。数学の証明、複雑な論理パズル、多段の計画立案のような、じっくり考えれば精度が上がるタスクでは、確かに効果があります。"
+        },
+        {
+          "s": "",
+          "t": "ただし、CCA-Fでの本当の出題ポイントは、効く場面ではなく、効かない場面のほうです。典型例がこれです。大量の生ログを1つのプロンプトに詰め込んで、重要な相関関係が埋もれてしまっている。この問題に、Extended Thinkingを有効にする、という選択肢が出てきます。これは罠です。考える時間を増やしても、入力そのものが悪ければ、埋もれた情報は掘り起こせません。必要なのは、入力を分割して、各パスで要点を抽出して、それから統合する、というマルチパスの設計です。つまり、推論力の問題と、入力設計の問題を見分けさせる出題です。"
+        },
+        {
+          "s": "",
+          "t": "見分け方の軸はこうです。問題文に、ログが大量、コンテキストが長大、情報が埋もれる、注意力が分散する、といった入力側の症状が書かれていたら、答えは分割、抽出、統合、構造化などの設計変更です。Extended Thinkingやtemperature調整のような、モデル側のつまみをいじる選択肢は、この場合ほぼ誤答です。逆に、入力はコンパクトなのに推論の深さが足りない、という文脈なら、Extended Thinkingが正解候補に浮上します。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。Extended Thinkingは、モデルに考える余地を増やす機能。深い推論には効くが、入力に埋もれた情報は、もっと考えさせても出てこない。入力側の症状には設計変更、モデル側のつまみでは直らない。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today, and it's a terminology episode: extended thinking."
+        },
+        {
+          "s": "",
+          "t": "Extended thinking is the feature that gives the model more reasoning steps and more computational room. Extended, made longer. Thinking, reasoning. You're granting the model extra time and space to work things through internally before answering. For tasks where careful deliberation genuinely raises accuracy, mathematical proofs, complex logic, multi-step planning, it really helps."
+        },
+        {
+          "s": "",
+          "t": "But on the CCA-F, the real testing point isn't where it works, it's where it doesn't. The classic setup: a mountain of raw logs stuffed into a single prompt, with the important correlations buried inside. And there's the option, enable extended thinking. That's the trap. More thinking time cannot excavate information that the input itself has buried. What's needed is a multi-pass design: split the input, extract the essentials in each pass, then integrate. The question is really testing whether you can tell a reasoning problem from an input design problem."
+        },
+        {
+          "s": "",
+          "t": "Here's the axis for telling them apart. If the problem describes input-side symptoms, huge logs, an enormous context, buried information, diluted attention, the answer is a design change: splitting, extracting, integrating, structuring. Options that turn model-side dials, extended thinking, temperature tweaks, are almost always wrong there. But if the input is compact and the reasoning just isn't deep enough, then extended thinking becomes a legitimate candidate."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: extended thinking buys the model more room to reason. It helps deep reasoning, but information buried in a bad input never surfaces by thinking harder. Input-side symptoms need design changes, not model-side dials. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep072",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "用語解説: temperature 〜ランダム性のつまみ〜",
+      "en": "Term Deep-Dive: Temperature"
+    },
+    "summary": {
+      "ja": "出力のランダム性を調整するパラメータ。事実・抽出・コードは低く、発想出しは高く。上げる選択肢はほぼ罠",
+      "en": "The randomness dial. Low for facts, extraction, and code. Raising it is almost always the trap"
+    },
+    "audio": {
+      "ja": "audio/ep072-ja.mp3",
+      "en": "audio/ep072-en.mp3"
+    },
+    "duration": {
+      "ja": 131,
+      "en": 116
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日は用語の回です。テーマは、temperature、温度パラメータ。"
+        },
+        {
+          "s": "",
+          "t": "temperatureとは、モデルの出力のランダム性を調整するつまみです。モデルは次の単語を選ぶとき、候補それぞれに確率を持っています。温度が低いと、一番確率の高い候補をほぼ確実に選ぶので、出力は毎回安定して、決定的に近くなります。温度が高いと、確率の低い候補も選ばれやすくなって、出力は多様に、予測しにくくなります。料理に例えると、温度ゼロはレシピどおりのきっちりした調理、温度が高いのは即興のアレンジ料理です。"
+        },
+        {
+          "s": "",
+          "t": "使い分けの原則はシンプルです。正確さが命のタスク、つまり事実の抽出、分類、構造化出力、コード生成、コードレビューでは、温度を低く、ゼロ寄りにします。同じ入力から毎回同じ答えが返ってほしいからです。逆に、ブレーンストーミングやキャッチコピーの案出しのような、多様なアイデアがほしい場面では、温度を上げる価値があります。"
+        },
+        {
+          "s": "",
+          "t": "そして試験での効きどころです。CCA-Fでは、temperatureを上げて創造的に統合させる、といった選択肢が繰り返し登場しますが、事実系のタスクではほぼ確実に罠です。タイムラインの構築、ログの分析、コードレビュー、データ抽出。これらでランダム性を増やすのは、正確さを自分から捨てる操作です。逆に注意したいのは、温度をゼロにすれば問題が解決する、という過信の選択肢です。温度ゼロは出力を安定させるだけで、ハルシネーションや構造理解の問題そのものは直しません。Few-shotの例示やスキーマ設計といった、根本の対策にはかないません。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。temperatureはランダム性のつまみ。事実、抽出、コードは低く。発想出しだけ高く。試験では、上げる選択肢はほぼ罠、そしてゼロにするだけでは根本解決にならない。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today, and it's a terminology episode: temperature."
+        },
+        {
+          "s": "",
+          "t": "Temperature is the dial that controls the randomness of the model's output. When choosing the next word, the model holds probabilities for every candidate. At low temperature, it almost always picks the most likely one, so outputs are stable and close to deterministic. At high temperature, lower-probability candidates get picked more often, so outputs become diverse and less predictable. Think of cooking: temperature zero is following the recipe exactly, high temperature is improvising."
+        },
+        {
+          "s": "",
+          "t": "The usage rule is simple. For tasks where precision is everything, fact extraction, classification, structured output, code generation, code review, keep the temperature low, near zero, because you want the same input to give the same answer every time. For brainstorming or generating many diverse ideas, raising the temperature has real value."
+        },
+        {
+          "s": "",
+          "t": "Now the exam angle. CCA-F options love to suggest raising the temperature for more creative synthesis, and for factual tasks that's almost always the trap. Building timelines, analyzing logs, reviewing code, extracting data, adding randomness there means voluntarily throwing away accuracy. But watch the opposite trap too: options claiming temperature zero alone will fix the problem. Zero only stabilizes the output, it doesn't cure hallucination or structural misunderstanding. Root-cause fixes, few-shot examples, schema design, always beat the temperature dial."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: temperature is the randomness dial. Low for facts, extraction, and code, high only for idea generation. On the exam, raising it is nearly always a trap, and zeroing it is never the whole fix. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep071",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "用語解説: Human-in-the-loop",
+      "en": "Term Deep-Dive: Human-in-the-Loop"
+    },
+    "summary": {
+      "ja": "処理の流れに人間の確認を挟む設計。破壊的操作・高リスク・ポリシー外のケースで必須になる",
+      "en": "Putting a human checkpoint inside the workflow, and when the exam expects it"
+    },
+    "audio": {
+      "ja": "audio/ep071-ja.mp3",
+      "en": "audio/ep071-en.mp3"
+    },
+    "duration": {
+      "ja": 131,
+      "en": 121
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日は用語の回です。テーマは、Human-in-the-loop。"
+        },
+        {
+          "s": "",
+          "t": "Human-in-the-loopとは、AIだけで処理を完結させず、流れの途中に人間の確認、承認、判断を挟む設計のことです。loopは処理の流れ、inはその中に入っている。つまり、人間がループの中にいる、という名前そのままの意味です。AIは候補の提示や情報の整理までを担当して、最終判断は人間に渡す、という役割分担になります。"
+        },
+        {
+          "s": "",
+          "t": "どこで挟むべきかが試験で問われます。定番は5つ。1つ目、削除やデータ変更のような破壊的操作。2つ目、メール送信や外部への通知。3つ目、高額な取引や課金。4つ目、安全、法務、医療のような高リスク領域。そして5つ目が、ポリシーの沈黙です。ルールに明確な規定がないケースで、モデルに勝手な承認や拒否をさせず、人間にエスカレーションする。また、ユーザー本人が、人間に代わってほしい、と明示的に求めたときは、ツールで処理できそうでも、即時にエスカレーションするのが正解でしたね。"
+        },
+        {
+          "s": "",
+          "t": "ここでの引っかけです。人間確認を入れる理由を、AIの性能が低いから、と説明する選択肢は誤りです。そうではなく、システム全体の安全性、責任の分界、監査可能性を高めるための設計です。逆方向の引っかけもあります。何にでも人間確認を挟むと、自動化の価値が消えて、ボトルネックになります。読み取り専用で低リスクな操作は自動でよくて、不可逆で影響の大きい操作にだけ関所を置く。リスクに比例させるのがポイントです。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。Human-in-the-loopは、人間の確認を処理の流れに組み込む設計。破壊的、不可逆、高リスク、ポリシー外、そして本人が人間を求めたとき。そこに関所を置き、理由は性能ではなく、安全性と責任と監査性。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today, and it's a terminology episode: human-in-the-loop."
+        },
+        {
+          "s": "",
+          "t": "Human-in-the-loop means not letting the AI complete the process alone, but placing a human check, approval, or decision inside the flow. The loop is the workflow, and the human sits inside it, exactly as the name says. The AI handles the preparation, proposing candidates, organizing information, and the final call goes to a person."
+        },
+        {
+          "s": "",
+          "t": "The exam asks where the checkpoint belongs. Five classic spots. One, destructive operations, deletions and data changes. Two, outbound actions, sending emails or notifications. Three, expensive transactions and billing. Four, high-risk domains, safety, legal, medical. And five, policy silence, cases the rules never anticipated, where the model must not invent an approval or a rejection on its own, but escalate to a human. And remember, when the user explicitly asks for a human, you escalate immediately, even if a tool could technically handle the request."
+        },
+        {
+          "s": "",
+          "t": "Now the traps. Any option that justifies human review with, because the AI isn't good enough, is wrong. The real rationale is system-level: safety, accountability, and auditability. There's a trap in the other direction too: putting a human gate on everything kills the value of automation and creates a bottleneck. Read-only, low-risk operations can run automatically, the checkpoint belongs only on irreversible, high-impact actions. Scale the gate to the risk."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: human-in-the-loop builds a human checkpoint into the workflow. Place it on the destructive, the irreversible, the high-risk, the policy-silent, and whenever the user asks for a human. And the reason is never model weakness, it's safety, accountability, and audit. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep070",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "用語解説: グレースフル・デグラデーション",
+      "en": "Term Deep-Dive: Graceful Degradation"
+    },
+    "summary": {
+      "ja": "一部が壊れても全体を落とさず、機能を下げて動かし続ける。ただし品質低下は隠さず正しく伝える",
+      "en": "Keep the system running at reduced capability when parts fail, and never hide the downgrade"
+    },
+    "audio": {
+      "ja": "audio/ep070-ja.mp3",
+      "en": "audio/ep070-en.mp3"
+    },
+    "duration": {
+      "ja": 130,
+      "en": 123
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日は用語の回です。テーマは、グレースフル・デグラデーション。"
+        },
+        {
+          "s": "",
+          "t": "グレースフルは、優雅な、乱暴に壊れない。デグラデーションは、劣化、フル機能ではない状態に下げること。つまりグレースフル・デグラデーションとは、一部の機能や外部サービスが失敗しても、システム全体を落とさずに、できる範囲の下げた機能で動かし続ける設計のことです。例えば、高精度な検索APIが落ちたら、古いキャッシュや簡易検索に切り替えて、ユーザーには最低限の結果を返す。全部が駄目になる代わりに、優雅に一段下がる、というイメージです。"
+        },
+        {
+          "s": "",
+          "t": "Claudeのシステム設計では、モデル呼び出し、ベクトルDB、検索API、外部ツールなど、依存先はどれも一時的に失敗しえます。そのときにアプリ全体を止めないために、ルールベースの応答に切り替える、キャッシュ済みの回答を返す、あとで再試行するキューに積む、手動対応に回す、といった段階的な逃げ道を用意しておきます。フォールバック、タイムアウト、リトライ、キャッシュ、そしてユーザーへの明確なメッセージ。この5点セットで考えるのが定石です。"
+        },
+        {
+          "s": "",
+          "t": "ここで最重要の引っかけがあります。グレースフル・デグラデーションは、失敗を隠して成功のふりをすることではありません。品質が下がったこと、これはフォールバックの値であること、再試行が必要なこと、手動対応に回したこと。これらを上位のエージェントやユーザーに正しく伝えるところまでがセットです。失敗を隠して平均値を正常な結果のように返せば、それはサイレント・フェイラーという別物の、最悪のアンチパターンになります。機能を下げて動き続けることと、下がったと正直に言うこと。この2つで1つです。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。一部が壊れても全体を落とさず、一段下げて動かし続けるのがグレースフル・デグラデーション。ただし下がったことは隠さず伝える。隠したらサイレント・フェイラー。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today, and it's a terminology episode: graceful degradation."
+        },
+        {
+          "s": "",
+          "t": "Graceful means elegant, not breaking violently. Degradation means dropping below full capability. Put together, graceful degradation is designing a system so that when some feature or external service fails, the whole thing doesn't collapse, it keeps running at whatever reduced capability it can manage. For example, if your high-precision search API goes down, you switch to a stale cache or a simpler search, and still give the user something. Instead of everything failing, the system steps down one notch, elegantly."
+        },
+        {
+          "s": "",
+          "t": "In Claude system design, every dependency can fail temporarily, the model call, the vector database, the search API, external tools. To keep the app alive, you prepare staged fallbacks: switch to rule-based responses, serve cached answers, queue the request for a later retry, or hand it to a human queue. The standard toolkit comes as a set of five: fallbacks, timeouts, retries, caching, and a clear message to the user."
+        },
+        {
+          "s": "",
+          "t": "And here's the trap that matters most. Graceful degradation is not hiding the failure and pretending everything succeeded. Reporting that quality dropped, that this value is a fallback, that a retry is pending, that the case went to manual handling, that reporting is part of the pattern. If you hide the failure and return, say, an average value as if it were the real figure, you've built something else entirely: a silent failure, the worst anti-pattern on the exam. Running in a degraded mode, and honestly saying so, those two together make the pattern."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: when parts fail, don't collapse, step down a notch and keep running, that's graceful degradation. But never conceal the step down, concealing it turns it into a silent failure. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep069",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "用語解説: 冪等性（idempotency）",
+      "en": "Term Deep-Dive: Idempotency"
+    },
+    "summary": {
+      "ja": "何回実行しても結果が同じなら冪等。書き込みを安全に再試行するための土台。冪等キーと絶対値セットで実現",
+      "en": "Same result no matter how many times it runs. The foundation that makes retrying writes safe"
+    },
+    "audio": {
+      "ja": "audio/ep069-ja.mp3",
+      "en": "audio/ep069-en.mp3"
+    },
+    "duration": {
+      "ja": 144,
+      "en": 139
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日は用語の回です。テーマは、冪等性、英語でidempotencyです。"
+        },
+        {
+          "s": "",
+          "t": "冪等性とは、同じ操作を1回やっても、複数回やっても、システムの最終状態が変わらない性質のことです。何回押しても同じ、と覚えてください。例を挙げます。データを取得するGETは冪等です。在庫を100にする、という絶対値のセットも冪等です。2回実行しても在庫は100のまま。ID5番を削除する、も冪等です。すでに消えていても、最終状態は同じ。一方、在庫を1増やす、は非冪等です。呼ぶたびに増えていく。新規注文の作成や、送金、課金も非冪等で、呼ぶたびに注文やお金が増えてしまいます。"
+        },
+        {
+          "s": "",
+          "t": "なぜこれが大事か。リトライと直結するからです。ネットワークが瞬断すると、実はサーバー側では成功していたのに、レスポンスだけが届かず、クライアントは失敗と誤認して再試行する、ということが起きます。操作が非冪等だと、これが二重課金や二重発注になります。逆に、操作を冪等にしておけば、安心して指数バックオフで再試行できる。実現手段の代表が冪等キーです。クライアントが操作ごとに一意なIDを付けて、サーバーは同じキーの2回目以降を、処理済みとみなして重複実行せず、同じ結果だけを返します。もう1つは、プラス1ではなく、100にする、という絶対値での指定です。"
+        },
+        {
+          "s": "",
+          "t": "試験での引っかけを整理します。正解の型は、副作用のある書き込み操作を再試行する前に、冪等性を担保する、です。読み取り専用のツールはもともと冪等なのでリスクが低い。危ないのは書き込み系で、在庫更新、課金、発注のようなツールをエージェントに持たせるときは、冪等性に加えて、human-in-the-loopの確認や、ログの記録もセットで問われます。リトライ設計の選択肢に書き込みが絡んでいたら、冪等性への言及があるかを見てください。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。もう一回押しても大丈夫か、がYESなら冪等。書き込みを再試行するなら、まず冪等にする。手段は、冪等キーか、絶対値セット。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today, and it's a terminology episode: idempotency."
+        },
+        {
+          "s": "",
+          "t": "Idempotency means that running the same operation once, or many times, leaves the system in the same final state. Pressing the button again changes nothing. Some examples. A GET that fetches data is idempotent. Setting inventory to exactly one hundred, an absolute-value write, is idempotent, run it twice and the stock is still one hundred. Deleting record number five is idempotent too, even if it's already gone, the end state is identical. But incrementing inventory by one is not idempotent, every call adds another. Creating a new order, transferring money, charging a card, all non-idempotent, every call makes another order or another charge."
+        },
+        {
+          "s": "",
+          "t": "Why does this matter? Because it's joined at the hip with retries. When the network blips, the server may have actually succeeded, but the response never arrives, so the client assumes failure and retries. With a non-idempotent operation, that's a double charge or a duplicate order. Make the operation idempotent, and you can retry with exponential backoff without fear. The classic tool is the idempotency key: the client attaches a unique ID to each operation, and the server treats any repeat of the same key as already processed, returning the same result without executing again. The other technique is absolute values, set it to one hundred, instead of add one."
+        },
+        {
+          "s": "",
+          "t": "For the exam, the winning pattern reads: before retrying an operation with side effects, ensure idempotency. Read-only tools are naturally idempotent and low risk. The danger is write tools, inventory updates, billing, ordering, and when an agent holds those, the expected answer usually bundles idempotency with human-in-the-loop confirmation and logging. Whenever a retry-design option involves writes, check whether it says anything about idempotency."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: if pressing it twice is safe, it's idempotent. Before you retry writes, make them idempotent first, with an idempotency key or absolute-value sets. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep068",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "用語解説: 指数バックオフとジッター",
+      "en": "Term Deep-Dive: Exponential Backoff and Jitter"
+    },
+    "summary": {
+      "ja": "待ち時間を倍々に伸ばして再試行、揺らぎを足して殺到を防ぎ、上限つき。使い切ったら構造化エラーで上へ",
+      "en": "Double the wait each retry, add jitter, cap the attempts, and escalate structured errors when exhausted"
+    },
+    "audio": {
+      "ja": "audio/ep068-ja.mp3",
+      "en": "audio/ep068-en.mp3"
+    },
+    "duration": {
+      "ja": 141,
+      "en": 131
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日は用語の回です。テーマは、指数バックオフとジッター。"
+        },
+        {
+          "s": "",
+          "t": "指数バックオフとは、再試行のたびに待ち時間を指数的に、つまり倍々に伸ばしていくリトライ戦略です。1秒待って駄目なら2秒、次は4秒、8秒。なぜ伸ばすのか。失敗した直後に連打すると、ただでさえ混雑して苦しんでいるサーバーを、さらに叩いて悪化させるからです。これはサンダリングハード、群れの殺到と呼ばれる現象です。待ちを伸ばすことで、サーバーに回復する猶予を与えながら、成功率を上げます。"
+        },
+        {
+          "s": "",
+          "t": "セットで覚える言葉が2つあります。1つ目はジッター。待ち時間にランダムな揺らぎを足すことです。多数のクライアントが同じ間隔で再試行すると、結局みんな同時に殺到してしまうので、バラバラのタイミングにずらします。2つ目は上限です。最大リトライ回数と最大待ち時間を必ず決めます。無期限のリトライは、リソースを占有し続けるので禁止。そして、リトライを全部使い果たしたときは、失敗を握りつぶさず、何をどう試したかの詳細を付けた構造化エラーとして、上位のコーディネーターに伝えます。"
+        },
+        {
+          "s": "",
+          "t": "試験での引っかけを整理します。まず、バックオフを使うのはtransient、つまり503や429のような一時的な障害だけです。400のような入力エラーに何回バックオフしても無駄です。次に、DB管理者が手動で解除するまで無期限に停止、は非スケーラブルで誤り。逆に、即座にエラーを上に伝えてセッション終了、も、数秒待てば直るものを諦めていて堅牢性を欠きます。そして、失敗したのに空の結果を、知見なし、として返すのはサイレント・フェイラーで最悪です。もう1つ、在庫更新や課金のような書き込み系の操作を再試行するなら、先に冪等性を担保すること。これは次の回で扱います。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。待ち時間を倍々に伸ばして再試行、ジッターで揺らして、上限を切る。対象はtransientだけ。使い切ったら、初めて構造化エラーで上に上げる。握りつぶさない。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today, and it's a terminology episode: exponential backoff and jitter."
+        },
+        {
+          "s": "",
+          "t": "Exponential backoff is a retry strategy where the waiting time grows exponentially, doubling with each attempt. Wait one second, then two, then four, then eight. Why stretch the waits? Because hammering a server the instant it fails makes an already overloaded system worse, a phenomenon called the thundering herd. Backing off gives the server room to recover, while your odds of success go up."
+        },
+        {
+          "s": "",
+          "t": "Two companion terms come with it. First, jitter: adding a random wobble to each wait. If thousands of clients retry on identical schedules, they all stampede at the same moment anyway, so you spread them out randomly. Second, caps: always set a maximum number of retries and a maximum wait. Unlimited retrying is forbidden, it just occupies resources forever. And when the retries are truly exhausted, you don't swallow the failure, you propagate a structured error upward to the coordinator, with the details of what was attempted."
+        },
+        {
+          "s": "",
+          "t": "For the exam, keep these traps straight. Backoff is only for transient failures, things like 503 or 429. Backing off on a 400, an input error, is pointless no matter how many times you try. Halting indefinitely until a database administrator manually intervenes is unscalable and wrong. Immediately propagating the error and killing the session is wrong in the other direction, giving up on something a few seconds of patience would fix. Returning an empty result as no insights found after a failure is a silent failure, the worst option on the board. And one more: before retrying write operations, like inventory updates or billing, you need idempotency first, which is the next episode."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: double the wait each retry, add jitter, cap the attempts, and only for transient errors. When you've used them all up, escalate a structured error upward. Never swallow it. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
+    "id": "ep067",
+    "date": "2026-07-17",
+    "style": "solo",
+    "topic": {
+      "ja": "用語解説: レイテンシとスループット",
+      "en": "Term Deep-Dive: Latency and Throughput"
+    },
+    "summary": {
+      "ja": "待ち時間の速さと処理量の多さは別物。Batch APIはレイテンシを犠牲にコスト半額、即時応答ならMessages API",
+      "en": "Response delay versus processing volume, and why the Batch API trades latency for cost"
+    },
+    "audio": {
+      "ja": "audio/ep067-ja.mp3",
+      "en": "audio/ep067-en.mp3"
+    },
+    "duration": {
+      "ja": 128,
+      "en": 114
+    },
+    "script": {
+      "ja": [
+        {
+          "s": "",
+          "t": "こんにちは。今日も1テーマ、CCA-Fのポイントを確認していきましょう。今日は用語の回です。テーマは、レイテンシとスループット。"
+        },
+        {
+          "s": "",
+          "t": "レイテンシとは、リクエストを投げてから、応答が返ってくるまでの待ち時間のことです。短いほど速い。レストランで言えば、注文してから料理が出てくるまでの時間です。よく混同されるのがスループットで、こちらは単位時間あたりに処理できる量のこと。同じレストランなら、1時間に何皿さばけるか、です。この2つは別物で、1皿ずつは遅くても、厨房を並列にすれば全体の処理量は増やせます。つまり、レイテンシが悪くてもスループットは高い、という状態がありえます。"
+        },
+        {
+          "s": "",
+          "t": "CCA-Fでこの区別が一番効くのが、Message Batches APIの設計判断です。Batch APIは、即時応答をあきらめる、つまりレイテンシを犠牲にする代わりに、コストが50%オフになります。何千件、何万件という大量のリクエストをまとめて投げて、最大24時間以内に結果を受け取る。大量処理のスループットとコスト効率を取る設計です。逆に、チャットボットのように、ユーザーが目の前で返事を待っているユースケースでは、レイテンシが命なので、通常のMessages APIを使います。"
+        },
+        {
+          "s": "",
+          "t": "試験での引っかけを整理します。即時応答が必要な場面でBatch APIを選ばせる選択肢は誤りです。逆に、夜間の大量バッチ処理に通常APIで1件ずつ、も不経済で誤り。また、ツールを増やしたり確認ステップを足したりする設計案に対して、レイテンシが増大する、という理由で不正解になるパターンもよく出ます。応答の速さが要件に入っていたら、まずレイテンシへの影響を疑ってください。"
+        },
+        {
+          "s": "",
+          "t": "まとめます。レイテンシは1件の待ち時間、スループットは全体の処理量。Batch APIはレイテンシを差し出してコスト半額、即時応答が要るなら通常のMessages API。ここだけ持ち帰ってください。それでは、また次回。"
+        }
+      ],
+      "en": [
+        {
+          "s": "",
+          "t": "Hello, and welcome back. One topic today, and it's a terminology episode: latency and throughput."
+        },
+        {
+          "s": "",
+          "t": "Latency is the waiting time between sending a request and getting the response back. Shorter is faster. Think of a restaurant: it's the time from placing your order to the dish arriving. The term it gets confused with is throughput, which is how much you can process per unit of time, how many dishes the kitchen turns out per hour. They're different things: each dish might come out slowly, but add parallel kitchens and total volume still goes up. High latency with high throughput is a perfectly real combination."
+        },
+        {
+          "s": "",
+          "t": "In CCA-F, this distinction matters most in the Message Batches API decision. The Batch API gives up immediate responses, sacrificing latency, in exchange for a fifty percent cost discount. You submit thousands of requests together and collect the results within up to twenty-four hours. It optimizes throughput and cost for bulk work. The flip side: for a chatbot, where a user is sitting there waiting, latency is everything, so you use the regular Messages API."
+        },
+        {
+          "s": "",
+          "t": "For the exam, watch these traps. Any option that picks the Batch API for a use case needing immediate responses is wrong. The reverse, processing a huge overnight batch one call at a time on the regular API, is wasteful and also wrong. And options that add extra tools or extra checking steps often lose points precisely because they increase latency. Whenever responsiveness appears in the requirements, check the latency impact first."
+        },
+        {
+          "s": "",
+          "t": "So, to recap: latency is the wait for one request, throughput is the volume overall. The Batch API trades latency away for half the cost, and when the user is waiting, it's the regular Messages API. That's your takeaway. See you next time."
+        }
+      ]
+    }
+  },
+  {
     "id": "ep066",
     "date": "2026-07-17",
     "style": "solo",
